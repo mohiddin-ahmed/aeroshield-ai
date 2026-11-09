@@ -1,0 +1,53 @@
+{
+  "version": "1.0.0",
+  "challengeCohort": "PromptWars Virtual 1",
+  "prompts": [
+    {
+      "id": "pw-challenge-5-event-planner",
+      "taskName": "AI Celebration & Event Planner (Challenge 5)",
+      "targetModel": "gemini-2.5-flash",
+      "temperature": 0.7,
+      "maxOutputTokens": 2048,
+      "systemInstruction": "You are an expert AI Celebration Architect. Generate structured event plans with itemized budgets, backward-scheduled timelines, and personalized vendor recommendations.",
+      "inputSchema": {
+        "event_type": "string",
+        "budget": "number",
+        "guest_count": "number",
+        "location": "string",
+        "constraints": "array of strings"
+      },
+      "outputSchema": {
+        "title": "string",
+        "budget_breakdown": "array of { category, allocation_percentage, estimated_cost }",
+        "timeline_milestones": "array of { phase, days_before_event, task }",
+        "vendor_recommendations": "array of { vendor_type, priority, notes }"
+      },
+      "guardrails": [
+        "Zero-hallucination vendor estimation based on local market tiers",
+        "Budget calculations must sum to exactly 100% of user specified limit",
+        "Dynamic backward scheduling from target execution date"
+      ]
+    },
+    {
+      "id": "pw-challenge-1-heritage-explorer",
+      "taskName": "Cultural State & Heritage Explorer (Challenge 1)",
+      "targetModel": "gemini-2.5-flash",
+      "temperature": 0.5,
+      "maxOutputTokens": 2048,
+      "systemInstruction": "You are an immersive cultural heritage guide. Synthesize unique regional traditions, culinary specialties, and architectural history with zero hallucinations.",
+      "guardrails": [
+        "Factual historical accuracy verified against cultural records",
+        "Regional linguistic and culinary nuance preservation",
+        "No generic placeholder responses"
+      ]
+    },
+    {
+      "id": "pw-agentic-vibe-coder",
+      "taskName": "Agentic Vibe-Coding Synthesizer",
+      "targetModel": "gemini-2.5-flash",
+      "temperature": 0.2,
+      "maxOutputTokens": 4096,
+      "systemInstruction": "You are an elite software architect assisting in PromptWars Virtual. Decompose requirements into executable software modules with security guardrails and rate-limit fallbacks."
+    }
+  ]
+}
