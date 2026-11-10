@@ -44,3 +44,4 @@ Whenever you finish working for the day:
 3. Replace the 4 bullet points with your day's work.
 4. Press Enter.
 5. Copy the generated LinkedIn and Instagram copy directly into your post drafts!
+

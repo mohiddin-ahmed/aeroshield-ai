@@ -55,3 +55,4 @@ Close-up dynamic lighting over sleek metallic developer badge with 'PromptWars W
    * Center your application window and add a dark blurred duplicate of the video in the background for a premium aesthetic.
 3. **Voiceover Tip:**  
    * Speak with energy and enthusiasm. Smile while talking—it naturally makes your tone sound confident, clear, and engaging to judges!
+
