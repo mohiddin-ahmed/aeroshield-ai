@@ -27,3 +27,4 @@ Run the automated validator in your terminal:
 npm run validate
 ```
 Ensure all 6 checks show **✔ PASS** before submitting.
+

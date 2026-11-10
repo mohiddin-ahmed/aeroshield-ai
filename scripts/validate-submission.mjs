@@ -179,3 +179,4 @@ if (failedCount === 0) {
   console.log(`${COLORS.bold}${COLORS.red}⚠️  ${failedCount} CHECK(S) FAILED. Address the fixes above before submitting to ensure maximum points!${COLORS.reset}\n`);
   process.exit(1);
 }
+

@@ -56,3 +56,4 @@ class PromptLogger {
 }
 
 export const promptLogger = new PromptLogger();
+

@@ -12,3 +12,4 @@ Judges evaluating PromptWars look for more than just code. They score:
 ## File Manifest
 * `prompt-registry.json`: Machine-readable registry of system instructions, expected input/output schemas, and models.
 * `templates/system-prompt-template.md`: The 5-pillar prompt template used to generate every challenge response.
+

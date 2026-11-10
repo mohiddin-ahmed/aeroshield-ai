@@ -25,3 +25,4 @@ A resilient, prompt-observable AI web application equipped with:
 Big thanks to the team at @Hack2skill and @Google for Developers for running such an inspiring builder series!
 
 #PromptWars #BuildWithAI #VibeCoding #GoogleForDevelopers #Hack2skill #GeminiAI #WebDevelopment #AIBuilders #Innovation
+

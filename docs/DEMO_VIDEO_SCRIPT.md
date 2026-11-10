@@ -29,3 +29,4 @@ Judges typically spend 1 to 2 minutes reviewing video submissions. Follow this c
 ### [1:45 - 2:00] Wrap-Up & Call to Action
 * *"The repository is fully open-source, and our complete technical blog is linked in the description."*
 * *"Thank you, Hack2skill and Google for Developers team, for an incredible challenge!"*
+
