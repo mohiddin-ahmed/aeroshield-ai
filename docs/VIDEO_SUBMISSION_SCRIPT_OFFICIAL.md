@@ -76,3 +76,4 @@
 - [ ] Total video duration is **under 4 minutes** (e.g. 3m 40s).
 - [ ] Uploaded to **YouTube as Unlisted** (or Google Drive as "Anyone with link can view").
 - [ ] **Crucial Test:** Open the video link in an **Incognito / Private browser window** to ensure it plays immediately without prompting for Google login!
+

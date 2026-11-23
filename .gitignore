@@ -34,3 +34,11 @@ Thumbs.db
 *.swp
 *.swo
 
+# Media & Binary Assets (Preserves Repo Size < 10 MB)
+*.wav
+*.mp4
+*.mov
+*.avi
+*.webm
+
+

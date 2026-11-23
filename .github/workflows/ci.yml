@@ -1,0 +1,34 @@
+name: AeroShield AI Continuous Integration
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-and-build:
+    name: Test, Validate & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Automated Vitest Suites
+        run: npm test
+
+      - name: Run Hack2skill Pre-Flight Submission Validator
+        run: npm run validate
+
+      - name: Verify Production Vite Build
+        run: npm run build

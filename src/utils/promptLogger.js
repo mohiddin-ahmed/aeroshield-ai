@@ -57,3 +57,20 @@ class PromptLogger {
 
 export const promptLogger = new PromptLogger();
 
+export function logPromptExecution(params) {
+  return promptLogger.log({
+    taskName: params.taskName || 'Smog Defense Planning',
+    userPrompt: params.prompt || params.userPrompt,
+    systemInstruction: params.systemInstruction,
+    response: params.response,
+    model: params.model,
+    latencyMs: params.latencyMs,
+    isMock: params.isMock ?? true
+  });
+}
+
+export function getPromptLogs() {
+  return promptLogger.getLogs();
+}
+
+
