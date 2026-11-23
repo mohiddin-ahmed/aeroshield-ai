@@ -4,6 +4,8 @@ import { getSolarWindowStatus } from '../src/utils/solarWindowEngine';
 import { getAqiCategory, calculateCigarettesFromPm25 } from '../src/services/airQualityService';
 import { researchArticles } from '../src/services/researchArticlesData';
 import { generateSmogDefensePlan } from '../src/services/gemini';
+import { getDetailedTimeContext } from '../src/utils/geolocationEngine';
+import { generatePersonalizedIntelligence } from '../src/utils/personalizedJugaadEngine';
 
 describe('AeroShield AI: Mathematical & Atmospheric Engine Tests', () => {
 
@@ -91,5 +93,38 @@ describe('AeroShield AI: Mathematical & Atmospheric Engine Tests', () => {
     expect(plan.data.daily_routine).toHaveLength(4);
     expect(plan.data.dosimetry_impact.cigarettes_avoided).toBeGreaterThan(0);
   });
+
+  it('accurately resolves detailed time context and inversion phase', () => {
+    const testDate = new Date();
+    testDate.setHours(14, 15, 0, 0); // 2:15 PM
+    const context = getDetailedTimeContext(testDate);
+    expect(context.solarVentilationWindow).toBe(true);
+    expect(context.timePhase).toBe('solar_window');
+  });
+
+  it('generates personalized Jugaad and custom AI prompt for active profile', () => {
+    const testDate = new Date();
+    testDate.setHours(8, 0, 0, 0); // Morning peak
+    const timeCtx = getDetailedTimeContext(testDate);
+    const mockTelemetry = {
+      city: 'New Delhi',
+      aqi: 425,
+      pm2_5: 320,
+      temperatureC: 16,
+      humidityPct: 80,
+      windSpeedKmh: 4
+    };
+
+    const intel = generatePersonalizedIntelligence({
+      timeContext: timeCtx,
+      telemetry: mockTelemetry,
+      vulnerabilities: ['asthma', 'toddler']
+    });
+
+    expect(intel.currentUrgentAdvisory).toContain('Morning Thermal Inversion Peak');
+    expect(intel.customizedJugaadList.length).toBeGreaterThanOrEqual(3);
+    expect(intel.customAiPrompt).toContain('asthma, toddler');
+  });
+
 
 });

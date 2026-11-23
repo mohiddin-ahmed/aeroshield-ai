@@ -1,33 +1,26 @@
 import React, { useState } from 'react';
-import { X, Bot, Copy, Check, ExternalLink, Sparkles } from 'lucide-react';
+import { X, Bot, Copy, Check, ExternalLink, Sparkles, Clock, MapPin, CloudRain } from 'lucide-react';
 
-export function MultiAiModal({ isOpen, onClose, telemetry, vulnerabilities = [] }) {
+export function MultiAiModal({ isOpen, onClose, telemetry, timeContext, vulnerabilities = [], customAiPrompt }) {
   const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
 
-  const { city, aqi, pm2_5, cigaretteEquivDaily } = telemetry;
-  const vulnText = vulnerabilities.length > 0 ? vulnerabilities.join(', ') : 'general urban family';
-
-  // Crafted professional prompt with scientific grounding
-  const generatedPrompt = `Act as an expert atmospheric chemist and clinical respiratory health specialist.
-I live in ${city}, where current outdoor air quality is hazardous at AQI ${aqi} (PM2.5: ${pm2_5} μg/m³, which according to Berkeley Earth is the toxic equivalent of smoking ${cigaretteEquivDaily} cigarettes per day).
-My household profile includes: ${vulnText}.
-
-Please provide:
-1. Step-by-step engineering instructions to build a ₹1,200 DIY Box-Fan HEPA Air Purifier (including exact fan specs, MERV 13 filter placement, and how to prevent air bypass).
-2. The exact scientific mechanism of the 1:00 PM – 3:00 PM solar thermal lift window and why dry broom sweeping causes a 340% dust resuspension spike.
-3. A personalized, low-cost daily clean-room protocol and dietary/respiratory defense hacks for our family.`;
+  const { city, aqi, pm2_5, temperatureC, humidityPct } = telemetry;
+  const promptToUse = customAiPrompt || `Act as an expert atmospheric chemist and clinical respiratory health specialist.
+I am in ${city} at ${timeContext?.timeString || 'now'}. Current AQI is ${aqi} (PM2.5: ${pm2_5} μg/m³).
+Family profile: ${vulnerabilities.join(', ') || 'general household'}.
+Provide immediate time-synchronized defense protocols and personalized Desi Jugaad hacks.`;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(generatedPrompt);
+    navigator.clipboard.writeText(promptToUse);
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
   };
 
   const handleOpenAi = (platform) => {
     handleCopy();
-    const encoded = encodeURIComponent(generatedPrompt);
+    const encoded = encodeURIComponent(promptToUse);
     let url = '';
 
     if (platform === 'chatgpt') {
@@ -42,8 +35,8 @@ Please provide:
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-2xl rounded-3xl glass-card-dark p-6 sm:p-8 border border-white/20 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
+      <div className="relative w-full max-w-2xl rounded-3xl glass-card-dark p-6 sm:p-8 border border-white/20 shadow-2xl overflow-hidden">
         
         {/* Close Button */}
         <button
@@ -55,26 +48,41 @@ Please provide:
 
         {/* Header */}
         <div className="flex items-center space-x-3 mb-4">
-          <div className="w-10 h-10 rounded-2xl bg-[#CBD77E] flex items-center justify-center text-[#282828]">
+          <div className="w-10 h-10 rounded-2xl bg-[#10B981] flex items-center justify-center text-[#18181B] font-bold">
             <Bot className="w-5 h-5" />
           </div>
           <div>
             <h2 className="text-xl font-bold text-white tracking-tight">
-              One-Click Multi-AI Consultation Engine
+              One-Click Multi-AI Deep Dive Engine
             </h2>
-            <p className="text-xs text-white/70">
-              Personalized prompt auto-generated from your live atmospheric telemetry.
-            </p>
+            <div className="flex items-center space-x-2 text-xs text-white/70 mt-0.5">
+              <span>📍 {city}</span>
+              <span>•</span>
+              <span>⏰ {timeContext?.timeString}</span>
+              <span>•</span>
+              <span className="text-[#34D399] font-mono">AQI {aqi}</span>
+            </div>
           </div>
         </div>
 
+        {/* Live Context Badge */}
+        <div className="p-3 rounded-2xl bg-white/5 border border-white/10 mb-4 flex items-center justify-between text-xs text-white/80">
+          <div className="flex items-center space-x-2">
+            <Sparkles className="w-4 h-4 text-[#34D399]" />
+            <span>Auto-Synchronized to your live time, weather & vulnerabilities</span>
+          </div>
+          <span className="font-mono text-[11px] text-[#34D399]">
+            {vulnerabilities.length} active tags
+          </span>
+        </div>
+
         {/* Prompt Preview Card */}
-        <div className="relative rounded-2xl bg-black/30 border border-white/10 p-4 mb-5">
-          <div className="flex items-center justify-between text-xs text-[#CBD77E] font-bold mb-2">
-            <span>PRE-FILLED CONTEXT-AWARE PROMPT</span>
+        <div className="relative rounded-2xl bg-black/40 border border-white/10 p-4 mb-5">
+          <div className="flex items-center justify-between text-xs text-[#34D399] font-bold mb-2">
+            <span>PRE-FILLED CONTEXTUAL AI PROMPT</span>
             <button
               onClick={handleCopy}
-              className="flex items-center space-x-1 text-white hover:text-[#CBD77E] transition-colors"
+              className="flex items-center space-x-1 text-white hover:text-[#34D399] transition-colors"
             >
               {copied ? (
                 <>
@@ -89,8 +97,8 @@ Please provide:
               )}
             </button>
           </div>
-          <pre className="text-xs text-white/80 whitespace-pre-wrap font-sans max-h-48 overflow-y-auto pr-2 leading-relaxed">
-            {generatedPrompt}
+          <pre className="text-xs text-white/85 whitespace-pre-wrap font-sans max-h-48 overflow-y-auto pr-2 leading-relaxed">
+            {promptToUse}
           </pre>
         </div>
 
