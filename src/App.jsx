@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Navbar } from './components/Navbar';
 import { FloatingBottomNav } from './components/FloatingBottomNav';
 import { DemoVideoModal } from './components/DemoVideoModal';
+import { SettingsModal } from './components/SettingsModal';
+import { JugaadDetailModal } from './components/JugaadDetailModal';
 import { RotaryAqiDial } from './components/RotaryAqiDial';
 import { TelemetryGrid } from './components/TelemetryGrid';
 import { VulnerabilityToggles } from './components/VulnerabilityToggles';
@@ -14,24 +16,22 @@ import { PromptInspector } from './components/PromptInspector';
 import { fetchLiveAirQuality } from './services/airQualityService';
 import { generateSmogDefensePlan } from './services/gemini';
 import { getSolarWindowStatus } from './utils/solarWindowEngine';
-import { detectDeviceLocation, getDetailedTimeContext } from './utils/geolocationEngine';
-import { generatePersonalizedIntelligence, familyVulnerabilityProfiles } from './utils/personalizedJugaadEngine';
+import { detectDeviceLocation, getDetailedTimeContext, MAJOR_CITIES_CATALOG } from './utils/geolocationEngine';
+import { generatePersonalizedIntelligence } from './utils/personalizedJugaadEngine';
 import { mockCitiesAirQuality } from './services/mockAirQualityData';
 import { getPromptLogs } from './utils/promptLogger';
+import { translations } from './utils/i18n';
 
 import { 
   MapPin, 
   RefreshCw, 
   Sparkles, 
   AlertTriangle, 
-  Clock, 
-  Wrench, 
-  Shield, 
   Bot, 
   ChevronDown,
-  Sun,
-  Moon,
-  Compass
+  Compass,
+  Info,
+  ShieldCheck
 } from 'lucide-react';
 
 export function App() {
@@ -47,6 +47,23 @@ export function App() {
     return false;
   });
 
+  // Language state
+  const [currentLang, setCurrentLang] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('lang') || 'en';
+    }
+    return 'en';
+  });
+
+  const handleSelectLang = (code) => {
+    setCurrentLang(code);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('lang', code);
+    }
+  };
+
+  const t = translations[currentLang] || translations.en;
+
   // Sync dark class on document root
   useEffect(() => {
     if (isDarkMode) {
@@ -60,10 +77,10 @@ export function App() {
 
   // Geolocation & Time Detection
   const [locationData, setLocationData] = useState({
-    city: 'New Delhi (NCR)',
+    city: 'Bengaluru',
     country: 'India',
-    latitude: 28.6139,
-    longitude: 77.2090,
+    latitude: 12.9716,
+    longitude: 77.5946,
     isAutoDetected: false
   });
   const [timeContext, setTimeContext] = useState(getDetailedTimeContext());
@@ -82,6 +99,8 @@ export function App() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
   const [isMultiAiOpen, setIsMultiAiOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [selectedJugaadItem, setSelectedJugaadItem] = useState(null);
   const [promptCount, setPromptCount] = useState(0);
 
   // Auto-detect device location on initial mount
@@ -130,11 +149,12 @@ export function App() {
     });
   }, [timeContext, telemetry, vulnerabilities]);
 
-  // Manual city override (keeps manual testing available alongside auto-detection)
+  // Manual city override
   const handleManualCityChange = async (cityKey) => {
     setIsLoadingTelemetry(true);
     try {
-      const data = await fetchLiveAirQuality(cityKey);
+      const cityPreset = MAJOR_CITIES_CATALOG[cityKey];
+      const data = await fetchLiveAirQuality(cityKey, cityPreset ? { lat: cityPreset.lat, lon: cityPreset.lon } : null);
       setTelemetry(data);
       setLocationData({
         city: data.city,
@@ -202,6 +222,9 @@ export function App() {
         onOpenVideoModal={() => setIsVideoModalOpen(true)}
         onOpenInspector={() => setIsInspectorOpen(true)}
         onOpenMultiAi={() => setIsMultiAiOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        currentLang={currentLang}
+        onSelectLang={handleSelectLang}
         promptCount={promptCount}
         isDarkMode={isDarkMode}
         onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
@@ -210,86 +233,102 @@ export function App() {
       {/* Main Container */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 space-y-6">
         
-        {/* Device Time & Location Real-Time Detection Banner */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-3xl glass-card">
-          
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#10B981]/20 text-[#059669] dark:text-[#34D399] flex items-center justify-center font-bold shrink-0">
-              <Compass className="w-5 h-5 stroke-[2.2]" />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#10B981]">
-                  Auto-Detected Device Location & Time
-                </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 font-mono">
-                  {timeContext.dateString}
-                </span>
-              </div>
-              <p className="text-sm font-bold tracking-tight mt-0.5">
-                {locationData.city}, {locationData.country} • <span className="font-mono text-[#10B981]">{timeContext.timeString}</span> ({timeContext.phaseLabel})
-              </p>
-            </div>
-          </div>
-
-          {/* Quick Actions & Manual Override Dropdown */}
-          <div className="flex items-center space-x-2">
-            <div className="relative">
-              <select
-                onChange={(e) => handleManualCityChange(e.target.value)}
-                defaultValue=""
-                className="appearance-none bg-black/5 dark:bg-white/10 text-inherit font-bold text-xs pl-3 pr-7 py-2 rounded-2xl border border-black/5 dark:border-white/10 focus:outline-none cursor-pointer"
-              >
-                <option value="" disabled>Switch City...</option>
-                <option value="delhi">New Delhi, India</option>
-                <option value="mumbai">Mumbai, India</option>
-                <option value="kolkata">Kolkata, India</option>
-                <option value="lahore">Lahore, Pakistan</option>
-                <option value="london">London, UK</option>
-                <option value="newyork">New York, USA</option>
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none" />
-            </div>
-
-            <button
-              onClick={() => setIsMultiAiOpen(true)}
-              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-2xl bg-white dark:bg-white/10 text-xs font-bold border border-black/5 dark:border-white/10 shadow-2xs hover:scale-102 transition-all"
-              title="Open Multi-AI Prompt Launcher"
-            >
-              <Bot className="w-3.5 h-3.5 text-emerald-500" />
-              <span className="hidden sm:inline">Ask AI</span>
-            </button>
-
-            <button
-              onClick={handleGeneratePlan}
-              disabled={isGenerating}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-2xl bg-[#282828] dark:bg-white text-white dark:text-[#282828] text-xs font-bold shadow-xs hover:opacity-90 transition-all disabled:opacity-50"
-            >
-              <Sparkles className={`w-3.5 h-3.5 text-[#10B981] ${isGenerating ? 'animate-spin' : ''}`} />
-              <span>{isGenerating ? 'Analyzing...' : 'AI Plan'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Severe Inversion Alert Banner (When AQI > 300) */}
-        {telemetry.aqi > 300 && (
-          <div className="p-4 sm:p-5 rounded-3xl bg-[#9B2226]/10 border-2 border-[#9B2226]/30 flex items-start space-x-3 text-[#9B2226] dark:text-rose-300">
-            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-[#9B2226] dark:text-rose-400" />
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider">
-                Emergency Ground Thermal Inversion Alert • AQI {telemetry.aqi}
-              </h3>
-              <p className="text-xs opacity-90 mt-1 leading-relaxed">
-                Atmospheric boundary layer is trapped below 150 meters. Inhaling ambient air today is the toxic equivalent of smoking <strong>{telemetry.cigaretteEquivDaily} cigarettes</strong>. Seal windows, run DIY box-fan filtration continuously, and ventilate only during the 1:00 PM – 3:00 PM solar window.
-              </p>
-            </div>
-          </div>
-        )}
-
         {/* TAB 1: COMMAND CENTER (HOME) */}
         {activeTab === 'commandCenter' && (
-          <div className="space-y-6 animate-fade-in">
-            {/* Top Layout: Rotary Dial + Vulnerability Toggles */}
+          <div className="space-y-6 animate-page-enter">
+            
+            {/* Device Time & Location Real-Time Detection Hero Banner (INSIDE HOME ONLY) */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 sm:p-5 rounded-3xl glass-card">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#10B981]/20 text-[#059669] dark:text-[#34D399] flex items-center justify-center font-bold shrink-0">
+                  <Compass className="w-5 h-5 stroke-[2.2]" />
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#10B981]">
+                      {t.status.autoDetected}
+                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 font-mono">
+                      {timeContext.dateString}
+                    </span>
+                  </div>
+                  <p className="text-sm sm:text-base font-bold tracking-tight mt-0.5">
+                    {locationData.city}, {locationData.country} • <span className="font-mono text-[#10B981]">{timeContext.timeString}</span> ({timeContext.phaseLabel})
+                  </p>
+                </div>
+              </div>
+
+              {/* Quick Actions & Manual Override Dropdown */}
+              <div className="flex items-center space-x-2">
+                <div className="relative">
+                  <select
+                    onChange={(e) => handleManualCityChange(e.target.value)}
+                    defaultValue=""
+                    className="appearance-none bg-black/5 dark:bg-white/10 text-inherit font-bold text-xs pl-3 pr-7 py-2 rounded-2xl border border-black/5 dark:border-white/10 focus:outline-none cursor-pointer"
+                  >
+                    <option value="" disabled>{t.actions.switchCity}</option>
+                    <optgroup label="India (All Regions)">
+                      <option value="bengaluru">Bengaluru, Karnataka</option>
+                      <option value="delhi">New Delhi (NCR)</option>
+                      <option value="mumbai">Mumbai, Maharashtra</option>
+                      <option value="kolkata">Kolkata, West Bengal</option>
+                      <option value="chennai">Chennai, Tamil Nadu</option>
+                      <option value="hyderabad">Hyderabad, Telangana</option>
+                      <option value="pune">Pune, Maharashtra</option>
+                      <option value="ahmedabad">Ahmedabad, Gujarat</option>
+                      <option value="lucknow">Lucknow, UP</option>
+                      <option value="patna">Patna, Bihar</option>
+                      <option value="jaipur">Jaipur, Rajasthan</option>
+                      <option value="kochi">Kochi, Kerala</option>
+                      <option value="chandigarh">Chandigarh</option>
+                      <option value="guwahati">Guwahati, Assam</option>
+                    </optgroup>
+                    <optgroup label="International">
+                      <option value="lahore">Lahore, Pakistan</option>
+                      <option value="dhaka">Dhaka, Bangladesh</option>
+                      <option value="london">London, UK</option>
+                      <option value="newyork">New York, USA</option>
+                    </optgroup>
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none" />
+                </div>
+
+                <button
+                  onClick={() => setIsMultiAiOpen(true)}
+                  className="flex items-center space-x-1.5 px-3.5 py-2 rounded-2xl bg-white dark:bg-white/10 text-xs font-bold border border-black/5 dark:border-white/10 shadow-2xs hover:scale-102 transition-all"
+                  title="Open Multi-AI Prompt Launcher"
+                >
+                  <Bot className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="hidden sm:inline">{t.actions.askAi}</span>
+                </button>
+
+                <button
+                  onClick={handleGeneratePlan}
+                  disabled={isGenerating}
+                  className="flex items-center space-x-1.5 px-4 py-2 rounded-2xl bg-[#282828] dark:bg-white text-white dark:text-[#282828] text-xs font-bold shadow-xs hover:opacity-90 transition-all disabled:opacity-50"
+                >
+                  <Sparkles className={`w-3.5 h-3.5 text-[#10B981] ${isGenerating ? 'animate-spin' : ''}`} />
+                  <span>{isGenerating ? 'Analyzing...' : t.actions.generatePlan}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Severe Inversion Alert Banner (When AQI > 300) */}
+            {telemetry.aqi > 300 && (
+              <div className="p-4 sm:p-5 rounded-3xl bg-[#9B2226]/10 border-2 border-[#9B2226]/30 flex items-start space-x-3 text-[#9B2226] dark:text-rose-300">
+                <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-[#9B2226] dark:text-rose-400" />
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider">
+                    Emergency Ground Thermal Inversion Alert • AQI {telemetry.aqi}
+                  </h3>
+                  <p className="text-xs opacity-90 mt-1 leading-relaxed">
+                    Atmospheric boundary layer is trapped below 150 meters. Inhaling ambient air today is the toxic equivalent of smoking <strong>{telemetry.cigaretteEquivDaily} cigarettes</strong>. Seal windows, run DIY box-fan filtration continuously, and ventilate only during the 1:00 PM – 3:00 PM solar window.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Center Stage: Rotary Dial + Real-Time Inversion Status */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
               
               {/* Rotary Circular AQI Dial */}
@@ -336,14 +375,14 @@ export function App() {
               </div>
             </div>
 
-            {/* Live Telemetry Grid (PM2.5, PM10, NO2, O3) */}
-            <div>
+            {/* Middle/Lower Section: Open-Meteo High-Resolution Atmospheric Sensors */}
+            <div className="pt-2">
               <div className="flex items-center justify-between mb-3 px-1">
                 <span className="text-xs font-bold uppercase tracking-wider opacity-60">
-                  Open-Meteo High-Resolution Atmospheric Sensors
+                  {t.metrics.sensorsTitle}
                 </span>
                 <span className="text-[11px] font-mono opacity-40">
-                  Updated {telemetry.timestamp || 'Live'}
+                  Updated {telemetry.timestamp || 'Live'} • {telemetry.city}
                 </span>
               </div>
               <TelemetryGrid telemetry={telemetry} />
@@ -371,48 +410,88 @@ export function App() {
                 </div>
               </div>
             )}
+
           </div>
         )}
 
         {/* TAB 2: DAILY ROUTINE */}
         {activeTab === 'routine' && (
-          <div className="animate-fade-in">
-            <SmogRoutineTimeline solarStatus={solarStatus} />
+          <div className="animate-page-enter">
+            <SmogRoutineTimeline 
+              solarStatus={solarStatus} 
+              timeContext={timeContext}
+            />
           </div>
         )}
 
         {/* TAB 3: DESI JUGAAD LAB */}
         {activeTab === 'jugaad' && (
-          <div className="animate-fade-in">
+          <div className="animate-page-enter">
             <DesiJugaadLab 
               onOpenMultiAi={() => setIsMultiAiOpen(true)}
               telemetry={telemetry}
               personalizedIntel={personalizedIntel}
               timeContext={timeContext}
+              onSelectJugaad={(item) => setSelectedJugaadItem(item)}
             />
           </div>
         )}
 
         {/* TAB 4: RESEARCH & EVIDENCE HUB */}
         {activeTab === 'research' && (
-          <div className="animate-fade-in">
+          <div className="animate-page-enter">
             <ResearchHub telemetry={telemetry} />
           </div>
         )}
 
+        {/* Footer Scientific & Public Health Disclaimer Banner */}
+        <footer className="mt-8 p-4 rounded-3xl glass-card border border-black/5 dark:border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs opacity-70">
+          <div className="flex items-start space-x-2.5">
+            <Info className="w-4 h-4 text-[#10B981] shrink-0 mt-0.5" />
+            <p className="leading-relaxed">
+              <strong>{t.disclaimer.title}:</strong> {t.disclaimer.text}
+            </p>
+          </div>
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="shrink-0 text-[#10B981] font-bold hover:underline"
+          >
+            Review Transparency & Sources →
+          </button>
+        </footer>
+
       </main>
 
-      {/* Floating Bottom Capsule Pill Navigation Bar (matching uploaded reference) */}
+      {/* Floating Bottom Capsule Pill Navigation Bar */}
       <FloatingBottomNav
         activeTab={activeTab}
         onSelectTab={setActiveTab}
         isDarkMode={isDarkMode}
       />
 
-      {/* Modals */}
+      {/* Modals & In-Place Drawers */}
       <DemoVideoModal
         isOpen={isVideoModalOpen}
         onClose={() => setIsVideoModalOpen(false)}
+      />
+
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        currentLang={currentLang}
+        onSelectLang={handleSelectLang}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+        vulnerabilities={vulnerabilities}
+        onToggleVulnerability={handleToggleVulnerability}
+        onOpenDevTools={() => setIsInspectorOpen(true)}
+      />
+
+      <JugaadDetailModal
+        item={selectedJugaadItem}
+        isOpen={Boolean(selectedJugaadItem)}
+        onClose={() => setSelectedJugaadItem(null)}
+        onOpenMultiAi={() => setIsMultiAiOpen(true)}
       />
 
       <MultiAiModal

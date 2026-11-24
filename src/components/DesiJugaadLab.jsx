@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Wrench, Sparkles, Sliders, Droplets, Shield, ExternalLink, Bot, Check, ArrowRight, Clock, AlertCircle } from 'lucide-react';
+import { Wrench, Sparkles, Sliders, Droplets, Shield, ExternalLink, Bot, Check, ArrowRight, Clock, BookOpen } from 'lucide-react';
 import { calculateDiyPurifierStats } from '../utils/cadrCalculator';
 
-export function DesiJugaadLab({ onOpenMultiAi, telemetry, personalizedIntel, timeContext }) {
+export function DesiJugaadLab({ onOpenMultiAi, telemetry, personalizedIntel, timeContext, onSelectJugaad }) {
   const [roomSqft, setRoomSqft] = useState(220);
   const [fanSpeed, setFanSpeed] = useState('medium');
 
@@ -72,7 +72,7 @@ export function DesiJugaadLab({ onOpenMultiAi, telemetry, personalizedIntel, tim
             </div>
           </div>
 
-          <div className="text-left sm:text-right">
+          <div className="flex items-center space-x-2">
             <span className="text-xs font-mono font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-500/20">
               {cadrStats.costSavingsMultiple}x More Cost-Efficient
             </span>
@@ -154,15 +154,16 @@ export function DesiJugaadLab({ onOpenMultiAi, telemetry, personalizedIntel, tim
           </div>
         </div>
 
-        {/* Assembly Steps */}
-        <div className="p-4 rounded-2xl bg-black/3 dark:bg-white/5 border border-black/5 dark:border-white/10">
-          <h4 className="text-xs font-bold mb-1">Simple 3-Step Assembly (15 minutes):</h4>
-          <ol className="text-xs opacity-85 space-y-1 list-decimal list-inside leading-relaxed">
-            <li>Buy any standard 20-inch box fan (₹850-₹900) and one 20x20 MERV 13 / H13 filter sheet (₹350-₹450).</li>
-            <li>Place the filter on the rear suction intake (arrow pointing towards the fan blades).</li>
-            <li>Seal the perimeter tightly with packing tape to eliminate air bypass. Plug in and run on medium.</li>
-          </ol>
-        </div>
+        {/* View Details Button */}
+        {customizedJugaadList[0] && (
+          <button
+            onClick={() => onSelectJugaad(customizedJugaadList[0])}
+            className="w-full flex items-center justify-center space-x-2 py-3 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-xs font-bold text-[#10B981] transition-all"
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>View Detailed Guide & Science for Box-Fan HEPA</span>
+          </button>
+        )}
       </div>
 
       {/* Dynamically Generated Personalized Hacks for User's Active Profile */}
@@ -194,10 +195,19 @@ export function DesiJugaadLab({ onOpenMultiAi, telemetry, personalizedIntel, tim
 
                 <div className="mt-3 p-3 rounded-xl bg-black/3 dark:bg-white/5 border border-black/5 dark:border-white/10">
                   <span className="text-xs font-medium opacity-90 block">
-                    <strong>How to make:</strong> {jugaad.instruction}
+                    <strong>Quick step:</strong> {jugaad.instruction}
                   </span>
                 </div>
               </div>
+
+              {/* View More Button (Opens In-Place Modal) */}
+              <button
+                onClick={() => onSelectJugaad(jugaad)}
+                className="mt-4 flex items-center justify-center space-x-1.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-[#10B981]/15 text-xs font-bold text-[#10B981] border border-black/5 dark:border-white/10 transition-colors"
+              >
+                <span>View Detailed Guide & Science</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
             </div>
           ))}
         </div>

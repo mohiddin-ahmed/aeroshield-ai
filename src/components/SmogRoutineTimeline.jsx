@@ -1,9 +1,10 @@
 import React from 'react';
-import { SunMedium, Moon, Wind, ShieldCheck, Clock, CheckCircle } from 'lucide-react';
-import { getSolarWindowStatus } from '../utils/solarWindowEngine';
+import { SunMedium, Moon, Wind, ShieldCheck, Clock, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
+import { getDetailedTimeContext } from '../utils/geolocationEngine';
 
-export function SmogRoutineTimeline({ solarStatus }) {
-  const currentHour = new Date().getHours();
+export function SmogRoutineTimeline({ solarStatus, timeContext }) {
+  const currentHour = timeContext?.hour ?? new Date().getHours();
+  const timeInfo = timeContext || getDetailedTimeContext();
 
   const routineSteps = [
     {
@@ -22,7 +23,7 @@ export function SmogRoutineTimeline({ solarStatus }) {
       action: 'Open opposing windows for 15 minutes of rapid air exchange to flush stagnant CO2 and VOCs.',
       icon: SunMedium,
       active: currentHour >= 13 && currentHour < 15,
-      highlightColor: '#CBD77E',
+      highlightColor: '#10B981',
       isSolarWindow: true
     },
     {
@@ -46,80 +47,117 @@ export function SmogRoutineTimeline({ solarStatus }) {
   ];
 
   return (
-    <div className="p-6 sm:p-8 rounded-3xl glass-card space-y-6">
+    <div className="space-y-6">
       
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-black/5 pb-4">
+      {/* Top Dedicated "Right Now: Active Slot & Prescribed Action" Hero Card */}
+      <div className="p-6 sm:p-7 rounded-3xl glass-card border border-emerald-500/20 bg-gradient-to-br from-white/95 via-white/90 to-[#10B981]/10 dark:from-[#18181B]/95 dark:via-[#18181B]/90 dark:to-[#10B981]/15 shadow-sm space-y-4">
+        
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-black/5 dark:border-white/10 pb-3">
+          <div className="flex items-center space-x-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-ping" />
+            <span className="text-xs font-bold uppercase tracking-wider text-[#10B981]">
+              Right Now • Current Active Time Slot
+            </span>
+          </div>
+
+          <div className="flex items-center space-x-2 text-xs font-mono font-bold px-3 py-1 rounded-full bg-black/5 dark:bg-white/10">
+            <Clock className="w-3.5 h-3.5 text-[#10B981]" />
+            <span>{timeInfo.timeString} ({timeInfo.phaseLabel})</span>
+          </div>
+        </div>
+
         <div>
-          <h2 className="text-xl font-bold text-[#282828] tracking-tight">
-            24-Hour Smog-Safe Automations & Daily Routine
-          </h2>
-          <p className="text-xs text-[#282828]/60 mt-0.5">
-            Synchronized with atmospheric boundary layer physics & solar convection cycles.
+          <h3 className="text-lg sm:text-xl font-bold tracking-tight">
+            {timeInfo.slotTitle}
+          </h3>
+          <p className="text-xs opacity-75 mt-1 leading-relaxed">
+            Atmospheric conditions right now are governed by the diurnal temperature gradient and soil thermal flux.
           </p>
         </div>
 
-        {/* Live Window Indicator */}
-        <div className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white/80 border border-black/5 text-xs font-semibold">
-          <Clock className="w-3.5 h-3.5 text-[#282828]" />
-          <span>{solarStatus.statusText}</span>
+        {/* Highlighted Prescribed Action */}
+        <div className="p-4 rounded-2xl bg-[#10B981]/15 dark:bg-[#10B981]/20 border border-[#10B981]/30 flex items-start space-x-3">
+          <CheckCircle className="w-5 h-5 text-[#059669] dark:text-[#34D399] shrink-0 mt-0.5" />
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#059669] dark:text-[#34D399] block mb-0.5">
+              Prescribed Immediate Action:
+            </span>
+            <p className="text-xs font-semibold text-[#282828] dark:text-white leading-relaxed">
+              {timeInfo.currentUrgentPrescription}
+            </p>
+          </div>
         </div>
+
       </div>
 
-      {/* Stepped Timeline */}
-      <div className="space-y-4">
-        {routineSteps.map((step, idx) => {
-          const Icon = step.icon;
+      {/* 24-Hour Stepped Timeline Container */}
+      <div className="p-6 sm:p-8 rounded-3xl glass-card space-y-6">
+        
+        <div className="border-b border-black/5 dark:border-white/10 pb-4">
+          <h2 className="text-xl font-bold tracking-tight">
+            24-Hour Smog-Safe Automations & Daily Routine
+          </h2>
+          <p className="text-xs opacity-60 mt-0.5">
+            Synchronized with diurnal atmospheric boundary layer physics & solar convection cycles.
+          </p>
+        </div>
 
-          return (
-            <div 
-              key={idx}
-              className={`p-4 sm:p-5 rounded-2xl transition-all ${
-                step.isSolarWindow 
-                  ? 'bg-gradient-to-r from-[#CBD77E]/20 via-[#CBD77E]/10 to-transparent border-2 border-[#CBD77E]' 
-                  : step.active
-                  ? 'bg-white border border-black/10 shadow-xs'
-                  : 'bg-white/60 border border-black/5 opacity-80'
-              }`}
-            >
-              <div className="flex items-start space-x-3.5">
-                <div 
-                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-2xs mt-0.5"
-                  style={{ backgroundColor: `${step.highlightColor}20`, color: step.highlightColor }}
-                >
-                  <Icon className="w-5 h-5 stroke-[2.2]" />
-                </div>
+        {/* Stepped Timeline */}
+        <div className="space-y-4">
+          {routineSteps.map((step, idx) => {
+            const Icon = step.icon;
 
-                <div className="flex-1">
-                  <div className="flex flex-wrap items-center justify-between gap-1">
-                    <span className="text-xs font-bold font-mono px-2 py-0.5 rounded-md bg-black/5 text-[#282828]">
-                      {step.time}
-                    </span>
-                    {step.active && (
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-                        Current Slot
-                      </span>
-                    )}
+            return (
+              <div 
+                key={idx}
+                className={`p-4 sm:p-5 rounded-2xl transition-all ${
+                  step.isSolarWindow 
+                    ? 'bg-gradient-to-r from-[#10B981]/15 via-[#10B981]/5 to-transparent border-2 border-[#10B981]' 
+                    : step.active
+                    ? 'bg-white dark:bg-white/10 border border-black/10 dark:border-white/20 shadow-xs'
+                    : 'bg-white/60 dark:bg-white/5 border border-black/5 dark:border-white/5 opacity-80'
+                }`}
+              >
+                <div className="flex items-start space-x-3.5">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-2xs mt-0.5"
+                    style={{ backgroundColor: `${step.highlightColor}20`, color: step.highlightColor }}
+                  >
+                    <Icon className="w-5 h-5 stroke-[2.2]" />
                   </div>
 
-                  <h3 className="text-sm font-bold text-[#282828] mt-1.5">
-                    {step.title}
-                  </h3>
-                  <p className="text-xs text-[#282828]/70 mt-1 leading-relaxed">
-                    {step.description}
-                  </p>
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center justify-between gap-1">
+                      <span className="text-xs font-bold font-mono px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-inherit">
+                        {step.time}
+                      </span>
+                      {step.active && (
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/70 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                          Active Now
+                        </span>
+                      )}
+                    </div>
 
-                  <div className="mt-2.5 p-2.5 rounded-xl bg-black/3 border border-black/5 flex items-start space-x-2">
-                    <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span className="text-xs font-medium text-[#282828]">
-                      <strong>Prescribed Action:</strong> {step.action}
-                    </span>
+                    <h4 className="text-sm font-bold mt-1.5">
+                      {step.title}
+                    </h4>
+                    <p className="text-xs opacity-70 mt-1 leading-relaxed">
+                      {step.description}
+                    </p>
+
+                    <div className="mt-2.5 p-2.5 rounded-xl bg-black/3 dark:bg-white/5 border border-black/5 dark:border-white/10 flex items-start space-x-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                      <span className="text-xs font-medium">
+                        <strong>Prescribed Action:</strong> {step.action}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+
       </div>
 
     </div>
