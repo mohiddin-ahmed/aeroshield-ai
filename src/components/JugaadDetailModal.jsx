@@ -8,30 +8,32 @@ export function JugaadDetailModal({ item, isOpen, onClose, onOpenMultiAi }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
       <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl glass-card-dark p-6 sm:p-8 border border-white/20 shadow-2xl">
         
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        {/* Header */}
-        <div className="flex items-start space-x-3 mb-5 pr-8">
-          <div className="w-12 h-12 rounded-2xl bg-[#10B981] flex items-center justify-center text-[#18181B] shrink-0 font-bold">
-            <Wrench className="w-6 h-6 stroke-[2.2]" />
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="text-[11px] font-bold text-[#34D399] bg-[#10B981]/20 px-2.5 py-0.5 rounded-full border border-[#10B981]/30">
-                {item.badge || item.category}
-              </span>
-              <span className="text-xs text-white/50">{item.hindiTitle}</span>
+        {/* Header with Clean Separated Close Button */}
+        <div className="flex items-start justify-between gap-3 mb-5">
+          <div className="flex items-start space-x-3 min-w-0 pr-2">
+            <div className="w-12 h-12 rounded-2xl bg-[#10B981] flex items-center justify-center text-[#18181B] shrink-0 font-bold mt-0.5">
+              <Wrench className="w-6 h-6 stroke-[2.2]" />
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight mt-1">
-              {item.title}
-            </h2>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[11px] font-bold text-[#34D399] bg-[#10B981]/20 px-2.5 py-0.5 rounded-full border border-[#10B981]/30">
+                  {item.badge || item.category}
+                </span>
+                <span className="text-xs text-white/50">{item.hindiTitle}</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight mt-1 leading-snug">
+                {item.title}
+              </h2>
+            </div>
           </div>
+
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white shrink-0 transition-all border border-white/10 cursor-pointer"
+            title="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Cost & Savings Banner */}

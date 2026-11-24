@@ -38,31 +38,33 @@ Provide immediate time-synchronized defense protocols and personalized Desi Juga
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
       <div className="relative w-full max-w-2xl rounded-3xl glass-card-dark p-6 sm:p-8 border border-white/20 shadow-2xl overflow-hidden">
         
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        {/* Header */}
-        <div className="flex items-center space-x-3 mb-4">
-          <div className="w-10 h-10 rounded-2xl bg-[#10B981] flex items-center justify-center text-[#18181B] font-bold">
-            <Bot className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-white tracking-tight">
-              One-Click Multi-AI Deep Dive Engine
-            </h2>
-            <div className="flex items-center space-x-2 text-xs text-white/70 mt-0.5">
-              <span>📍 {city}</span>
-              <span>•</span>
-              <span>⏰ {timeContext?.timeString}</span>
-              <span>•</span>
-              <span className="text-[#34D399] font-mono">AQI {aqi}</span>
+        {/* Header with Clean Separated Close Button */}
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="flex items-start sm:items-center space-x-3 min-w-0 pr-2">
+            <div className="w-10 h-10 rounded-2xl bg-[#10B981] flex items-center justify-center text-[#18181B] font-bold shrink-0 mt-0.5 sm:mt-0">
+              <Bot className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight leading-snug">
+                One-Click Multi-AI Deep Dive Engine
+              </h2>
+              <div className="flex flex-wrap items-center gap-1.5 text-xs text-white/70 mt-1">
+                <span>📍 {city}</span>
+                <span>•</span>
+                <span>⏰ {timeContext?.timeString}</span>
+                <span>•</span>
+                <span className="text-[#34D399] font-mono font-bold">AQI {aqi}</span>
+              </div>
             </div>
           </div>
+
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white shrink-0 transition-all border border-white/10 cursor-pointer"
+            title="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Live Context Badge */}

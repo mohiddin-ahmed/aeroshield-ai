@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Navbar } from './components/Navbar';
 import { FloatingBottomNav } from './components/FloatingBottomNav';
 import { DemoVideoModal } from './components/DemoVideoModal';
@@ -30,11 +30,51 @@ import {
   Bot, 
   ChevronDown,
   Compass,
-  Info
+  Info,
+  X
 } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState('commandCenter');
+  
+  // Psychology-based scroll memory: preserve position when quickly toggling, scroll top when fresh
+  const scrollMemoryRef = useRef({});
+  const aiPlanRef = useRef(null);
+
+  const handleTabChange = useCallback((newTab) => {
+    if (newTab === activeTab) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    // Save departure scroll position & timestamp for current tab
+    if (typeof window !== 'undefined') {
+      scrollMemoryRef.current[activeTab] = {
+        scrollY: window.scrollY,
+        timestamp: Date.now()
+      };
+    }
+
+    setActiveTab(newTab);
+
+    // Check if target tab was visited within recent engagement window (25 seconds)
+    const targetMemory = scrollMemoryRef.current[newTab];
+    const isRecentlyEngaged = targetMemory && (Date.now() - targetMemory.timestamp < 25000);
+
+    setTimeout(() => {
+      if (isRecentlyEngaged && targetMemory.scrollY > 40) {
+        window.scrollTo({
+          top: targetMemory.scrollY,
+          behavior: 'smooth'
+        });
+      } else {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    }, 40);
+  }, [activeTab]);
   
   // Theme state: dark / light mode
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -181,6 +221,9 @@ export function App() {
       });
       if (result?.data) {
         setAiPlan(result.data);
+        setTimeout(() => {
+          aiPlanRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
       }
       setPromptCount(getPromptLogs().length);
     } catch (err) {
@@ -237,33 +280,33 @@ export function App() {
           <div className="space-y-6 animate-page-enter">
             
             {/* Device Time & Location Real-Time Detection Hero Banner (INSIDE HOME ONLY) */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 sm:p-5 rounded-3xl glass-card">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold shrink-0">
+            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 p-4 sm:p-5 rounded-3xl glass-card">
+              <div className="flex items-start sm:items-center space-x-3 min-w-0">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold shrink-0 mt-0.5 sm:mt-0">
                   <Compass className="w-5 h-5 stroke-[2.2]" />
                 </div>
-                <div>
-                  <div className="flex items-center space-x-2">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between sm:justify-start gap-2 flex-wrap">
                     <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                       {t.status.autoDetected}
                     </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-mono font-bold">
+                    <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-zinc-200/90 dark:bg-zinc-700/90 text-zinc-800 dark:text-zinc-200 font-mono font-bold whitespace-nowrap shrink-0">
                       {timeContext.dateString}
                     </span>
                   </div>
-                  <p className="text-sm sm:text-base font-extrabold tracking-tight mt-0.5 text-zinc-950 dark:text-white">
-                    {locationData.city}, {locationData.country} • <span className="font-mono text-emerald-600 dark:text-emerald-400">{timeContext.timeString}</span> ({timeContext.phaseLabel})
+                  <p className="text-sm sm:text-base font-extrabold tracking-tight mt-1 text-zinc-950 dark:text-white leading-snug">
+                    {locationData.city}, {locationData.country} • <span className="font-mono text-emerald-600 dark:text-emerald-400">{timeContext.timeString}</span> <span className="text-xs sm:text-sm font-semibold opacity-75">({timeContext.phaseLabel})</span>
                   </p>
                 </div>
               </div>
 
               {/* Quick Actions & Manual Override Dropdown */}
-              <div className="flex items-center space-x-2">
-                <div className="relative">
+              <div className="flex items-center flex-wrap sm:flex-nowrap gap-2 shrink-0">
+                <div className="relative flex-1 sm:flex-initial">
                   <select
                     onChange={(e) => handleManualCityChange(e.target.value)}
                     defaultValue=""
-                    className="appearance-none bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold text-xs pl-3 pr-7 py-2 rounded-2xl border border-zinc-200 dark:border-zinc-700 focus:outline-none cursor-pointer"
+                    className="w-full sm:w-auto appearance-none bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold text-xs pl-3 pr-7 py-2.5 rounded-2xl border border-zinc-200 dark:border-zinc-700 focus:outline-none cursor-pointer"
                   >
                     <option value="" disabled>{t.actions.switchCity}</option>
                     <optgroup label="India (All Regions)">
@@ -294,7 +337,7 @@ export function App() {
 
                 <button
                   onClick={() => setIsMultiAiOpen(true)}
-                  className="flex items-center space-x-1.5 px-3.5 py-2 rounded-2xl bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-bold border border-zinc-200 dark:border-zinc-700 shadow-2xs hover:scale-102 transition-all"
+                  className="flex items-center space-x-1.5 px-3 py-2.5 rounded-2xl bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-bold border border-zinc-200 dark:border-zinc-700 shadow-2xs hover:scale-102 transition-all cursor-pointer"
                   title="Open Multi-AI Prompt Launcher"
                 >
                   <Bot className="w-3.5 h-3.5 text-emerald-500" />
@@ -304,13 +347,61 @@ export function App() {
                 <button
                   onClick={handleGeneratePlan}
                   disabled={isGenerating}
-                  className="flex items-center space-x-1.5 px-4 py-2 rounded-2xl bg-zinc-950 dark:bg-emerald-500 text-white dark:text-zinc-950 text-xs font-bold shadow-xs hover:opacity-90 transition-all disabled:opacity-50"
+                  className="flex-1 sm:flex-initial flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-2xl bg-zinc-950 dark:bg-emerald-500 text-white dark:text-zinc-950 text-xs font-extrabold shadow-md hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   <Sparkles className={`w-3.5 h-3.5 text-emerald-400 dark:text-zinc-950 ${isGenerating ? 'animate-spin' : ''}`} />
-                  <span>{isGenerating ? t.actions.analyzing : t.actions.generatePlan}</span>
+                  <span className="whitespace-nowrap">{isGenerating ? t.actions.analyzing : t.actions.generatePlan}</span>
                 </button>
               </div>
             </div>
+
+            {/* AI Generated Plan Spotlight (Renders Prominently at Top with Smooth Entrance & Scroll Anchor) */}
+            {aiPlan?.daily_routine && (
+              <div 
+                ref={aiPlanRef}
+                className="p-5 sm:p-6 rounded-3xl glass-card border-2 border-emerald-500/40 shadow-xl space-y-4 animate-page-enter bg-gradient-to-br from-emerald-500/5 via-transparent to-emerald-500/10"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500 text-zinc-950 flex items-center justify-center font-bold">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm sm:text-base font-extrabold text-zinc-950 dark:text-white tracking-tight">
+                        Generated Smog Defense Plan for Your Family
+                      </h3>
+                      <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
+                        ⚡ AI Clinical Protocol Synchronized to {locationData.city} • {timeContext.timeString}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setAiPlan(null)}
+                    className="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors text-xs font-semibold cursor-pointer"
+                    title="Dismiss Plan"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {aiPlan.daily_routine.map((r, idx) => (
+                    <div key={idx} className="p-4 rounded-2xl bg-white/70 dark:bg-zinc-800/90 border border-emerald-500/20 shadow-xs hover:border-emerald-500/40 transition-colors">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-bold font-mono text-emerald-600 dark:text-emerald-400">
+                          {r.time}
+                        </span>
+                        <span className="text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded-full">
+                          Slot {idx + 1}
+                        </span>
+                      </div>
+                      <p className="text-xs font-bold text-zinc-950 dark:text-white mb-1">{r.action}</p>
+                      <p className="text-[11px] text-zinc-600 dark:text-zinc-300 leading-relaxed">{r.scientific_reason}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Severe Inversion Alert Banner (When AQI > 300) */}
             {telemetry.aqi > 300 && (
@@ -390,29 +481,6 @@ export function App() {
               <TelemetryGrid telemetry={telemetry} currentLang={currentLang} />
             </div>
 
-            {/* AI Generated Routine Preview if available */}
-            {aiPlan?.daily_routine && (
-              <div className="p-6 rounded-3xl glass-card space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4 text-emerald-500" />
-                  <h3 className="text-sm font-bold text-zinc-950 dark:text-white">
-                    Generated Smog Defense Plan for Your Family
-                  </h3>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {aiPlan.daily_routine.map((r, idx) => (
-                    <div key={idx} className="p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700">
-                      <span className="text-xs font-bold font-mono text-emerald-600 dark:text-emerald-400 block mb-1">
-                        {r.time}
-                      </span>
-                      <p className="text-xs font-bold text-zinc-950 dark:text-white mb-1">{r.action}</p>
-                      <p className="text-[11px] text-zinc-600 dark:text-zinc-300 leading-tight">{r.scientific_reason}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
           </div>
         )}
 
@@ -472,7 +540,7 @@ export function App() {
       {/* Floating Bottom Capsule Pill Navigation Bar */}
       <FloatingBottomNav
         activeTab={activeTab}
-        onSelectTab={setActiveTab}
+        onSelectTab={handleTabChange}
         isDarkMode={isDarkMode}
         currentLang={currentLang}
       />

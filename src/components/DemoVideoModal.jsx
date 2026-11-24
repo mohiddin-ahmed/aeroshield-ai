@@ -8,28 +8,30 @@ export function DemoVideoModal({ isOpen, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
       <div className="relative w-full max-w-2xl rounded-3xl glass-card-dark p-6 sm:p-8 border border-white/20 shadow-2xl overflow-hidden">
         
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        {/* Modal Header */}
-        <div className="flex items-center space-x-3 mb-4">
-          <div className="w-10 h-10 rounded-2xl bg-[#CBD77E] flex items-center justify-center text-[#282828]">
-            <Film className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <h2 className="text-xl font-bold text-white tracking-tight">Project Demo Video Submission</h2>
-              <span className="text-[11px] font-bold bg-[#CBD77E] text-[#282828] px-2 py-0.5 rounded-full">
-                Option A: Prismatic Glass
-              </span>
+        {/* Modal Header with Clean Flex Row */}
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="flex items-start sm:items-center space-x-3 min-w-0 pr-2">
+            <div className="w-10 h-10 rounded-2xl bg-[#CBD77E] flex items-center justify-center text-[#282828] shrink-0 mt-0.5 sm:mt-0">
+              <Film className="w-5 h-5" />
             </div>
-            <p className="text-xs text-white/70">AeroShield AI • 3D VayuBot Avatar Presenter • 1080p Full HD</p>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-xl font-bold text-white tracking-tight">Project Demo Video Submission</h2>
+                <span className="text-[11px] font-bold bg-[#CBD77E] text-[#282828] px-2 py-0.5 rounded-full whitespace-nowrap">
+                  Option A: Prismatic Glass
+                </span>
+              </div>
+              <p className="text-xs text-white/70 mt-0.5">AeroShield AI • 3D VayuBot Avatar Presenter • 1080p Full HD</p>
+            </div>
           </div>
+
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white shrink-0 transition-all border border-white/10 cursor-pointer"
+            title="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Production Status Banner */}

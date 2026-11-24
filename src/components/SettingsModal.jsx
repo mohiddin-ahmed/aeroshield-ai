@@ -35,27 +35,29 @@ export function SettingsModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
       <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl glass-card-dark p-6 sm:p-8 border border-white/20 shadow-2xl space-y-6">
         
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        {/* Modal Header with Clean Flex Row */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start sm:items-center space-x-3 min-w-0 pr-2">
+            <div className="w-10 h-10 rounded-2xl bg-[#10B981] flex items-center justify-center text-[#18181B] font-bold shrink-0 mt-0.5 sm:mt-0">
+              <Settings className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Settings & Preferences
+              </h2>
+              <p className="text-xs text-white/60 mt-0.5">
+                Customize language, display mode, family profile, and system transparency.
+              </p>
+            </div>
+          </div>
 
-        {/* Modal Header */}
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#10B981] flex items-center justify-center text-[#18181B] font-bold">
-            <Settings className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-white tracking-tight">
-              Settings & Preferences
-            </h2>
-            <p className="text-xs text-white/60">
-              Customize language, display mode, family profile, and system transparency.
-            </p>
-          </div>
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white shrink-0 transition-all border border-white/10 cursor-pointer"
+            title="Close Settings"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* 1. Language Switcher (Indian Languages) */}
@@ -182,12 +184,13 @@ export function SettingsModal({
           </button>
         </div>
 
-        {/* Footer */}
+        {/* Footer: Bold Tactile Dark Save Button with Green Checkmark */}
         <button
           onClick={onClose}
-          className="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold transition-colors"
+          className="w-full py-3.5 px-6 rounded-2xl bg-zinc-950 hover:bg-black text-white font-extrabold text-sm border-2 border-zinc-700 hover:border-emerald-400 shadow-xl shadow-black/40 active:scale-[0.98] transition-all flex items-center justify-center space-x-2 cursor-pointer"
         >
-          Save & Close Settings
+          <Check className="w-4 h-4 text-emerald-400 stroke-[2.5]" />
+          <span>Save & Close Settings</span>
         </button>
 
       </div>

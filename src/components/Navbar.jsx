@@ -48,20 +48,24 @@ export function Navbar({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
         {/* Brand & Wordmark */}
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#282828] dark:bg-white flex items-center justify-center text-[#10B981] dark:text-[#18181B] shadow-sm">
+        <div className="flex items-center space-x-2.5 sm:space-x-3">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#282828] dark:bg-white flex items-center justify-center text-[#10B981] dark:text-[#18181B] shadow-sm shrink-0">
             <Shield className="w-5 h-5 stroke-[2.4]" />
           </div>
-          <div>
-            <div className="flex items-center space-x-1.5">
-              <span className="font-bold text-base sm:text-lg tracking-tight">{t.appTitle}</span>
-              <span className="text-[10px] font-bold bg-[#10B981]/20 text-[#059669] dark:text-[#34D399] px-2 py-0.5 rounded-full">
-                {t.subBrand}
+          <div className="flex flex-col justify-center">
+            <div className="flex items-center leading-none">
+              <span className="font-extrabold text-base sm:text-lg tracking-tight whitespace-nowrap">
+                {t.appTitle}
               </span>
             </div>
-            <p className="text-[10px] opacity-60 font-medium hidden sm:block">
-              {t.tagline}
-            </p>
+            <div className="flex items-center space-x-1.5 mt-1">
+              <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-[#059669] dark:text-[#34D399] bg-[#10B981]/15 dark:bg-[#10B981]/25 px-1.5 py-0.5 rounded-md inline-block leading-none">
+                {t.subBrand}
+              </span>
+              <span className="text-[10px] opacity-60 font-medium hidden sm:inline-block truncate max-w-[200px] leading-none">
+                • {t.tagline}
+              </span>
+            </div>
           </div>
         </div>
 
