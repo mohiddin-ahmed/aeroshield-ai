@@ -116,7 +116,7 @@ export function DesiJugaadLab({ onOpenMultiAi, telemetry, personalizedIntel, tim
                   className={`py-1.5 rounded-xl text-xs font-bold capitalize transition-all border cursor-pointer select-none active:scale-95 ${
                     fanSpeed === speed
                       ? 'bg-zinc-950 text-white dark:bg-emerald-500 dark:text-zinc-950 border-zinc-950 dark:border-emerald-400 shadow-xs'
-                      : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-750'
+                      : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700'
                   }`}
                 >
                   {speed}

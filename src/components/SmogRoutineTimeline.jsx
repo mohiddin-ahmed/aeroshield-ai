@@ -113,10 +113,12 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
               <div 
                 key={idx}
                 className={`p-4 sm:p-5 rounded-2xl transition-all border ${
-                  step.isSolarWindow 
-                    ? 'bg-gradient-to-r from-emerald-500/15 via-emerald-500/5 to-transparent border-emerald-500 dark:border-emerald-400' 
+                  step.isSolarWindow && step.active
+                    ? 'bg-gradient-to-r from-emerald-500/25 via-emerald-500/10 to-transparent border-emerald-500 dark:border-emerald-400 ring-1 ring-emerald-500/40 shadow-md'
+                    : step.isSolarWindow
+                    ? 'bg-gradient-to-r from-emerald-500/15 via-emerald-500/5 to-transparent border-emerald-500 dark:border-emerald-400'
                     : step.active
-                    ? 'bg-white dark:bg-zinc-850 border-zinc-300 dark:border-zinc-600 shadow-sm'
+                    ? 'bg-white dark:bg-zinc-800/90 border-emerald-500/60 dark:border-emerald-500/60 ring-1 ring-emerald-500/30 shadow-md'
                     : 'bg-zinc-50/70 dark:bg-zinc-800/40 border-zinc-200 dark:border-zinc-800'
                 }`}
               >
@@ -147,7 +149,7 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
                       {step.description}
                     </p>
 
-                    <div className="mt-2.5 p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 flex items-start space-x-2">
+                    <div className="mt-2.5 p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900/70 border border-zinc-200 dark:border-zinc-700/80 flex items-start space-x-2">
                       <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                       <span className="text-xs font-medium text-zinc-800 dark:text-zinc-200">
                         <strong className="text-zinc-950 dark:text-white">{t.hero.prescribedAction}</strong> {step.action}
