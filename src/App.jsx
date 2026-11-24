@@ -13,7 +13,6 @@ import { MultiAiModal } from './components/MultiAiModal';
 import { ResearchHub } from './components/ResearchHub';
 import { PromptInspector } from './components/PromptInspector';
 import { OnboardingModal } from './components/OnboardingModal';
-import { LogoShowcaseModal } from './components/LogoShowcaseModal';
 
 import { fetchLiveAirQuality } from './services/airQualityService';
 import { generateSmogDefensePlan } from './services/gemini';
@@ -141,13 +140,6 @@ export function App() {
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
   const [isMultiAiOpen, setIsMultiAiOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isLogosOpen, setIsLogosOpen] = useState(false);
-  const [activeLogoVariant, setActiveLogoVariant] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('activeLogoVariant') || 'shield-wind';
-    }
-    return 'shield-wind';
-  });
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(() => {
     if (typeof window !== 'undefined') {
       return !localStorage.getItem('aeroshield_onboarded');
@@ -261,13 +253,6 @@ export function App() {
     );
   };
 
-  const handleSelectLogo = (variant) => {
-    setActiveLogoVariant(variant);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('activeLogoVariant', variant);
-    }
-  };
-
   return (
     <div className={`relative min-h-screen transition-colors duration-300 font-sans pb-28 ${
       isDarkMode ? 'bg-[#09090b] text-[#f4f4f5]' : 'bg-[#F7F7F7] text-[#18181b]'
@@ -295,8 +280,6 @@ export function App() {
         onOpenMultiAi={() => setIsMultiAiOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenTour={() => setIsOnboardingOpen(true)}
-        onOpenLogos={() => setIsLogosOpen(true)}
-        activeLogoVariant={activeLogoVariant}
         currentLang={currentLang}
         onSelectLang={handleSelectLang}
         promptCount={promptCount}
@@ -578,14 +561,6 @@ export function App() {
       />
 
       {/* Modals & In-Place Drawers */}
-      <LogoShowcaseModal
-        isOpen={isLogosOpen}
-        onClose={() => setIsLogosOpen(false)}
-        activeLogoVariant={activeLogoVariant}
-        onSelectLogoVariant={handleSelectLogo}
-        isDarkMode={isDarkMode}
-      />
-
       <OnboardingModal
         isOpen={isOnboardingOpen}
         onClose={() => setIsOnboardingOpen(false)}

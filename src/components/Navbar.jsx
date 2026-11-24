@@ -30,8 +30,6 @@ export function Navbar({
   onOpenMultiAi, 
   onOpenSettings,
   onOpenTour,
-  onOpenLogos,
-  activeLogoVariant = 'shield-wind',
   currentLang = 'en',
   onSelectLang,
   promptCount = 0,
@@ -52,19 +50,15 @@ export function Navbar({
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
-        {/* Brand & Wordmark */}
+        {/* Brand & Wordmark (Permanent Vortex Clean-Air Logo) */}
         <div className="flex items-center space-x-2.5 sm:space-x-3">
-          <button 
-            onClick={onOpenLogos}
-            className="shrink-0 transition-transform hover:scale-105 active:scale-95 cursor-pointer"
-            title="Click to view all 4 brand logo concepts"
-          >
+          <div className="shrink-0">
             <AeroShieldLogo 
-              variant={activeLogoVariant} 
+              variant="vortex-leaf" 
               size={38} 
               isDarkMode={isDarkMode} 
             />
-          </button>
+          </div>
           <div className="flex flex-col justify-center">
             <div className="flex items-center leading-none">
               <span className="font-extrabold text-base sm:text-lg tracking-tight whitespace-nowrap">
@@ -156,16 +150,6 @@ export function Navbar({
             <Settings className="w-4 h-4 opacity-80" />
           </button>
 
-          {/* Logo Suite Trigger */}
-          <button
-            onClick={onOpenLogos}
-            className="hidden lg:flex items-center space-x-1 px-2.5 py-1.5 rounded-full text-xs font-semibold bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 transition-all cursor-pointer"
-            title="Explore 4 Professional Vector Logo Concepts"
-          >
-            <Palette className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Logos</span>
-          </button>
-
           {/* Quick Onboarding Tour Button */}
           <button
             onClick={onOpenTour}
@@ -200,27 +184,29 @@ export function Navbar({
             )}
           </button>
 
-          {/* Mobile Hamburger Menu Button */}
+          {/* Mobile Hamburger Menu Button (Smooth Rotation Animation) */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="sm:hidden p-2 rounded-2xl bg-black/5 dark:bg-white/10 text-inherit transition-colors"
+            className="sm:hidden p-2.5 rounded-2xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-inherit transition-all duration-300 active:scale-90 cursor-pointer"
             title="Toggle Menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            <div className={`transition-transform duration-300 ${mobileMenuOpen ? 'rotate-90 scale-105' : 'rotate-0'}`}>
+              {mobileMenuOpen ? <X className="w-5 h-5 text-emerald-500" /> : <Menu className="w-5 h-5" />}
+            </div>
           </button>
         </div>
 
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Drawer Menu (Silky Smooth Slide-Down) */}
       {mobileMenuOpen && (
-        <div className="sm:hidden border-t border-black/5 dark:border-white/10 p-4 space-y-3 bg-white/95 dark:bg-[#18181B]/95 backdrop-blur-xl animate-fade-in">
+        <div className="sm:hidden border-t border-black/5 dark:border-white/10 p-4 space-y-2.5 bg-white/95 dark:bg-[#18181B]/95 backdrop-blur-2xl shadow-2xl animate-drawer">
           
           <div className="flex items-center justify-between text-xs font-semibold pb-2 border-b border-black/5 dark:border-white/10">
             <span>{locationData.city || 'Location'} • {timeContext.timeString}</span>
             <button
               onClick={onRefreshLocation}
-              className="text-[#10B981] font-bold flex items-center space-x-1"
+              className="text-[#10B981] font-bold flex items-center space-x-1 cursor-pointer"
             >
               <RefreshCw className={`w-3 h-3 ${isRefreshingLocation ? 'animate-spin' : ''}`} />
               <span>{t.actions.autoDetect}</span>
@@ -228,50 +214,42 @@ export function Navbar({
           </div>
 
           <button
-            onClick={() => { setMobileMenuOpen(false); onOpenLogos(); }}
-            className="w-full flex items-center space-x-2 p-2.5 rounded-2xl bg-black/5 dark:bg-white/10 text-xs font-bold cursor-pointer"
-          >
-            <Palette className="w-4 h-4 text-emerald-500" />
-            <span>Brand Logo Concepts & SVG Exporter</span>
-          </button>
-
-          <button
             onClick={() => { setMobileMenuOpen(false); onOpenTour(); }}
-            className="w-full flex items-center space-x-2 p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-500/20 cursor-pointer"
+            className="w-full flex items-center space-x-2.5 p-3 rounded-2xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-500/25 hover:bg-emerald-500/15 transition-all cursor-pointer active:scale-98"
           >
-            <Sparkles className="w-4 h-4 text-emerald-500" />
+            <Sparkles className="w-4 h-4 text-emerald-500 shrink-0" />
             <span>Interactive App Tour & Guide</span>
           </button>
 
           <button
-            onClick={() => { setMobileMenuOpen(false); onOpenSettings(); }}
-            className="w-full flex items-center space-x-2 p-2.5 rounded-2xl bg-black/5 dark:bg-white/10 text-xs font-bold"
-          >
-            <Settings className="w-4 h-4 text-[#10B981]" />
-            <span>Settings, Profiles & Languages</span>
-          </button>
-
-          <button
             onClick={() => { setMobileMenuOpen(false); onOpenVideoModal(); }}
-            className="w-full flex items-center space-x-2 p-2.5 rounded-2xl bg-black/5 dark:bg-white/10 text-xs font-bold"
+            className="w-full flex items-center space-x-2.5 p-3 rounded-2xl bg-rose-500/10 text-rose-700 dark:text-rose-300 text-xs font-bold border border-rose-500/20 hover:bg-rose-500/15 transition-all cursor-pointer active:scale-98"
           >
-            <PlayCircle className="w-4 h-4 text-[#9B2226] dark:text-rose-400" />
+            <PlayCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
             <span>{t.actions.watchVideo}</span>
           </button>
 
           <button
             onClick={() => { setMobileMenuOpen(false); onOpenMultiAi(); }}
-            className="w-full flex items-center space-x-2 p-2.5 rounded-2xl bg-black/5 dark:bg-white/10 text-xs font-bold"
+            className="w-full flex items-center space-x-2.5 p-3 rounded-2xl bg-black/5 dark:bg-white/10 text-xs font-bold hover:bg-black/10 dark:hover:bg-white/15 transition-all cursor-pointer active:scale-98"
           >
-            <Bot className="w-4 h-4 text-emerald-500" />
+            <Bot className="w-4 h-4 text-emerald-500 shrink-0" />
             <span>Ask ChatGPT / Claude / Gemini</span>
           </button>
 
           <button
-            onClick={() => { setMobileMenuOpen(false); onOpenInspector(); }}
-            className="w-full flex items-center space-x-2 p-2.5 rounded-2xl bg-[#282828] dark:bg-white text-white dark:text-[#282828] text-xs font-bold"
+            onClick={() => { setMobileMenuOpen(false); onOpenSettings(); }}
+            className="w-full flex items-center space-x-2.5 p-3 rounded-2xl bg-black/5 dark:bg-white/10 text-xs font-bold hover:bg-black/10 dark:hover:bg-white/15 transition-all cursor-pointer active:scale-98"
           >
-            <Terminal className="w-4 h-4 text-[#10B981] dark:text-emerald-700" />
+            <Settings className="w-4 h-4 text-[#10B981] shrink-0" />
+            <span>Settings, Profiles & Languages</span>
+          </button>
+
+          <button
+            onClick={() => { setMobileMenuOpen(false); onOpenInspector(); }}
+            className="w-full flex items-center space-x-2.5 p-3 rounded-2xl bg-[#282828] dark:bg-white text-white dark:text-[#282828] text-xs font-bold shadow-md hover:opacity-90 transition-all cursor-pointer active:scale-98"
+          >
+            <Terminal className="w-4 h-4 text-[#10B981] dark:text-emerald-700 shrink-0" />
             <span>{t.actions.devTools} ({promptCount})</span>
           </button>
         </div>

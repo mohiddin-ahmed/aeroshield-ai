@@ -115,7 +115,7 @@ Provide immediate time-synchronized defense protocols and personalized Desi Juga
             {/* ChatGPT */}
             <button
               onClick={() => handleOpenAi('chatgpt')}
-              className="flex items-center justify-center space-x-2 p-3.5 rounded-2xl bg-[#10A37F] hover:bg-[#0e8e6e] text-white font-bold text-xs shadow-md transition-all hover:scale-102"
+              className="flex items-center justify-center space-x-2 p-3.5 rounded-2xl bg-[#10A37F] hover:bg-[#0d8a6b] text-white font-extrabold text-xs shadow-lg shadow-[#10A37F]/25 transition-all hover:scale-102 active:scale-95 cursor-pointer border border-emerald-400/30"
             >
               <span>Ask ChatGPT</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -124,7 +124,7 @@ Provide immediate time-synchronized defense protocols and personalized Desi Juga
             {/* Claude */}
             <button
               onClick={() => handleOpenAi('claude')}
-              className="flex items-center justify-center space-x-2 p-3.5 rounded-2xl bg-[#D97706] hover:bg-[#b45309] text-white font-bold text-xs shadow-md transition-all hover:scale-102"
+              className="flex items-center justify-center space-x-2 p-3.5 rounded-2xl bg-[#C2410C] hover:bg-[#9a3412] text-white font-extrabold text-xs shadow-lg shadow-[#C2410C]/25 transition-all hover:scale-102 active:scale-95 cursor-pointer border border-amber-500/30"
             >
               <span>Ask Claude</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -133,7 +133,7 @@ Provide immediate time-synchronized defense protocols and personalized Desi Juga
             {/* Gemini */}
             <button
               onClick={() => handleOpenAi('gemini')}
-              className="flex items-center justify-center space-x-2 p-3.5 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold text-xs shadow-md transition-all hover:scale-102"
+              className="flex items-center justify-center space-x-2 p-3.5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-700 hover:to-indigo-800 text-white font-extrabold text-xs shadow-lg shadow-indigo-500/25 transition-all hover:scale-102 active:scale-95 cursor-pointer border border-indigo-400/30"
             >
               <span>Ask Gemini</span>
               <ExternalLink className="w-3.5 h-3.5" />
