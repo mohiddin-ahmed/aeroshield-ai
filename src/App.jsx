@@ -12,6 +12,7 @@ import { DesiJugaadLab } from './components/DesiJugaadLab';
 import { MultiAiModal } from './components/MultiAiModal';
 import { ResearchHub } from './components/ResearchHub';
 import { PromptInspector } from './components/PromptInspector';
+import { OnboardingModal } from './components/OnboardingModal';
 
 import { fetchLiveAirQuality } from './services/airQualityService';
 import { generateSmogDefensePlan } from './services/gemini';
@@ -139,6 +140,12 @@ export function App() {
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
   const [isMultiAiOpen, setIsMultiAiOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !localStorage.getItem('aeroshield_onboarded');
+    }
+    return false;
+  });
   const [selectedJugaadItem, setSelectedJugaadItem] = useState(null);
   const [promptCount, setPromptCount] = useState(0);
 
@@ -265,6 +272,7 @@ export function App() {
         onOpenInspector={() => setIsInspectorOpen(true)}
         onOpenMultiAi={() => setIsMultiAiOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenTour={() => setIsOnboardingOpen(true)}
         currentLang={currentLang}
         onSelectLang={handleSelectLang}
         promptCount={promptCount}
@@ -546,6 +554,11 @@ export function App() {
       />
 
       {/* Modals & In-Place Drawers */}
+      <OnboardingModal
+        isOpen={isOnboardingOpen}
+        onClose={() => setIsOnboardingOpen(false)}
+      />
+
       <DemoVideoModal
         isOpen={isVideoModalOpen}
         onClose={() => setIsVideoModalOpen(false)}

@@ -27,6 +27,7 @@ export function Navbar({
   onOpenInspector, 
   onOpenMultiAi, 
   onOpenSettings,
+  onOpenTour,
   currentLang = 'en',
   onSelectLang,
   promptCount = 0,
@@ -61,9 +62,6 @@ export function Navbar({
             <div className="flex items-center space-x-1.5 mt-1">
               <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-[#059669] dark:text-[#34D399] bg-[#10B981]/15 dark:bg-[#10B981]/25 px-1.5 py-0.5 rounded-md inline-block leading-none">
                 {t.subBrand}
-              </span>
-              <span className="text-[10px] opacity-60 font-medium hidden sm:inline-block truncate max-w-[200px] leading-none">
-                • {t.tagline}
               </span>
             </div>
           </div>
@@ -146,10 +144,20 @@ export function Navbar({
             <Settings className="w-4 h-4 opacity-80" />
           </button>
 
+          {/* Quick Onboarding Tour Button */}
+          <button
+            onClick={onOpenTour}
+            className="hidden sm:flex items-center space-x-1 px-2.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 transition-all cursor-pointer"
+            title="Take a 30-second Interactive Walkthrough"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+            <span className="hidden xl:inline">App Tour</span>
+          </button>
+
           {/* Watch Demo Video Button (Desktop) */}
           <button
             onClick={onOpenVideoModal}
-            className="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-white/10 dark:text-white text-[#282828] border border-black/10 dark:border-white/10 shadow-xs hover:shadow-sm transition-all"
+            className="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white dark:bg-white/10 dark:text-white text-[#282828] border border-black/10 dark:border-white/10 shadow-xs hover:shadow-sm transition-all cursor-pointer"
           >
             <PlayCircle className="w-4 h-4 text-[#9B2226] dark:text-rose-400" />
             <span>{t.actions.watchVideo}</span>
@@ -196,6 +204,14 @@ export function Navbar({
               <span>{t.actions.autoDetect}</span>
             </button>
           </div>
+
+          <button
+            onClick={() => { setMobileMenuOpen(false); onOpenTour(); }}
+            className="w-full flex items-center space-x-2 p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-500/20 cursor-pointer"
+          >
+            <Sparkles className="w-4 h-4 text-emerald-500" />
+            <span>Interactive App Tour & Guide</span>
+          </button>
 
           <button
             onClick={() => { setMobileMenuOpen(false); onOpenSettings(); }}
