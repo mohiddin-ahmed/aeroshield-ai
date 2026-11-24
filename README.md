@@ -28,6 +28,54 @@ Every winter across the Indo-Gangetic Plains (Delhi NCR, Patna, Lucknow, Kolkata
 
 ---
 
+## 🎯 Chosen Vertical
+**[Challenge 6] Urban Air Quality Assistant**  
+Designed for citizens, families, and vulnerable demographics (infants, asthmatics, elderly) across severe particulate smog zones in the Indo-Gangetic Plains and global urban metros.
+
+---
+
+## 🧠 Approach and Logic
+
+1. **Atmospheric Physics over Static AQI:** Traditional apps display passive red numbers that induce anxiety. AeroShield AI models the diurnal boundary layer: winter smog is trapped by nocturnal radiation inversions. At 1–3 PM, peak solar flux heats the ground, triggering convective thermals that break the cold pool. AeroShield detects this window to prescribe the exact 15-minute cross-ventilation time.
+2. **Clinical Dosimetry (Berkeley Earth Rule):** Translates abstract $\mu\text{g/m}^3$ numbers into tangible human health impact: $22\,\mu\text{g/m}^3$ of PM2.5 inhaled over 24 hours $\approx 1$ smoked cigarette.
+3. **Democratized Clean Air (Frugal Engineering):** Instead of inaccessible ₹25,000 commercial purifiers, we engineer an interactive fluid dynamics CADR calculator for a ₹1,200 DIY Box-Fan with MERV 13/HEPA filtration delivering 300+ CFM.
+4. **Resilient GenAI (Gemini 2.5 Flash):** Uses strict JSON schemas with demographic risk weighting, auditable via Judges DevTools, paired with a Zero-Crash fallback engine.
+
+---
+
+## ⚙️ How the Solution Works
+
+```mermaid
+flowchart TD
+    A["Device GPS & Time Sensor"] --> B["Atmospheric Telemetry Engine (Copernicus / Open-Meteo)"]
+    B --> C["Diurnal Inversion & Solar Lift Analyzer"]
+    C --> D{"Gemini API Key Active?"}
+    D -->|"Live Key"| E["Gemini 2.5 Flash Clinical Pulmonology Model"]
+    D -->|"Rate Limited / Offline"| F["Zero-Crash High-Fidelity Mock Engine"]
+    E --> G["Prompt Logger & Token Auditor"]
+    F --> G
+    G --> H["Judges Live Prompt Inspector"]
+    G --> I["VayuMitra OS Command Center (Dial, Routine, Jugaad, Research)"]
+```
+
+1. **Telemetry Ingestion:** Real-time satellite & sensor streaming (PM2.5, PM10, NO2, O3, temperature, humidity, wind) via Open-Meteo and Copernicus CAMS.
+2. **Solar Window Computation:** Evaluates local solar zenith and ground temperature differential to alert users when the 1–3 PM convective lift window is open.
+3. **GenAI Plan Generation:** Sends structured context to Gemini 2.5 Flash API to synthesize actionable hourly routines tailored to active vulnerabilities (asthma, infants, elderly, renters).
+4. **Multi-AI Launcher:** Synthesizes context-rich prompts ready for 1-click execution in Google Gemini, ChatGPT, and Claude.
+5. **Observability & Accessibility:** Judges can audit prompt schemas in real time with 'Judges DevTools', toggle 7 Indian languages, or switch between dark/light themes.
+
+---
+
+## 📌 Assumptions Made
+
+1. **Atmospheric Inversion Dynamics:** Assumes winter continental boundary layer dynamics where nocturnal radiative ground cooling creates a stable inversion layer that typically breaks between 1:00 PM and 3:00 PM under direct solar irradiation.
+2. **Inhaled Dosimetry Equivalence:** Adheres to the peer-reviewed Berkeley Earth epidemiological standard ($22\,\mu\text{g/m}^3$ ambient PM2.5 over 24 hours equals the particulate mass of 1 smoked cigarette).
+3. **DIY Box-Fan CADR:** Models a standard 20-inch 3-speed box fan with a MERV 13 or HEPA filter sealed with masking/duct tape, yielding single-pass particulate capture efficiency of 85–90% and Clean Air Delivery Rate of 250–350 CFM.
+4. **Telemetry Representation:** Satellite telemetry reflects 11 km grid ambient levels; indoor micro-climates vary based on window seal integrity and building height.
+5. **Failover Transparency:** If the evaluator runs without a live Gemini API key, the system assumes full autonomy and activates high-fidelity clinical heuristic routines rather than breaking.
+
+---
+
 ## 🏗️ System Architecture
 
 ```mermaid
