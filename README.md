@@ -4,10 +4,12 @@
 [![Evaluator Compliance](https://img.shields.io/badge/Evaluator%20Compliance-100%25-indigo?style=for-the-badge)](https://hack2skill.com/event/pwvirtual1)
 [![AI Engine](https://img.shields.io/badge/Gemini%20API-2.5%20Flash-blue?style=for-the-badge&logo=google)](https://aistudio.google.com)
 [![Zero-Crash](https://img.shields.io/badge/Fallback%20Engine-Active-amber?style=for-the-badge)](https://github.com)
-[![Production Target](https://img.shields.io/badge/Target%20Domain-aeroshield.ummeedlabs.com-emerald?style=for-the-badge)](https://aeroshield.ummeedlabs.com)
+[![Live Deployment](https://img.shields.io/badge/Live%20App-Vercel-emerald?style=for-the-badge&logo=vercel)](https://aeroshield-ai-sandy.vercel.app/)
+[![Demo Video](https://img.shields.io/badge/Demo%20Video-Watch%20HD-rose?style=for-the-badge&logo=googledrive)](https://drive.google.com/file/d/18vHHx8OvH3ZrenDX-60WtGm0OsJ_NTD7/view?usp=sharing)
 
 > **PromptWars Virtual [Challenge 6: Urban Air Quality Assistant]**  
 > *Turn Winter Smog Anxiety into Daily Clean-Air Strategy.*  
+> **Live App:** [https://aeroshield-ai-sandy.vercel.app/](https://aeroshield-ai-sandy.vercel.app/) • **Demo Video:** [Watch 01:45 HD Walkthrough](https://drive.google.com/file/d/18vHHx8OvH3ZrenDX-60WtGm0OsJ_NTD7/view?usp=sharing) • **LinkedIn:** [Launch Announcement](https://www.linkedin.com/posts/mohiddin-ahmed-motiya-19ba06393_promptwars-hack2skill-googlefordevelopers-activity-7531098612081061888-a7pz)  
 > Built with **Google Antigravity**, **Gemini 2.5 Flash API**, **Open-Meteo High-Resolution Satellite Atmospheric Sensors**, and **Tailwind CSS**.
 
 ---

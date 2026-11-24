@@ -1,83 +1,51 @@
-import React, { useState, useRef } from 'react';
-import { X, Sparkles, Film, CheckCircle2, Play, Pause, Download, Volume2, ExternalLink } from 'lucide-react';
+import React from 'react';
+import { X, Film, ExternalLink, Share2, Sparkles, CheckCircle2 } from 'lucide-react';
 
-const audioClips = [
+const DEMO_VIDEO_VIEW_URL =
+  'https://drive.google.com/file/d/18vHHx8OvH3ZrenDX-60WtGm0OsJ_NTD7/view?usp=sharing';
+const DEMO_VIDEO_EMBED_URL =
+  'https://drive.google.com/file/d/18vHHx8OvH3ZrenDX-60WtGm0OsJ_NTD7/preview';
+const LINKEDIN_POST_URL =
+  'https://www.linkedin.com/posts/mohiddin-ahmed-motiya-19ba06393_promptwars-hack2skill-googlefordevelopers-activity-7531098612081061888-a7pz';
+
+const VIDEO_CHAPTERS = [
   {
-    id: 'full',
-    title: 'Full Continuous Narration (Scenes 1–4)',
-    duration: '1:45',
-    src: '/demo_audios/full_demo_narration.mp3',
-    desc: 'Complete pitch from hook to closing. Play while recording your full screen walkthrough.'
+    time: '00:00 – 00:30',
+    title: 'Crisis & AI Smog Defense Plan',
+    detail: 'Rotary cigarette dosimetry dial, Delhi NCR winter smog switch & Gemini plan generator.'
   },
   {
-    id: 'scene1',
-    title: 'Scene 1: The Hook & Severe Smog Crisis',
-    duration: '0:22',
-    src: '/demo_audios/scene1_intro_hook.mp3',
-    desc: 'Show Home Page and AQI rotary dial.'
+    time: '00:30 – 00:55',
+    title: 'Copernicus Telemetry & Solar Window',
+    detail: 'Open-Meteo live particulate sensors & 1–3 PM convective cross-ventilation detector.'
   },
   {
-    id: 'scene2',
-    title: 'Scene 2: Copernicus Telemetry & Solar Window',
-    duration: '0:28',
-    src: '/demo_audios/scene2_telemetry_solar_window.mp3',
-    desc: 'Switch city to Delhi NCR and point to Solar Convective Lift banner.'
+    time: '00:55 – 01:22',
+    title: '₹1,200 Desi Jugaad CADR & Multi-AI',
+    detail: 'Interactive 361 CFM Box-Fan fluid-dynamics calculator & 1-click ChatGPT/Claude/Gemini prompts.'
   },
   {
-    id: 'scene3',
-    title: 'Scene 3: ₹1,200 Desi Jugaad Lab & Multi-AI',
-    duration: '0:27',
-    src: '/demo_audios/scene3_desi_jugaad_multi_ai.mp3',
-    desc: 'Open Desi Jugaad tab, toggle Box-Fan CADR, click Multi-AI launcher.'
-  },
-  {
-    id: 'scene4',
-    title: 'Scene 4: Judges DevTools & Conclusion',
-    duration: '0:24',
-    src: '/demo_audios/scene4_judges_devtools_conclusion.mp3',
-    desc: 'Launch Judges DevTools modal, show Gemini tokens & latency.'
+    time: '01:22 – 01:45',
+    title: 'Judges DevTools & 7 Languages',
+    detail: 'Live Gemini 2.5 Flash prompt auditing, latency readout & instant regional translation.'
   }
 ];
 
+/**
+ * Interactive Demo Video modal embedding the official 1:45 hackathon walkthrough.
+ */
 export function DemoVideoModal({ isOpen, onClose }) {
-  const [playingId, setPlayingId] = useState(null);
-  const audioRefs = useRef({});
-
   if (!isOpen) return null;
 
-  const togglePlay = (id, src) => {
-    if (playingId === id) {
-      if (audioRefs.current[id]) {
-        audioRefs.current[id].pause();
-      }
-      setPlayingId(null);
-    } else {
-      // Pause currently playing
-      if (playingId && audioRefs.current[playingId]) {
-        audioRefs.current[playingId].pause();
-      }
-      if (!audioRefs.current[id]) {
-        audioRefs.current[id] = new Audio(src);
-        audioRefs.current[id].onended = () => setPlayingId(null);
-      }
-      audioRefs.current[id].play();
-      setPlayingId(id);
-    }
-  };
-
-  const handleClose = () => {
-    if (playingId && audioRefs.current[playingId]) {
-      audioRefs.current[playingId].pause();
-    }
-    setPlayingId(null);
-    onClose();
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-3xl glass-card-dark p-6 sm:p-7 border border-white/20 shadow-2xl overflow-hidden">
-        
-        {/* Modal Header */}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fade-in"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="demo-video-modal-title"
+    >
+      <div className="relative w-full max-w-3xl max-h-[92vh] flex flex-col rounded-3xl glass-card-dark p-5 sm:p-7 border border-white/20 shadow-2xl overflow-hidden">
+        {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-4 shrink-0">
           <div className="flex items-start sm:items-center space-x-3 min-w-0 pr-2">
             <div className="w-10 h-10 rounded-2xl bg-emerald-500 flex items-center justify-center text-zinc-950 shrink-0 mt-0.5 sm:mt-0 font-bold">
@@ -85,19 +53,24 @@ export function DemoVideoModal({ isOpen, onClose }) {
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-xl font-bold text-white tracking-tight">Demo Video Studio & Audio Clips</h2>
-                <span className="text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full whitespace-nowrap">
-                  Ready to Screen Record
+                <h2 id="demo-video-modal-title" className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                  Official Hackathon Demo Walkthrough
+                </h2>
+                <span className="text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-0.5 rounded-full whitespace-nowrap">
+                  01:45 • HD Walkthrough
                 </span>
               </div>
-              <p className="text-xs text-white/70 mt-0.5">High-impact 1080p voice-overs calibrated for Hack2skill & Google for Developers evaluators</p>
+              <p className="text-xs text-white/70 mt-0.5">
+                AeroShield AI (VayuMitra OS) • PromptWars Challenge 6: Urban Air Quality Assistant
+              </p>
             </div>
           </div>
 
           <button
-            onClick={handleClose}
+            onClick={onClose}
             className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 flex items-center justify-center text-white shrink-0 transition-all border border-white/10 cursor-pointer"
             title="Close"
+            aria-label="Close demo video modal"
           >
             <X className="w-5 h-5" />
           </button>
@@ -105,126 +78,78 @@ export function DemoVideoModal({ isOpen, onClose }) {
 
         {/* Scrollable Body */}
         <div className="flex-1 overflow-y-auto space-y-4 pr-1">
-          
-          {/* Quick Instruction Banner */}
-          <div className="rounded-2xl bg-emerald-950/40 border border-emerald-500/30 p-3.5 flex items-start space-x-3">
-            <Volume2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-            <div className="text-xs">
-              <span className="font-bold text-emerald-300">How to use these audio clips:</span>
-              <p className="text-white/80 mt-0.5 leading-relaxed">
-                Click <strong>Play</strong> on any clip below while using Windows Game Bar (<code>Win + Alt + R</code>) or Loom to record your screen action, or download the files directly.
-              </p>
+          {/* Embedded Google Drive Player */}
+          <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-zinc-950 border border-white/15 shadow-xl">
+            <iframe
+              src={DEMO_VIDEO_EMBED_URL}
+              title="AeroShield AI Official Demo Video"
+              className="w-full h-full border-0"
+              allow="autoplay; fullscreen"
+              allowFullScreen
+              loading="lazy"
+            />
+          </div>
+
+          {/* Quick External Actions */}
+          <div className="flex flex-wrap items-center justify-between gap-2.5 p-3 rounded-2xl bg-white/5 border border-white/10">
+            <div className="flex items-center space-x-2 text-xs text-white/80">
+              <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>If preview buffers inside iframe, open the full HD stream directly:</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <a
+                href={DEMO_VIDEO_VIEW_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-extrabold transition-colors"
+              >
+                <span>Watch on Google Drive</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+              <a
+                href={LINKEDIN_POST_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/15 transition-colors"
+              >
+                <Share2 className="w-3.5 h-3.5 text-sky-400" />
+                <span>LinkedIn Launch Post</span>
+              </a>
             </div>
           </div>
 
-          {/* Audio Clips List */}
-          <div className="space-y-2.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-              Generated Studio Audio Narration (No Music • Clean Volume)
-            </h3>
-
-            {audioClips.map((clip) => {
-              const isPlaying = playingId === clip.id;
-
-              return (
-                <div
-                  key={clip.id}
-                  className={`p-3.5 rounded-2xl border transition-all ${
-                    clip.id === 'full'
-                      ? 'bg-gradient-to-r from-emerald-950/50 via-zinc-900/90 to-zinc-900/90 border-emerald-500/50 shadow-md ring-1 ring-emerald-500/20'
-                      : 'bg-white/5 border-white/10 hover:border-white/20'
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xs font-bold text-white truncate">{clip.title}</span>
-                        <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-1.5 py-0.5 rounded-md">
-                          {clip.duration}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-white/60 mt-0.5 truncate">{clip.desc}</p>
-                    </div>
-
-                    <div className="flex items-center space-x-2 shrink-0">
-                      <button
-                        onClick={() => togglePlay(clip.id, clip.src)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all cursor-pointer active:scale-95 ${
-                          isPlaying
-                            ? 'bg-amber-400 text-zinc-950 shadow-md ring-2 ring-amber-400/50'
-                            : clip.id === 'full'
-                            ? 'bg-emerald-500 text-zinc-950 hover:bg-emerald-400'
-                            : 'bg-white/10 text-white hover:bg-white/20 border border-white/10'
-                        }`}
-                      >
-                        {isPlaying ? (
-                          <>
-                            <Pause className="w-3.5 h-3.5 fill-current" />
-                            <span>Pause</span>
-                          </>
-                        ) : (
-                          <>
-                            <Play className="w-3.5 h-3.5 fill-current" />
-                            <span>Play</span>
-                          </>
-                        )}
-                      </button>
-
-                      <a
-                        href={clip.src}
-                        download
-                        className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer border border-white/10"
-                        title="Download MP3"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                      </a>
-                    </div>
-                  </div>
+          {/* 4-Chapter Breakdown */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {VIDEO_CHAPTERS.map((chapter) => (
+              <div
+                key={chapter.time}
+                className="p-3 rounded-2xl bg-white/5 border border-white/10 space-y-1"
+              >
+                <div className="flex items-center space-x-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span className="text-[11px] font-mono font-bold text-emerald-300">
+                    {chapter.time}
+                  </span>
                 </div>
-              );
-            })}
+                <p className="text-xs font-bold text-white">{chapter.title}</p>
+                <p className="text-[11px] text-white/65 leading-relaxed">{chapter.detail}</p>
+              </div>
+            ))}
           </div>
-
-          {/* Video Scene Timeline Checklist */}
-          <div className="space-y-2 pt-2 border-t border-white/10">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white/70">
-              Screen Recording Steps
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-white/70">
-              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                <span className="font-bold text-emerald-400 block mb-0.5">Scene 1 [0:00 - 0:25]</span>
-                Show Home Page & rotary dial.
-              </div>
-              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                <span className="font-bold text-emerald-400 block mb-0.5">Scene 2 [0:25 - 0:55]</span>
-                Switch City to Delhi & show Solar Window.
-              </div>
-              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                <span className="font-bold text-emerald-400 block mb-0.5">Scene 3 [0:55 - 1:25]</span>
-                Desi Jugaad Lab & Multi-AI Launcher.
-              </div>
-              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                <span className="font-bold text-emerald-400 block mb-0.5">Scene 4 [1:25 - 1:55]</span>
-                Judges DevTools & 7 Language switch.
-              </div>
-            </div>
-          </div>
-
         </div>
 
-        {/* Footer Actions */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-white/10 shrink-0">
-          <span className="text-xs text-white/50 text-center sm:text-left">
-            Upload to YouTube as <strong>Unlisted</strong> or Google Drive with public view access.
+        {/* Footer */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 mt-2 border-t border-white/10 shrink-0">
+          <span className="text-xs text-white/55 text-center sm:text-left">
+            Public submission media verified for Hack2skill &amp; Google for Developers evaluation.
           </span>
           <button
-            onClick={handleClose}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-emerald-500 text-zinc-950 text-xs font-bold hover:bg-emerald-400 transition-colors cursor-pointer"
+            onClick={onClose}
+            className="w-full sm:w-auto px-5 py-2 rounded-full bg-white text-zinc-950 text-xs font-bold hover:bg-zinc-200 transition-colors cursor-pointer"
           >
-            Close Studio
+            Close Preview
           </button>
         </div>
-
       </div>
     </div>
   );

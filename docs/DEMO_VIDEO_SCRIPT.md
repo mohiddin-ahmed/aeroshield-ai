@@ -2,6 +2,7 @@
 
 > **Challenge:** PromptWars Virtual [Challenge 6: Urban Air Quality Assistant]  
 > **App Title:** AeroShield AI (VayuMitra OS)  
+> **Watch Published Video (01:45 HD):** [https://drive.google.com/file/d/18vHHx8OvH3ZrenDX-60WtGm0OsJ_NTD7/view?usp=sharing](https://drive.google.com/file/d/18vHHx8OvH3ZrenDX-60WtGm0OsJ_NTD7/view?usp=sharing)  
 > **Target Audience:** Hackathon Judges & Evaluators  
 
 Follow this crisp, high-scoring script to ensure full points across Innovation, Technical Implementation, and Impact:
@@ -33,5 +34,5 @@ Follow this crisp, high-scoring script to ensure full points across Innovation, 
 * *(Click top-right 'Judges DevTools' button)*
 * *"For full transparency, judges can click 'Judges DevTools' to inspect our Gemini 2.5 Flash system instructions, token counts, and execution latency in real time."*
 * *"Best of all, our Zero-Crash architecture guarantees seamless failover if API keys hit rate limits."*
-* *"AeroShield AI is completely responsive, localized in 7 Indian languages, and ready for production at aeroshield.ummeedlabs.com. Thank you, Hack2skill and Google for Developers!"*
+* *"AeroShield AI is completely responsive, localized in 7 Indian languages, and live in production. Thank you, Hack2skill and Google for Developers!"*
 

@@ -25,9 +25,10 @@ Built with **Google Antigravity**, **Gemini 2.5 Flash**, **Open-Meteo High-Resol
 
 🎥 Watch the quick 2-minute video demo below!
 
-🔗 **Live App:** https://aeroshield.ummeedlabs.com (or your Vercel deployment link)  
-💻 **GitHub Repo:** [Insert Your Public GitHub URL]  
-📝 **Technical Blog:** Included in `/docs/TECHNICAL_BLOG.md` in repository  
+🔗 **Live App:** https://aeroshield-ai-sandy.vercel.app/  
+🎥 **Demo Video:** https://drive.google.com/file/d/18vHHx8OvH3ZrenDX-60WtGm0OsJ_NTD7/view?usp=sharing  
+💻 **GitHub Repo:** https://github.com/mohiddin-ahmed/aeroshield-ai  
+📣 **Published Post:** https://www.linkedin.com/posts/mohiddin-ahmed-motiya-19ba06393_promptwars-hack2skill-googlefordevelopers-activity-7531098612081061888-a7pz  
 
 Big thanks to the team at @Hack2skill and @Google for Developers for running such an inspiring builder series!
 

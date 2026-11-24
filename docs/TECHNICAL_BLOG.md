@@ -2,8 +2,9 @@
 
 > **Event:** PromptWars Virtual (Hack2skill × Google for Developers)  
 > **Challenge:** Challenge 6: Urban Air Quality Assistant  
-> **Live Demo Target:** [https://aeroshield.ummeedlabs.com](https://aeroshield.ummeedlabs.com)  
-> **GitHub Repository:** Public Submission Repository  
+> **Live Demo App:** [https://aeroshield-ai-sandy.vercel.app/](https://aeroshield-ai-sandy.vercel.app/)  
+> **Demo Video (01:45 HD):** [Watch Walkthrough on Google Drive](https://drive.google.com/file/d/18vHHx8OvH3ZrenDX-60WtGm0OsJ_NTD7/view?usp=sharing)  
+> **GitHub Repository:** [https://github.com/mohiddin-ahmed/aeroshield-ai](https://github.com/mohiddin-ahmed/aeroshield-ai)  
 
 ---
 

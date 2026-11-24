@@ -183,14 +183,8 @@ export function App() {
       setTimeContext(getDetailedTimeContext());
       setSolarStatus(getSolarWindowStatus());
     }, 30000);
-    const handleSelectLogo = (variant) => {
-    setActiveLogoVariant(variant);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('activeLogoVariant', variant);
-    }
-  };
 
-  return () => clearInterval(timer);
+    return () => clearInterval(timer);
   }, []);
 
   // Compute personalized intelligence dynamically for current time, weather, and profile
