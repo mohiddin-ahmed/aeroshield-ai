@@ -25,8 +25,8 @@ export function FloatingBottomNav({ activeTab, onSelectTab, isDarkMode, currentL
       <nav 
         className={`flex items-center justify-around sm:justify-center sm:space-x-2 px-2.5 py-2 rounded-full transition-all duration-300 shadow-2xl backdrop-blur-2xl ${
           isDarkMode
-            ? 'bg-zinc-900/95 border border-zinc-750 text-zinc-300 shadow-black/80'
-            : 'bg-white/95 border border-zinc-300 text-zinc-700 shadow-black/10'
+            ? 'bg-zinc-900/95 border border-zinc-700/80 text-zinc-300 shadow-black/80'
+            : 'bg-white/95 border border-zinc-200 text-zinc-700 shadow-black/10'
         }`}
       >
         {tabs.map((tab) => {
@@ -37,27 +37,32 @@ export function FloatingBottomNav({ activeTab, onSelectTab, isDarkMode, currentL
             <button
               key={tab.id}
               onClick={() => onSelectTab(tab.id)}
-              className={`relative flex items-center space-x-2 py-2.5 px-3.5 sm:px-5 rounded-full text-xs font-bold transition-all duration-200 select-none ${
+              className={`relative flex items-center space-x-2 py-2 px-3.5 sm:px-4.5 rounded-full text-xs font-bold transition-all duration-300 select-none cursor-pointer ${
                 isActive
                   ? isDarkMode
-                    ? 'bg-zinc-800 text-white shadow-inner scale-102 border border-emerald-500/50'
-                    : 'bg-zinc-950 text-white shadow-md scale-102'
+                    ? 'bg-zinc-800 text-white shadow-md border border-emerald-500/40'
+                    : 'bg-zinc-950 text-white shadow-lg shadow-black/20'
                   : isDarkMode
-                  ? 'hover:text-white hover:bg-zinc-800/60'
-                  : 'hover:text-zinc-950 hover:bg-zinc-100'
+                  ? 'hover:text-white hover:bg-zinc-800/60 text-zinc-400'
+                  : 'hover:text-zinc-950 hover:bg-zinc-100 text-zinc-600'
               }`}
             >
               <Icon 
-                className={`w-4 h-4 transition-colors ${
-                  isActive ? (isDarkMode ? 'text-emerald-400' : 'text-emerald-400') : ''
+                className={`w-4 h-4 transition-transform duration-300 ${
+                  isActive 
+                    ? 'text-emerald-400 scale-110' 
+                    : 'opacity-70'
                 }`} 
               />
               
-              {/* Active Label (Only displays when selected, matching uploaded screenshot) */}
+              {/* Active Label + Pulse Micro-Indicator */}
               {isActive && (
-                <span className="tracking-tight text-white animate-fade-in text-xs font-bold whitespace-nowrap">
-                  {tab.label}
-                </span>
+                <div className="flex items-center space-x-1.5 animate-fade-in">
+                  <span className="tracking-tight text-white text-xs font-bold whitespace-nowrap">
+                    {tab.label}
+                  </span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                </div>
               )}
             </button>
           );

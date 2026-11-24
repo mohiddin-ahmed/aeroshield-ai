@@ -75,7 +75,7 @@ export function ResearchHub({ telemetry, currentLang = 'en' }) {
             <button
               key={item.id}
               onClick={() => setActiveSafeguards(prev => ({ ...prev, [item.id]: !prev[item.id] }))}
-              className={`p-3 rounded-2xl text-xs font-bold text-left transition-all border ${
+              className={`p-3 rounded-2xl text-xs font-bold text-left transition-all border cursor-pointer select-none active:scale-98 ${
                 activeSafeguards[item.id]
                   ? 'bg-zinc-950 text-white dark:bg-emerald-500 dark:text-zinc-950 border-zinc-950 dark:border-emerald-400 shadow-xs'
                   : 'bg-zinc-100 dark:bg-zinc-800/90 text-zinc-800 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700'
@@ -123,10 +123,10 @@ export function ResearchHub({ telemetry, currentLang = 'en' }) {
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border ${
+            className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border cursor-pointer select-none active:scale-95 ${
               selectedCategory === cat
                 ? 'bg-zinc-950 text-white dark:bg-emerald-500 dark:text-zinc-950 border-zinc-950 dark:border-emerald-400 shadow-xs'
-                : 'bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700'
+                : 'bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-750'
             }`}
           >
             {cat}

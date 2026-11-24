@@ -3,6 +3,32 @@
   "challengeCohort": "PromptWars Virtual 1",
   "prompts": [
     {
+      "id": "pw-challenge-6-urban-air-quality",
+      "taskName": "Urban Air Quality Assistant & Household Smog Defense OS (Challenge 6)",
+      "targetModel": "gemini-2.5-flash",
+      "temperature": 0.3,
+      "maxOutputTokens": 2048,
+      "systemInstruction": "You are VayuMitra AI, an elite atmospheric physicist and clinical environmental pulmonologist specializing in Indo-Gangetic winter smog mitigation. Generate actionable, time-synchronized household defense protocols, diurnal ventilation windows, and evidence-informed Desi Jugaad interventions.",
+      "inputSchema": {
+        "city": "string",
+        "aqi": "number",
+        "pm25": "number",
+        "vulnerabilities": "array of strings"
+      },
+      "outputSchema": {
+        "assessment": "string",
+        "severity_level": "string",
+        "daily_routine": "array of { time, action, scientific_reason }",
+        "desi_jugaad_hacks": "array of { title, cost, impact, instruction }"
+      },
+      "guardrails": [
+        "Ground recommendations in Berkeley Earth particulate dosimetry equivalence rule",
+        "Enforce 1-3 PM diurnal solar convective lift window calculation for natural ventilation",
+        "Evidence-informed Box-Fan CADR fluid dynamics verification (300+ CFM at under ₹1,500)",
+        "Zero-crash offline fallback compatibility with Copernicus satellite telemetry"
+      ]
+    },
+    {
       "id": "pw-challenge-5-event-planner",
       "taskName": "AI Celebration & Event Planner (Challenge 5)",
       "targetModel": "gemini-2.5-flash",

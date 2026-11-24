@@ -1,23 +1,19 @@
-# Building for PromptWars Virtual: Architecting an Intent-Driven AI Solution with Google Antigravity & Gemini
+# Building AeroShield AI (VayuMitra OS): Architecting a GenAI Clean-Air Defense Operating System with Google Antigravity & Gemini
 
 > **Event:** PromptWars Virtual (Hack2skill × Google for Developers)  
-> **Track:** Vibe-Coding & Intent-Driven Software Architecture  
-> **Live Demo:** [Insert Deployed Vercel / Cloud Run Link]  
-> **GitHub Repository:** [Insert Public GitHub URL]  
+> **Challenge:** Challenge 6: Urban Air Quality Assistant  
+> **Live Demo Target:** [https://aeroshield.ummeedlabs.com](https://aeroshield.ummeedlabs.com)  
+> **GitHub Repository:** Public Submission Repository  
 
 ---
 
 ## 1. Abstract & Problem Statement
 
-Modern software development is undergoing a paradigm shift. Traditional workflows demand hours of syntax wrangling, boilerplate configuration, and manual plumbing. In this challenge for **PromptWars Virtual**, our goal was to build a production-ready, intent-driven web application using **Google Antigravity** and the **Gemini 2.5 API**, shifting the focus from manual coding to intelligent system prompt engineering and automated agentic iteration.
+Every winter across the Indo-Gangetic Plains, over **300 million citizens breathe toxic air equivalent to smoking 25 to 30 cigarettes a day**. Thermal boundary-layer inversions trap PM2.5, NO2, and volatile organic compounds near ground level. 
 
-### The Core Problem:
-Whether orchestrating an AI Celebration Planner (Challenge 5) or developing an intelligent decision engine, real-world users struggle with:
-1. Fragmented data across unorganized channels and spreadsheets.
-2. Inflexible static software that cannot adapt dynamically to unpredictable real-world constraints.
-3. Brittle AI prototypes that crash whenever an API key runs out of quota or encounters network latency.
+Commercial solutions present a stark socioeconomic divide: branded HEPA air purifiers cost between ₹20,000 and ₹40,000, putting them out of reach for 90% of Indian households. Meanwhile, commercial weather applications merely display alarmist red numbers and induce psychological dread without delivering a single actionable, low-cost harm reduction strategy.
 
-Our mission was to build an application that is **resilient, transparent, and prompt-observable**.
+Our mission with **AeroShield AI (VayuMitra OS)** is to **turn winter smog anxiety into daily clean-air strategy**. We built a scientifically grounded household clean-air operating system that leverages **Google Antigravity**, the **Gemini 2.5 Flash API**, high-resolution European **Copernicus Atmosphere Monitoring Service (CAMS)** telemetry via Open-Meteo, and evidence-informed **Desi Jugaad engineering**.
 
 ---
 
@@ -25,64 +21,71 @@ Our mission was to build an application that is **resilient, transparent, and pr
 
 ```mermaid
 flowchart TD
-    User["User Intent / Prompt Input"] --> UI["Vite + React 19 Frontend"]
-    UI --> Guard["Prompt Guardrail Engine"]
-    Guard --> Selector{"API Key Present & Valid?"}
+    A["Auto-Detected Device GPS & Clock"] --> B["Open-Meteo High-Resolution Satellite Atmospheric Grid"]
+    B --> C["Diurnal Inversion & Solar Thermal Lift Analyzer"]
     
-    Selector -->|"Yes (Live Mode)"| Gemini["Google Gemini 2.5 API"]
-    Selector -->|"No / Rate Limited"| Mock["Zero-Crash Mock Fallback Engine"]
+    C --> D{"Gemini API Key Available?"}
+    D -->|"Live Mode"| E["Gemini 2.5 Flash Clinical Pulmonology Model"]
+    D -->|"Quota Limit / Offline"| F["Zero-Crash High-Fidelity Mock Fallback Engine"]
     
-    Gemini --> Telemetry["Real-time Prompt Logger"]
-    Mock --> Telemetry
+    E --> G["Prompt Telemetry & Token Logger"]
+    F --> G
     
-    Telemetry --> Inspector["Live Prompt Inspector (Judges DevTools)"]
-    Telemetry --> Render["Structured UI Rendering Canvas"]
+    G --> H["Judges Live Prompt Inspector (DevTools)"]
+    G --> I["VayuMitra OS UI (Rotary Dial, Routine Timeline, Jugaad Lab, Research Hub)"]
 ```
 
-### Tech Stack:
-* **Agentic Platform:** Google Antigravity
-* **AI Model:** Google Gemini 2.5 Flash / Gemini 1.5 Pro
-* **Frontend:** React 19, Tailwind CSS v4, Lucide Icons, Vite 8
-* **Resilience Layer:** In-Memory Prompt Logger with Fallback Boundary and zero-crash mock engine
+### Full-Stack Architecture:
+* **Agentic Orchestration:** Google Antigravity
+* **Core Foundation Model:** Google Gemini 2.5 Flash API with temperature control (`0.3` for clinical accuracy)
+* **Atmospheric Data Pipeline:** Open-Meteo 11km ECMWF & CAMS atmospheric model grid (PM2.5, PM10, NO2, Ozone)
+* **Frontend Platform:** React 19, Tailwind CSS v4, Lucide Icons, Vite 8
+* **Mathematical Engines:**
+  * **Berkeley Earth Dosimetry:** Translates PM2.5 mass concentration ($\mu\text{g/m}^3$) into daily cigarette inhalation.
+  * **Box-Fan CADR Fluid Dynamics:** Computes effective Clean Air Delivery Rate (CFM), Air Changes per Hour (ACH), and time-to-90% particulate clearance for room sizes from 80 to 600 sq ft.
+* **Resilience Layer:** Zero-Crash mock failover guaranteeing evaluators never face a blank screen.
 
 ---
 
 ## 3. Prompt Strategy & Engineering Framework
 
-We adhered to a structured **5-Pillar Intent Architecture**:
-1. **Explicit Role & Persona Calibration:**  
-   Rather than letting the model assume a generic persona, each challenge module binds to a specialized system persona (e.g., *Celebration Architect* or *Cultural Heritage Guide*).
-2. **Strict Schema Constraints:**  
-   Prompts are formulated with deterministic output structures (JSON/structured objects) to prevent conversational hallucinations.
-3. **Dynamic Parameter Control:**  
-   Temperature is calibrated between `0.2` (for deterministic software generation) and `0.7` (for creative planning and syntheses).
-4. **Observable Prompt DevTools:**  
-   We embedded an in-app **Live Prompt Inspector**, allowing evaluators to audit the exact system instruction, user prompt payload, token latency, and execution parameters in real time.
+We engineered a specialized **5-Pillar Intent Architecture** tailored for critical public health:
+
+1. **Role & Clinical Persona Calibration:**  
+   The model is strictly calibrated as *VayuMitra AI: an elite atmospheric physicist and clinical pulmonologist*. It never provides vague advice like "stay indoors"; it prescribes exact boundary-layer actions (e.g., "activate Rock-Salt Wet Mopping to precipitate dry particulates without resuspension").
+2. **Deterministic Output Schema Constraints:**  
+   Outputs follow a rigid JSON schema containing an executive assessment, severity category, 4-phase daily routine milestones, and tailored Desi Jugaad interventions.
+3. **Multi-AI Context Synchronization:**  
+   Our One-Click Multi-AI engine auto-crafts structured prompts pre-filled with the user's live micro-climate, current time, and selected family vulnerabilities (Toddlers, Elderly, Asthmatics, etc.), allowing seamless 1-click execution across ChatGPT, Claude, and Gemini.
+4. **Observable Prompt DevTools for Judges:**  
+   We embedded an in-app **Live Prompt Inspector**, empowering hackathon judges to verify the exact system instruction, user prompt payload, token counts, and execution latency in real time.
 
 ---
 
 ## 4. Key Engineering Challenges & How We Fixed Them
 
 ### Pitfall 1: Evaluator API Quota Exhaustion (The "Blank Screen" Crash)
-* **The Problem:** Many hackathon submissions fail because evaluators test during peak hours when the developer's Gemini API key hits free-tier rate limits (`429 Too Many Requests`), rendering a blank screen or raw JSON crash.
-* **Our Solution:** We engineered a **Zero-Crash Mock Fallback Engine**. If the API fails or is unconfigured, the app automatically serves high-fidelity, interactive mock data with an informative badge. The evaluator can always test 100% of the UI.
+* **The Problem:** In hackathon competitions, judges evaluating dozens of projects simultaneously cause shared API keys to hit `429 Too Many Requests` or quota limits, leading to an immediate zero-score crash.
+* **Our Solution:** We architected a **Zero-Crash Mock Fallback Engine**. If the API key is missing or fails, the application automatically falls back to rich, simulated atmospheric intelligence with an explanatory status badge. The evaluator experience is 100% uninterrupted.
 
-### Pitfall 2: Hallucination in Numerical Constraints
-* **The Problem:** Freeform text prompts often fail on exact math (e.g., budget allocation adding up to 100%).
-* **Our Solution:** We implemented input pre-validation and step-by-step chain-of-thought instructions enforcing mathematical consistency before rendering.
+### Pitfall 2: Mobile Viewport Clashes & Dark Mode Contrast
+* **The Problem:** In dense data dashboards, mobile screens often wrap badges awkwardly, collide close buttons with modal titles, or suffer from text-on-dark invisibility.
+* **Our Solution:** We decoupled modal headers into flex row containers, added custom dark-mode CSS overrides in `src/index.css`, established tactile primary buttons, and designed a floating capsule navigation bar with intelligent scroll memory.
 
 ---
 
 ## 5. Live Demo Walkthrough
 
-1. **Preset Selection:** Choose a pre-configured challenge target (e.g., Event Planner or Heritage Explorer).
-2. **Intent Execution:** Click "Execute Prompt with Guardrails" to see real-time synthesis.
-3. **Inspect Prompts:** Click the top-right **"Inspect Prompts"** button to open the live inspector drawer and review prompt telemetry.
+1. **Auto-Detected Device Location & Time:** The app immediately senses your city and solar phase.
+2. **Rotary AQI Dial & Cigarette Equivalence:** Visualizes real-time toxicity and Berkeley Earth cigarette equivalence.
+3. **1–3 PM Solar Lift Window:** Alerts households when solar convective currents break the cold pool, allowing safe ventilation.
+4. **₹1,200 Box-Fan CADR Calculator:** Adjust room size and fan speed to calculate clean-air delivery matching ₹25,000 branded purifiers.
+5. **Inspect Prompts (Judges DevTools):** Click the top-right terminal icon to review real-time Gemini 2.5 Flash prompt payloads and execution latency.
 
 ---
 
 ## 6. Future Scope & Conclusion
 
-Building with **Google Antigravity** proved that vibe-coding is not just rapid prototyping—it is a discipline of clear architectural intent, resilient error handling, and prompt craft. In future iterations, we plan to incorporate multimodal image analysis and real-time collaborative canvas editing.
+AeroShield AI (VayuMitra OS) proves that GenAI can democratize life-saving environmental health defense. Future roadmaps include integrating low-cost IoT PM2.5 sensors and rolling out localized WhatsApp voice advisories for rural agricultural communities.
 
-*We thank Google for Developers and Hack2skill for hosting PromptWars Virtual!*
+*We express our heartfelt gratitude to Google for Developers and Hack2skill for hosting PromptWars Virtual!*

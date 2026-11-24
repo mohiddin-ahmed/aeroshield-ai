@@ -1,32 +1,37 @@
-# 🎥 2-Minute High-Impact Demo Video Script
+# 🎥 2-Minute High-Impact Demo Video Script — AeroShield AI (VayuMitra OS)
 
-Judges typically spend 1 to 2 minutes reviewing video submissions. Follow this crisp script structure to maximize points:
+> **Challenge:** PromptWars Virtual [Challenge 6: Urban Air Quality Assistant]  
+> **App Title:** AeroShield AI (VayuMitra OS)  
+> **Target Audience:** Hackathon Judges & Evaluators  
 
----
-
-### [0:00 - 0:25] The Hook & Problem Statement
-* *"Hello everyone! This is [Your Name], presenting my project for PromptWars Virtual, organized by Hack2skill and Google for Developers."*
-* *"When building AI applications, the two biggest issues are brittle prompts that hallucinate and apps that crash when API limits are reached. Here is how our solution solves this through intent-driven vibe-coding."*
+Follow this crisp, high-scoring script to ensure full points across Innovation, Technical Implementation, and Impact:
 
 ---
 
-### [0:25 - 1:15] The Live Demonstration
-* *(Switch to screen share of the live deployed app)*
-* *"Here is the application. We can select curated challenge presets like the AI Celebration Planner or Cultural Heritage Explorer."*
-* *"Notice how we can configure the system persona, intent prompt, and temperature slider in real time."*
-* *(Click 'Execute Prompt with Guardrails')*
-* *"Within milliseconds, the app orchestrates the prompt via the Gemini API, producing structured timelines, itemized budgets, and validated action steps."*
+### [0:00 - 0:25] The Hook & Severe Problem Statement
+* *"Hello judges! Over 300 million citizens across the Indo-Gangetic Plains breathe toxic smog equivalent to smoking 25 to 30 cigarettes a day. Branded purifiers cost ₹25,000+, while ordinary apps just display scary red numbers."*
+* *"This is AeroShield AI (VayuMitra OS)—our GenAI clean-air defense companion built with Google Antigravity and the Gemini 2.5 API that turns winter smog anxiety into daily clean-air strategy."*
 
 ---
 
-### [1:15 - 1:45] The Secret Weapon: Prompt Inspector & Fallback
-* *"What sets our project apart is transparency. If we click 'Inspect Prompts', judges can see our Live Prompt Inspector."*
-* *"It audits the exact system instruction, user prompt payload, token counts, and execution latency."*
-* *"Furthermore, if the API quota runs out, our zero-crash fallback guarantees the app never breaks."*
+### [0:25 - 1:10] Core Innovation: Telemetry & The 1–3 PM Solar Window
+* *(Show the Command Center screen)*
+* *"First, AeroShield AI automatically detects device location and time, streaming live atmospheric telemetry from European Copernicus CAMS satellites via Open-Meteo."*
+* *"Our Rotary Dial converts PM2.5 directly into Berkeley Earth cigarette equivalence."*
+* *"Notice our diurnal inversion detector: it calculates the exact 1–3 PM Solar Convective Lift Window—the only time in 24 hours when solar thermal expansion breaks the cold pool, allowing 15 minutes of safe household ventilation."*
 
 ---
 
-### [1:45 - 2:00] Wrap-Up & Call to Action
-* *"The repository is fully open-source, and our complete technical blog is linked in the description."*
-* *"Thank you, Hack2skill and Google for Developers team, for an incredible challenge!"*
+### [1:10 - 1:40] Democratizing Clean Air: ₹1,200 Desi Jugaad Lab & Multi-AI Launcher
+* *(Switch to Desi Jugaad Lab tab)*
+* *"Instead of buying ₹25,000 purifiers, our interactive CADR calculator models a ₹1,200 DIY Box-Fan with MERV 13/HEPA filtration, delivering over 300 CFM Clean Air Delivery Rate with fluid dynamics math."*
+* *"Our One-Click Multi-AI engine auto-synthesizes prompts with live weather and family profiles, allowing 1-click execution in ChatGPT, Claude, and Gemini."*
+
+---
+
+### [1:40 - 2:00] The Secret Weapon: Judges Live Prompt Inspector & Resilience
+* *(Click top-right 'Judges DevTools' button)*
+* *"For full transparency, judges can click 'Judges DevTools' to inspect our Gemini 2.5 Flash system instructions, token counts, and execution latency in real time."*
+* *"Best of all, our Zero-Crash architecture guarantees seamless failover if API keys hit rate limits."*
+* *"AeroShield AI is completely responsive, localized in 7 Indian languages, and ready for production at aeroshield.ummeedlabs.com. Thank you, Hack2skill and Google for Developers!"*
 
