@@ -40,16 +40,16 @@ export function ResearchHub({ telemetry, currentLang = 'en' }) {
           </span>
           <span className="text-xs text-zinc-500 dark:text-zinc-400">• {t.research.academicCitations}</span>
         </div>
-        <h2 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-white mt-1.5">
+        <h2 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-white mt-2">
           {t.research.title}
         </h2>
-        <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-1 max-w-3xl leading-relaxed">
+        <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1 max-w-3xl leading-relaxed">
           {t.research.description}
         </p>
       </div>
 
       {/* Interactive Particulate Dosimetry & Cigarette Savings Calculator */}
-      <div className="p-6 sm:p-8 rounded-3xl glass-card bg-gradient-to-br from-white/95 via-white/90 to-emerald-500/10 dark:from-zinc-900/95 dark:via-zinc-900/90 dark:to-emerald-500/20 shadow-md">
+      <div className="p-6 sm:p-8 rounded-3xl glass-card border border-emerald-500/20 shadow-md">
         <div className="flex items-center space-x-3 mb-4">
           <div className="w-10 h-10 rounded-2xl bg-zinc-950 dark:bg-emerald-500 text-emerald-400 dark:text-zinc-950 flex items-center justify-center font-bold">
             <Calculator className="w-5 h-5 stroke-[2.2]" />
@@ -65,7 +65,7 @@ export function ResearchHub({ telemetry, currentLang = 'en' }) {
         </div>
 
         {/* Safeguard Toggles */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-6">
           {[
             { id: 'diyPurifier', label: 'DIY Box-Fan (300 CFM)' },
             { id: 'solarVentilation', label: '1-3 PM Solar Window' },
@@ -78,25 +78,25 @@ export function ResearchHub({ telemetry, currentLang = 'en' }) {
               className={`p-3 rounded-2xl text-xs font-bold text-left transition-all border ${
                 activeSafeguards[item.id]
                   ? 'bg-zinc-950 text-white dark:bg-emerald-500 dark:text-zinc-950 border-zinc-950 dark:border-emerald-400 shadow-xs'
-                  : 'bg-white/80 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'
+                  : 'bg-zinc-100 dark:bg-zinc-800/90 text-zinc-800 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700'
               }`}
             >
               <div className="flex items-center justify-between">
                 <span>{item.label}</span>
-                <span className={`w-2 h-2 rounded-full ${activeSafeguards[item.id] ? 'bg-emerald-400 dark:bg-zinc-950' : 'bg-zinc-300 dark:bg-zinc-600'}`} />
+                <span className={`w-2 h-2 rounded-full ${activeSafeguards[item.id] ? 'bg-emerald-400 dark:bg-zinc-950' : 'bg-zinc-400 dark:bg-zinc-500'}`} />
               </div>
             </button>
           ))}
         </div>
 
-        {/* Results Banner */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white dark:bg-zinc-800 p-5 rounded-2xl border border-zinc-200 dark:border-zinc-700 shadow-xs">
+        {/* Results Banner (Harmonized for Dark Mode - NO White Box) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-zinc-100 dark:bg-zinc-800/90 p-5 rounded-2xl border border-zinc-200 dark:border-zinc-700 shadow-xs">
           <div className="flex items-center space-x-3.5">
             <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 flex items-center justify-center text-emerald-800 dark:text-emerald-300 shrink-0">
               <HeartPulse className="w-6 h-6 stroke-[2.2]" />
             </div>
             <div>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400 font-bold block">{t.research.totalAvoided}</span>
+              <span className="text-xs text-zinc-600 dark:text-zinc-300 font-bold block">{t.research.totalAvoided}</span>
               <span className="text-2xl sm:text-3xl font-extrabold font-mono text-zinc-950 dark:text-white">
                 {totalAvoidedUg} <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400 font-semibold">μg / day</span>
               </span>
@@ -108,7 +108,7 @@ export function ResearchHub({ telemetry, currentLang = 'en' }) {
               <Cigarette className="w-6 h-6 stroke-[2.2]" />
             </div>
             <div>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400 font-bold block">{t.research.cigarettesPrevented}</span>
+              <span className="text-xs text-zinc-600 dark:text-zinc-300 font-bold block">{t.research.cigarettesPrevented}</span>
               <span className="text-2xl sm:text-3xl font-extrabold font-mono text-rose-600 dark:text-rose-400">
                 {cigarettesAvoided} <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400 font-semibold">{t.dial.cigarettesUnit}</span>
               </span>
@@ -126,7 +126,7 @@ export function ResearchHub({ telemetry, currentLang = 'en' }) {
             className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border ${
               selectedCategory === cat
                 ? 'bg-zinc-950 text-white dark:bg-emerald-500 dark:text-zinc-950 border-zinc-950 dark:border-emerald-400 shadow-xs'
-                : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700'
+                : 'bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700'
             }`}
           >
             {cat}
@@ -159,11 +159,11 @@ export function ResearchHub({ telemetry, currentLang = 'en' }) {
               {paper.title}
             </h3>
 
-            <p className="text-xs font-semibold text-zinc-600 dark:text-zinc-300">
+            <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
               Authors: {paper.authors}
             </p>
 
-            <p className="text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed bg-zinc-100 dark:bg-zinc-800/80 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-700">
+            <p className="text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed bg-zinc-100 dark:bg-zinc-800/80 p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-700">
               <strong className="text-zinc-950 dark:text-white">Core Clinical Finding:</strong> {paper.keyTakeaway}
             </p>
 
