@@ -1,7 +1,12 @@
 {
-  "name": "promptwars-builder-suite",
+  "name": "aeroshield-ai",
   "version": "1.0.0",
-  "description": "Production-ready PromptWars Virtual challenge submission suite with automated validation and prompt logging",
+  "description": "AeroShield AI (VayuMitra OS) — GenAI Urban Air Quality Defense Companion & Household Smog Defense OS for PromptWars Virtual",
+  "homepage": "https://aeroshield.ummeedlabs.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mohiddin-ahmed/aeroshield-ai.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

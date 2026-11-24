@@ -9,12 +9,13 @@ Welcome to your central workspace for **PromptWars Virtual** (`pwvirtual1`). Eve
 ```
 D:\PROJECTS\PromptWars/
 │
-├── 🏛️ challenges/                 # All 5 Challenge Blueprints & Winner Strategies
-│   ├── challenge-01-heritage-explorer/     # Challenge 1: Cultural State & Heritage Explorer
-│   ├── challenge-02-decision-support/      # Challenge 2: Real-Time Decision Support Engine
-│   ├── challenge-03-multilingual-sports/   # Challenge 3: Vernacular & Inclusive Sports Experience
+├── 🏛️ challenges/                 # Challenge Blueprints & Winner Strategies
+│   ├── challenge-06-urban-air-quality/     # 🌟 PRIMARY SUBMISSION: AeroShield AI (VayuMitra OS)
+│   ├── challenge-05-utsav-planner/         # Challenge 5: AI Celebration & Event Planner
 │   ├── challenge-04-dev-productivity/      # Challenge 4: Agentic Workflow & Code Synthesizer
-│   └── challenge-05-utsav-planner/         # Challenge 5: AI Celebration & Event Planner
+│   ├── challenge-03-multilingual-sports/   # Challenge 3: Vernacular & Inclusive Sports Experience
+│   ├── challenge-02-decision-support/      # Challenge 2: Real-Time Decision Support Engine
+│   └── challenge-01-heritage-explorer/     # Challenge 1: Cultural State & Heritage Explorer
 │
 ├── 📱 social-media/               # Viral LinkedIn & Instagram Growth Engine
 │   ├── DAY-01-LATE-BUT-UNSTOPPABLE.md      # Launch Post ("Registered late, showing up to win")
