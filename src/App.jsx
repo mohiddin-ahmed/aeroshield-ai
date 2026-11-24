@@ -30,8 +30,7 @@ import {
   Bot, 
   ChevronDown,
   Compass,
-  Info,
-  ShieldCheck
+  Info
 } from 'lucide-react';
 
 export function App() {
@@ -199,7 +198,7 @@ export function App() {
 
   return (
     <div className={`relative min-h-screen transition-colors duration-300 font-sans pb-28 ${
-      isDarkMode ? 'bg-[#121212] text-[#F3F4F6]' : 'bg-[#F7F7F7] text-[#282828]'
+      isDarkMode ? 'bg-[#09090b] text-[#f4f4f5]' : 'bg-[#F7F7F7] text-[#18181b]'
     }`}>
       
       {/* Dynamic Ambient Background Severity Glow Orbs */}
@@ -209,7 +208,7 @@ export function App() {
       />
       <div 
         className="fixed bottom-12 right-1/4 w-80 h-80 rounded-full blur-[130px] opacity-20 dark:opacity-15 pointer-events-none transition-colors duration-1000 -z-10 animate-float-delayed"
-        style={{ backgroundColor: telemetry.categoryColor === '#CBD77E' ? '#10B981' : '#9B2226' }}
+        style={{ backgroundColor: telemetry.categoryColor === '#CBD77E' ? '#10B981' : '#EF4444' }}
       />
 
       {/* Top Navbar */}
@@ -240,20 +239,20 @@ export function App() {
             {/* Device Time & Location Real-Time Detection Hero Banner (INSIDE HOME ONLY) */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 sm:p-5 rounded-3xl glass-card">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#10B981]/20 text-[#059669] dark:text-[#34D399] flex items-center justify-center font-bold shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center font-bold shrink-0">
                   <Compass className="w-5 h-5 stroke-[2.2]" />
                 </div>
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#10B981]">
+                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                       {t.status.autoDetected}
                     </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 font-mono">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-mono font-bold">
                       {timeContext.dateString}
                     </span>
                   </div>
-                  <p className="text-sm sm:text-base font-bold tracking-tight mt-0.5">
-                    {locationData.city}, {locationData.country} • <span className="font-mono text-[#10B981]">{timeContext.timeString}</span> ({timeContext.phaseLabel})
+                  <p className="text-sm sm:text-base font-extrabold tracking-tight mt-0.5 text-zinc-950 dark:text-white">
+                    {locationData.city}, {locationData.country} • <span className="font-mono text-emerald-600 dark:text-emerald-400">{timeContext.timeString}</span> ({timeContext.phaseLabel})
                   </p>
                 </div>
               </div>
@@ -264,7 +263,7 @@ export function App() {
                   <select
                     onChange={(e) => handleManualCityChange(e.target.value)}
                     defaultValue=""
-                    className="appearance-none bg-black/5 dark:bg-white/10 text-inherit font-bold text-xs pl-3 pr-7 py-2 rounded-2xl border border-black/5 dark:border-white/10 focus:outline-none cursor-pointer"
+                    className="appearance-none bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold text-xs pl-3 pr-7 py-2 rounded-2xl border border-zinc-200 dark:border-zinc-700 focus:outline-none cursor-pointer"
                   >
                     <option value="" disabled>{t.actions.switchCity}</option>
                     <optgroup label="India (All Regions)">
@@ -295,7 +294,7 @@ export function App() {
 
                 <button
                   onClick={() => setIsMultiAiOpen(true)}
-                  className="flex items-center space-x-1.5 px-3.5 py-2 rounded-2xl bg-white dark:bg-white/10 text-xs font-bold border border-black/5 dark:border-white/10 shadow-2xs hover:scale-102 transition-all"
+                  className="flex items-center space-x-1.5 px-3.5 py-2 rounded-2xl bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-bold border border-zinc-200 dark:border-zinc-700 shadow-2xs hover:scale-102 transition-all"
                   title="Open Multi-AI Prompt Launcher"
                 >
                   <Bot className="w-3.5 h-3.5 text-emerald-500" />
@@ -305,24 +304,24 @@ export function App() {
                 <button
                   onClick={handleGeneratePlan}
                   disabled={isGenerating}
-                  className="flex items-center space-x-1.5 px-4 py-2 rounded-2xl bg-[#282828] dark:bg-white text-white dark:text-[#282828] text-xs font-bold shadow-xs hover:opacity-90 transition-all disabled:opacity-50"
+                  className="flex items-center space-x-1.5 px-4 py-2 rounded-2xl bg-zinc-950 dark:bg-emerald-500 text-white dark:text-zinc-950 text-xs font-bold shadow-xs hover:opacity-90 transition-all disabled:opacity-50"
                 >
-                  <Sparkles className={`w-3.5 h-3.5 text-[#10B981] ${isGenerating ? 'animate-spin' : ''}`} />
-                  <span>{isGenerating ? 'Analyzing...' : t.actions.generatePlan}</span>
+                  <Sparkles className={`w-3.5 h-3.5 text-emerald-400 dark:text-zinc-950 ${isGenerating ? 'animate-spin' : ''}`} />
+                  <span>{isGenerating ? t.actions.analyzing : t.actions.generatePlan}</span>
                 </button>
               </div>
             </div>
 
             {/* Severe Inversion Alert Banner (When AQI > 300) */}
             {telemetry.aqi > 300 && (
-              <div className="p-4 sm:p-5 rounded-3xl bg-[#9B2226]/10 border-2 border-[#9B2226]/30 flex items-start space-x-3 text-[#9B2226] dark:text-rose-300">
-                <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-[#9B2226] dark:text-rose-400" />
+              <div className="p-4 sm:p-5 rounded-3xl bg-rose-500/10 border-2 border-rose-500/30 flex items-start space-x-3 text-rose-700 dark:text-rose-300">
+                <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
                 <div>
                   <h3 className="text-xs font-bold uppercase tracking-wider">
-                    Emergency Ground Thermal Inversion Alert • AQI {telemetry.aqi}
+                    {t.hero.emergencyTitle} • AQI {telemetry.aqi}
                   </h3>
                   <p className="text-xs opacity-90 mt-1 leading-relaxed">
-                    Atmospheric boundary layer is trapped below 150 meters. Inhaling ambient air today is the toxic equivalent of smoking <strong>{telemetry.cigaretteEquivDaily} cigarettes</strong>. Seal windows, run DIY box-fan filtration continuously, and ventilate only during the 1:00 PM – 3:00 PM solar window.
+                    {t.hero.emergencyBody}
                   </p>
                 </div>
               </div>
@@ -336,6 +335,8 @@ export function App() {
                 <RotaryAqiDial 
                   telemetry={telemetry} 
                   isSolarActive={solarStatus.isWindowActive}
+                  currentLang={currentLang}
+                  isDarkMode={isDarkMode}
                 />
               </div>
 
@@ -344,18 +345,19 @@ export function App() {
                 <VulnerabilityToggles
                   selected={vulnerabilities}
                   onToggle={handleToggleVulnerability}
+                  currentLang={currentLang}
                 />
 
                 {/* AI Executive Assessment or Live Telemetry Card */}
                 <div className="p-6 rounded-3xl glass-card flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center space-x-2 mb-2">
-                      <Sparkles className="w-4 h-4 text-[#10B981]" />
-                      <span className="text-xs font-bold uppercase tracking-wider opacity-70">
+                      <Sparkles className="w-4 h-4 text-emerald-500" />
+                      <span className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
                         {aiPlan ? 'VayuMitra AI Clinical Assessment' : 'Real-Time Inversion Status'}
                       </span>
                     </div>
-                    <p className="text-xs opacity-85 leading-relaxed font-medium">
+                    <p className="text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed font-semibold">
                       {aiPlan ? aiPlan.assessment : personalizedIntel.currentUrgentAdvisory}
                     </p>
                   </div>
@@ -365,7 +367,7 @@ export function App() {
                     {telemetry.advisoryPills?.map((pill, i) => (
                       <span 
                         key={i}
-                        className="text-[11px] font-semibold bg-black/5 dark:bg-white/10 px-3 py-1 rounded-full"
+                        className="text-[11px] font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 px-3 py-1 rounded-full border border-zinc-200 dark:border-zinc-700"
                       >
                         • {pill}
                       </span>
@@ -378,33 +380,33 @@ export function App() {
             {/* Middle/Lower Section: Open-Meteo High-Resolution Atmospheric Sensors */}
             <div className="pt-2">
               <div className="flex items-center justify-between mb-3 px-1">
-                <span className="text-xs font-bold uppercase tracking-wider opacity-60">
-                  {t.metrics.sensorsTitle}
+                <span className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
+                  {t.sensors.title}
                 </span>
-                <span className="text-[11px] font-mono opacity-40">
+                <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 font-bold">
                   Updated {telemetry.timestamp || 'Live'} • {telemetry.city}
                 </span>
               </div>
-              <TelemetryGrid telemetry={telemetry} />
+              <TelemetryGrid telemetry={telemetry} currentLang={currentLang} />
             </div>
 
             {/* AI Generated Routine Preview if available */}
             {aiPlan?.daily_routine && (
               <div className="p-6 rounded-3xl glass-card space-y-4">
                 <div className="flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4 text-[#10B981]" />
-                  <h3 className="text-sm font-bold">
+                  <Sparkles className="w-4 h-4 text-emerald-500" />
+                  <h3 className="text-sm font-bold text-zinc-950 dark:text-white">
                     Generated Smog Defense Plan for Your Family
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {aiPlan.daily_routine.map((r, idx) => (
-                    <div key={idx} className="p-4 rounded-2xl bg-black/3 dark:bg-white/5 border border-black/5 dark:border-white/10">
-                      <span className="text-xs font-bold font-mono text-[#10B981] block mb-1">
+                    <div key={idx} className="p-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700">
+                      <span className="text-xs font-bold font-mono text-emerald-600 dark:text-emerald-400 block mb-1">
                         {r.time}
                       </span>
-                      <p className="text-xs font-semibold mb-1">{r.action}</p>
-                      <p className="text-[11px] opacity-60 leading-tight">{r.scientific_reason}</p>
+                      <p className="text-xs font-bold text-zinc-950 dark:text-white mb-1">{r.action}</p>
+                      <p className="text-[11px] text-zinc-600 dark:text-zinc-300 leading-tight">{r.scientific_reason}</p>
                     </div>
                   ))}
                 </div>
@@ -420,6 +422,7 @@ export function App() {
             <SmogRoutineTimeline 
               solarStatus={solarStatus} 
               timeContext={timeContext}
+              currentLang={currentLang}
             />
           </div>
         )}
@@ -433,6 +436,7 @@ export function App() {
               personalizedIntel={personalizedIntel}
               timeContext={timeContext}
               onSelectJugaad={(item) => setSelectedJugaadItem(item)}
+              currentLang={currentLang}
             />
           </div>
         )}
@@ -440,21 +444,24 @@ export function App() {
         {/* TAB 4: RESEARCH & EVIDENCE HUB */}
         {activeTab === 'research' && (
           <div className="animate-page-enter">
-            <ResearchHub telemetry={telemetry} />
+            <ResearchHub 
+              telemetry={telemetry} 
+              currentLang={currentLang}
+            />
           </div>
         )}
 
         {/* Footer Scientific & Public Health Disclaimer Banner */}
-        <footer className="mt-8 p-4 rounded-3xl glass-card border border-black/5 dark:border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs opacity-70">
+        <footer className="mt-8 p-4 rounded-3xl glass-card border border-zinc-200 dark:border-zinc-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-zinc-600 dark:text-zinc-300">
           <div className="flex items-start space-x-2.5">
-            <Info className="w-4 h-4 text-[#10B981] shrink-0 mt-0.5" />
+            <Info className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               <strong>{t.disclaimer.title}:</strong> {t.disclaimer.text}
             </p>
           </div>
           <button
             onClick={() => setIsSettingsOpen(true)}
-            className="shrink-0 text-[#10B981] font-bold hover:underline"
+            className="shrink-0 text-emerald-600 dark:text-emerald-400 font-bold hover:underline"
           >
             Review Transparency & Sources →
           </button>
@@ -467,6 +474,7 @@ export function App() {
         activeTab={activeTab}
         onSelectTab={setActiveTab}
         isDarkMode={isDarkMode}
+        currentLang={currentLang}
       />
 
       {/* Modals & In-Place Drawers */}

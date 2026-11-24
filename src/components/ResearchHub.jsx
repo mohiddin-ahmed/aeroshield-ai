@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { BookOpen, ExternalLink, ShieldCheck, HeartPulse, Award, Calculator, Cigarette } from 'lucide-react';
+import { BookOpen, ExternalLink, HeartPulse, Calculator, Cigarette } from 'lucide-react';
 import { researchArticles } from '../services/researchArticlesData';
+import { translations } from '../utils/i18n';
 
-export function ResearchHub({ telemetry }) {
+export function ResearchHub({ telemetry, currentLang = 'en' }) {
+  const t = translations[currentLang] || translations.en;
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [activeSafeguards, setActiveSafeguards] = useState({
     diyPurifier: true,
@@ -33,31 +35,31 @@ export function ResearchHub({ telemetry }) {
       {/* Top Academic Header */}
       <div className="p-6 sm:p-8 rounded-3xl glass-card">
         <div className="flex items-center space-x-2">
-          <span className="text-xs font-bold uppercase tracking-wider bg-[#CBD77E]/30 text-[#282828] px-2.5 py-1 rounded-full">
-            Peer-Reviewed Evidence Hub
+          <span className="text-xs font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-400/40">
+            {t.research.badge}
           </span>
-          <span className="text-xs text-[#282828]/60">• Academic Citations</span>
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">• {t.research.academicCitations}</span>
         </div>
-        <h2 className="text-2xl font-bold text-[#282828] tracking-tight mt-1.5">
-          Scientific Research & Particulate Dosimetry Hub
+        <h2 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-white mt-1.5">
+          {t.research.title}
         </h2>
-        <p className="text-xs text-[#282828]/70 mt-1 max-w-3xl leading-relaxed">
-          AeroShield AI is grounded in peer-reviewed atmospheric physics and clinical epidemiology. All calculations adhere to Berkeley Earth's cigarette equivalence rule, clinical autopsy findings from AIIMS/Medanta, and boundary layer measurements from IIT Kanpur.
+        <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-1 max-w-3xl leading-relaxed">
+          {t.research.description}
         </p>
       </div>
 
       {/* Interactive Particulate Dosimetry & Cigarette Savings Calculator */}
-      <div className="p-6 sm:p-8 rounded-3xl glass-card bg-gradient-to-br from-white/90 via-white/80 to-[#CBD77E]/10">
+      <div className="p-6 sm:p-8 rounded-3xl glass-card bg-gradient-to-br from-white/95 via-white/90 to-emerald-500/10 dark:from-zinc-900/95 dark:via-zinc-900/90 dark:to-emerald-500/20 shadow-md">
         <div className="flex items-center space-x-3 mb-4">
-          <div className="w-10 h-10 rounded-2xl bg-[#282828] text-[#CBD77E] flex items-center justify-center">
-            <Calculator className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-2xl bg-zinc-950 dark:bg-emerald-500 text-emerald-400 dark:text-zinc-950 flex items-center justify-center font-bold">
+            <Calculator className="w-5 h-5 stroke-[2.2]" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-[#282828]">
-              Personalized Inhaled Dosimetry Calculator
+            <h3 className="text-lg font-bold text-zinc-950 dark:text-white">
+              {t.research.calculatorTitle}
             </h3>
-            <p className="text-xs text-[#282828]/60">
-              Calculate the direct mass of alveolar PM2.5 and equivalent cigarettes prevented today.
+            <p className="text-xs text-zinc-600 dark:text-zinc-300">
+              {t.research.calculatorSubtitle}
             </p>
           </div>
         </div>
@@ -73,42 +75,42 @@ export function ResearchHub({ telemetry }) {
             <button
               key={item.id}
               onClick={() => setActiveSafeguards(prev => ({ ...prev, [item.id]: !prev[item.id] }))}
-              className={`p-3 rounded-2xl text-xs font-bold text-left transition-all ${
+              className={`p-3 rounded-2xl text-xs font-bold text-left transition-all border ${
                 activeSafeguards[item.id]
-                  ? 'bg-[#282828] text-white shadow-xs'
-                  : 'bg-white/70 hover:bg-white text-[#282828]/60 border border-black/5'
+                  ? 'bg-zinc-950 text-white dark:bg-emerald-500 dark:text-zinc-950 border-zinc-950 dark:border-emerald-400 shadow-xs'
+                  : 'bg-white/80 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'
               }`}
             >
               <div className="flex items-center justify-between">
                 <span>{item.label}</span>
-                <span className={`w-2 h-2 rounded-full ${activeSafeguards[item.id] ? 'bg-[#CBD77E]' : 'bg-gray-300'}`} />
+                <span className={`w-2 h-2 rounded-full ${activeSafeguards[item.id] ? 'bg-emerald-400 dark:bg-zinc-950' : 'bg-zinc-300 dark:bg-zinc-600'}`} />
               </div>
             </button>
           ))}
         </div>
 
         {/* Results Banner */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white/90 p-5 rounded-2xl border border-black/5">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-2xl bg-[#CBD77E]/30 flex items-center justify-center text-[#282828] shrink-0">
-              <HeartPulse className="w-6 h-6 text-emerald-800" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white dark:bg-zinc-800 p-5 rounded-2xl border border-zinc-200 dark:border-zinc-700 shadow-xs">
+          <div className="flex items-center space-x-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 flex items-center justify-center text-emerald-800 dark:text-emerald-300 shrink-0">
+              <HeartPulse className="w-6 h-6 stroke-[2.2]" />
             </div>
             <div>
-              <span className="text-xs text-[#282828]/60 font-semibold block">Total Inhaled PM2.5 Avoided</span>
-              <span className="text-2xl sm:text-3xl font-bold font-mono text-[#282828]">
-                {totalAvoidedUg} <span className="text-xs font-mono text-[#282828]/50">μg / day</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400 font-bold block">{t.research.totalAvoided}</span>
+              <span className="text-2xl sm:text-3xl font-extrabold font-mono text-zinc-950 dark:text-white">
+                {totalAvoidedUg} <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400 font-semibold">μg / day</span>
               </span>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-2xl bg-rose-100 flex items-center justify-center text-rose-700 shrink-0">
-              <Cigarette className="w-6 h-6" />
+          <div className="flex items-center space-x-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950/80 flex items-center justify-center text-rose-700 dark:text-rose-300 shrink-0">
+              <Cigarette className="w-6 h-6 stroke-[2.2]" />
             </div>
             <div>
-              <span className="text-xs text-[#282828]/60 font-semibold block">Equivalent Cigarettes Prevented</span>
-              <span className="text-2xl sm:text-3xl font-bold font-mono text-[#9B2226]">
-                {cigarettesAvoided} <span className="text-xs font-mono text-[#282828]/50">cigarettes today</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400 font-bold block">{t.research.cigarettesPrevented}</span>
+              <span className="text-2xl sm:text-3xl font-extrabold font-mono text-rose-600 dark:text-rose-400">
+                {cigarettesAvoided} <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400 font-semibold">{t.dial.cigarettesUnit}</span>
               </span>
             </div>
           </div>
@@ -121,10 +123,10 @@ export function ResearchHub({ telemetry }) {
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border ${
               selectedCategory === cat
-                ? 'bg-[#282828] text-white shadow-xs'
-                : 'bg-white/80 hover:bg-white text-[#282828] border border-black/5'
+                ? 'bg-zinc-950 text-white dark:bg-emerald-500 dark:text-zinc-950 border-zinc-950 dark:border-emerald-400 shadow-xs'
+                : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700'
             }`}
           >
             {cat}
@@ -137,43 +139,43 @@ export function ResearchHub({ telemetry }) {
         {filtered.map((paper) => (
           <article
             key={paper.id}
-            className="p-6 rounded-3xl glass-card space-y-3 hover:shadow-md transition-shadow"
+            className="p-6 rounded-3xl glass-card space-y-3 hover:shadow-md transition-shadow border border-zinc-200 dark:border-zinc-700"
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center space-x-2">
-                <span className="text-[11px] font-bold font-mono text-[#282828] bg-black/5 px-2.5 py-0.5 rounded-full">
+                <span className="text-[11px] font-bold font-mono text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700">
                   {paper.journal} • {paper.year}
                 </span>
-                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-400/50">
                   {paper.evidenceScore}
                 </span>
               </div>
-              <span className="text-[11px] font-mono text-[#282828]/60">
+              <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
                 DOI: {paper.doi}
               </span>
             </div>
 
-            <h3 className="text-lg font-bold text-[#282828] tracking-tight">
+            <h3 className="text-lg font-bold text-zinc-950 dark:text-white tracking-tight">
               {paper.title}
             </h3>
 
-            <p className="text-xs font-semibold text-[#282828]/70">
+            <p className="text-xs font-semibold text-zinc-600 dark:text-zinc-300">
               Authors: {paper.authors}
             </p>
 
-            <p className="text-xs text-[#282828]/80 leading-relaxed bg-white/60 p-3 rounded-2xl border border-black/5">
-              <strong>Core Clinical Finding:</strong> {paper.keyTakeaway}
+            <p className="text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed bg-zinc-100 dark:bg-zinc-800/80 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-700">
+              <strong className="text-zinc-950 dark:text-white">Core Clinical Finding:</strong> {paper.keyTakeaway}
             </p>
 
-            <div className="flex flex-wrap items-center justify-between pt-2 border-t border-black/5 text-xs text-[#282828]/60">
+            <div className="flex flex-wrap items-center justify-between pt-2 border-t border-zinc-200 dark:border-zinc-700/80 text-xs text-zinc-500 dark:text-zinc-400">
               <span className="italic">{paper.citationApa}</span>
               <a
                 href={`https://doi.org/${paper.doi}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center space-x-1 text-emerald-800 hover:text-emerald-950 font-bold mt-1 sm:mt-0"
+                className="flex items-center space-x-1 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-bold mt-1 sm:mt-0"
               >
-                <span>Read Full Journal Article</span>
+                <span>{t.research.readJournalBtn}</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             </div>
