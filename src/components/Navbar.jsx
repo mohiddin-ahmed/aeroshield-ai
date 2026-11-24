@@ -13,9 +13,11 @@ import {
   Sparkles,
   Bot,
   Globe,
-  Settings
+  Settings,
+  Palette
 } from 'lucide-react';
 import { translations, SUPPORTED_LANGUAGES } from '../utils/i18n';
+import { AeroShieldLogo } from './AeroShieldLogo';
 
 export function Navbar({ 
   locationData, 
@@ -28,6 +30,8 @@ export function Navbar({
   onOpenMultiAi, 
   onOpenSettings,
   onOpenTour,
+  onOpenLogos,
+  activeLogoVariant = 'shield-wind',
   currentLang = 'en',
   onSelectLang,
   promptCount = 0,
@@ -50,9 +54,17 @@ export function Navbar({
         
         {/* Brand & Wordmark */}
         <div className="flex items-center space-x-2.5 sm:space-x-3">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#282828] dark:bg-white flex items-center justify-center text-[#10B981] dark:text-[#18181B] shadow-sm shrink-0">
-            <Shield className="w-5 h-5 stroke-[2.4]" />
-          </div>
+          <button 
+            onClick={onOpenLogos}
+            className="shrink-0 transition-transform hover:scale-105 active:scale-95 cursor-pointer"
+            title="Click to view all 4 brand logo concepts"
+          >
+            <AeroShieldLogo 
+              variant={activeLogoVariant} 
+              size={38} 
+              isDarkMode={isDarkMode} 
+            />
+          </button>
           <div className="flex flex-col justify-center">
             <div className="flex items-center leading-none">
               <span className="font-extrabold text-base sm:text-lg tracking-tight whitespace-nowrap">
@@ -144,6 +156,16 @@ export function Navbar({
             <Settings className="w-4 h-4 opacity-80" />
           </button>
 
+          {/* Logo Suite Trigger */}
+          <button
+            onClick={onOpenLogos}
+            className="hidden lg:flex items-center space-x-1 px-2.5 py-1.5 rounded-full text-xs font-semibold bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 transition-all cursor-pointer"
+            title="Explore 4 Professional Vector Logo Concepts"
+          >
+            <Palette className="w-3.5 h-3.5 text-emerald-500" />
+            <span>Logos</span>
+          </button>
+
           {/* Quick Onboarding Tour Button */}
           <button
             onClick={onOpenTour}
@@ -204,6 +226,14 @@ export function Navbar({
               <span>{t.actions.autoDetect}</span>
             </button>
           </div>
+
+          <button
+            onClick={() => { setMobileMenuOpen(false); onOpenLogos(); }}
+            className="w-full flex items-center space-x-2 p-2.5 rounded-2xl bg-black/5 dark:bg-white/10 text-xs font-bold cursor-pointer"
+          >
+            <Palette className="w-4 h-4 text-emerald-500" />
+            <span>Brand Logo Concepts & SVG Exporter</span>
+          </button>
 
           <button
             onClick={() => { setMobileMenuOpen(false); onOpenTour(); }}
