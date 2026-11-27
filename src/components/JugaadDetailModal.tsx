@@ -1,15 +1,24 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { X, Wrench, ShieldAlert, Sparkles, Bot } from 'lucide-react';
+import { Bot, ShieldAlert, Sparkles, Wrench, X } from 'lucide-react';
 import { useModalAccessibility } from '../hooks/useModalAccessibility';
+import type { JugaadProtocol } from '../types/airQuality';
+
+export interface JugaadDetailModalProps {
+  item: JugaadProtocol | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onOpenMultiAi: () => void;
+}
 
 /**
  * In-place modal presenting full materials checklist, step-by-step build instructions,
  * fluid-dynamics or respiratory mechanism, and safety notice for a selected Desi Jugaad hack.
- * @param {object} props - Component props.
- * @returns {JSX.Element|null} Detail guide dialog or null when closed.
  */
-export function JugaadDetailModal({ item, isOpen, onClose, onOpenMultiAi }) {
+export function JugaadDetailModal({
+  item,
+  isOpen,
+  onClose,
+  onOpenMultiAi
+}: JugaadDetailModalProps) {
   useModalAccessibility(isOpen, onClose);
 
   if (!isOpen || !item) return null;
@@ -22,7 +31,6 @@ export function JugaadDetailModal({ item, isOpen, onClose, onOpenMultiAi }) {
       aria-labelledby="jugaad-detail-modal-title"
     >
       <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl glass-card-dark p-6 sm:p-8 border border-white/20 shadow-2xl">
-        {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-5">
           <div className="flex items-start space-x-3 min-w-0 pr-2">
             <div
@@ -58,10 +66,11 @@ export function JugaadDetailModal({ item, isOpen, onClose, onOpenMultiAi }) {
           </button>
         </div>
 
-        {/* Cost & Savings Banner */}
         <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 mb-6">
           <div>
-            <span className="text-[11px] text-white/60 block font-semibold">DIY Household Cost</span>
+            <span className="text-[11px] text-white/60 block font-semibold">
+              DIY Household Cost
+            </span>
             <span className="text-xl font-bold font-mono text-[#34D399]">{item.cost}</span>
           </div>
           <div>
@@ -74,7 +83,6 @@ export function JugaadDetailModal({ item, isOpen, onClose, onOpenMultiAi }) {
           </div>
         </div>
 
-        {/* Materials Needed */}
         {item.materialsNeeded && (
           <div className="mb-6 space-y-2">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[#34D399]">
@@ -93,7 +101,6 @@ export function JugaadDetailModal({ item, isOpen, onClose, onOpenMultiAi }) {
           </div>
         )}
 
-        {/* Step-by-Step Guide */}
         {item.detailedSteps && (
           <div className="mb-6 space-y-2">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[#34D399]">
@@ -115,7 +122,6 @@ export function JugaadDetailModal({ item, isOpen, onClose, onOpenMultiAi }) {
           </div>
         )}
 
-        {/* Scientific Mechanism */}
         {item.scientificMechanism && (
           <div className="mb-6 p-4 rounded-2xl bg-black/40 border border-[#10B981]/30 space-y-1.5">
             <div className="flex items-center space-x-1.5 text-[#34D399] text-xs font-bold">
@@ -128,7 +134,6 @@ export function JugaadDetailModal({ item, isOpen, onClose, onOpenMultiAi }) {
           </div>
         )}
 
-        {/* Safety Notice */}
         {item.safetyTips && (
           <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 space-y-1">
             <div className="flex items-center space-x-1.5 font-bold text-amber-300">
@@ -139,7 +144,6 @@ export function JugaadDetailModal({ item, isOpen, onClose, onOpenMultiAi }) {
           </div>
         )}
 
-        {/* Action Footer */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-white/10">
           <button
             type="button"
@@ -165,22 +169,3 @@ export function JugaadDetailModal({ item, isOpen, onClose, onOpenMultiAi }) {
     </div>
   );
 }
-
-JugaadDetailModal.propTypes = {
-  item: PropTypes.shape({
-    id: PropTypes.string,
-    badge: PropTypes.string,
-    category: PropTypes.string,
-    hindiTitle: PropTypes.string,
-    title: PropTypes.string,
-    cost: PropTypes.string,
-    commercialEquiv: PropTypes.string,
-    materialsNeeded: PropTypes.arrayOf(PropTypes.string),
-    detailedSteps: PropTypes.arrayOf(PropTypes.string),
-    scientificMechanism: PropTypes.string,
-    safetyTips: PropTypes.string
-  }),
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onOpenMultiAi: PropTypes.func.isRequired
-};

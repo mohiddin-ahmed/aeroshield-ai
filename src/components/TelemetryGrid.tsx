@@ -1,19 +1,36 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import type { AirQualityTelemetry, SupportedLanguageCode } from '../types/airQuality';
 import { translations } from '../utils/i18n';
+
+export interface TelemetryGridProps {
+  telemetry: Pick<AirQualityTelemetry, 'pm2_5' | 'pm10' | 'no2' | 'ozone'>;
+  currentLang?: SupportedLanguageCode;
+  compact?: boolean;
+}
+
+interface PollutantMetricCard {
+  id: string;
+  label: string;
+  value: string;
+  unit: string;
+  safeLimit: string;
+  ratio: number;
+  color: string;
+  statusDot: string;
+}
 
 /**
  * Modular sensor metric card grid displaying live PM2.5, PM10, NO2, and O3 readings
- * against WHO safe reference limits with accessible progressbar semantics.
- * Supports compact 2x2 hero placement or full 4-column layout.
- * @param {object} props - Component props.
- * @returns {JSX.Element} Atmospheric pollutant sensor cards.
+ * against WHO safe reference limits with SVG severity bars (zero inline CSS).
  */
-export function TelemetryGrid({ telemetry, currentLang = 'en', compact = false }) {
+export function TelemetryGrid({
+  telemetry,
+  currentLang = 'en',
+  compact = false
+}: TelemetryGridProps) {
   const t = translations[currentLang] || translations.en;
   const { pm2_5, pm10, no2, ozone } = telemetry;
 
-  const metrics = [
+  const metrics: PollutantMetricCard[] = [
     {
       id: 'pm25',
       label: t.sensors.pm25,
@@ -59,9 +76,7 @@ export function TelemetryGrid({ telemetry, currentLang = 'en', compact = false }
   return (
     <div
       className={
-        compact
-          ? 'grid grid-cols-2 gap-3'
-          : 'grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4'
+        compact ? 'grid grid-cols-2 gap-3' : 'grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4'
       }
     >
       {metrics.map((metric) => (
@@ -98,10 +113,14 @@ export function TelemetryGrid({ telemetry, currentLang = 'en', compact = false }
               aria-valuemax={100}
               className="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-700/80 overflow-hidden"
             >
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${metric.ratio}%`, backgroundColor: metric.color }}
-              />
+              <svg
+                viewBox="0 0 100 6"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+                className="w-full h-full block"
+              >
+                <rect width={metric.ratio} height="6" rx="3" fill={metric.color} />
+              </svg>
             </div>
             <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 mt-1 block">
               {metric.safeLimit} μg/m³
@@ -112,14 +131,3 @@ export function TelemetryGrid({ telemetry, currentLang = 'en', compact = false }
     </div>
   );
 }
-
-TelemetryGrid.propTypes = {
-  telemetry: PropTypes.shape({
-    pm2_5: PropTypes.number.isRequired,
-    pm10: PropTypes.number.isRequired,
-    no2: PropTypes.number.isRequired,
-    ozone: PropTypes.number.isRequired
-  }).isRequired,
-  currentLang: PropTypes.string,
-  compact: PropTypes.bool
-};

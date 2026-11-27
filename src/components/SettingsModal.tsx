@@ -1,15 +1,24 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { X, Settings, Globe, Moon, Sun, Users, Info, Check } from 'lucide-react';
-import { SUPPORTED_LANGUAGES } from '../utils/i18n';
-import { familyVulnerabilityProfiles } from '../utils/personalizedJugaadEngine';
+import { Check, Globe, Info, Moon, Settings, Sun, Users, X } from 'lucide-react';
+import { familyVulnerabilityProfiles } from '../data/jugaadProtocols';
 import { useModalAccessibility } from '../hooks/useModalAccessibility';
+import type { SupportedLanguageCode } from '../types/airQuality';
+import { SUPPORTED_LANGUAGES } from '../utils/i18n';
+
+export interface SettingsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  currentLang: SupportedLanguageCode;
+  onSelectLang: (code: SupportedLanguageCode) => void;
+  isDarkMode: boolean;
+  onToggleDarkMode: () => void;
+  vulnerabilities: string[];
+  onToggleVulnerability: (id: string) => void;
+  onOpenDevTools: () => void;
+}
 
 /**
  * Application Settings, Preferences, Household Profile Selection, Scientific Data Source,
  * and Judges DevTools Launcher Modal.
- * @param {object} props - Component props.
- * @returns {JSX.Element|null} Accessible settings dialog or null when closed.
  */
 export function SettingsModal({
   isOpen,
@@ -21,7 +30,7 @@ export function SettingsModal({
   vulnerabilities,
   onToggleVulnerability,
   onOpenDevTools
-}) {
+}: SettingsModalProps) {
   useModalAccessibility(isOpen, onClose);
 
   if (!isOpen) return null;
@@ -34,7 +43,6 @@ export function SettingsModal({
       aria-labelledby="settings-modal-title"
     >
       <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl glass-card-dark p-6 sm:p-8 border border-white/20 shadow-2xl space-y-6">
-        {/* Modal Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start sm:items-center space-x-3 min-w-0 pr-2">
             <div
@@ -64,7 +72,6 @@ export function SettingsModal({
           </button>
         </div>
 
-        {/* 1. Language Switcher */}
         <div className="space-y-2">
           <div className="flex items-center space-x-2 text-xs font-bold text-[#34D399] uppercase tracking-wider">
             <Globe className="w-4 h-4" aria-hidden="true" />
@@ -95,7 +102,6 @@ export function SettingsModal({
           </div>
         </div>
 
-        {/* 2. Theme Appearance */}
         <div className="space-y-2">
           <span className="text-xs font-bold text-[#34D399] uppercase tracking-wider block">
             Display Appearance
@@ -136,7 +142,6 @@ export function SettingsModal({
           </div>
         </div>
 
-        {/* 3. Household Vulnerability Profiles */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs font-bold text-[#34D399] uppercase tracking-wider">
             <div className="flex items-center space-x-2">
@@ -147,8 +152,8 @@ export function SettingsModal({
           </div>
 
           <p className="text-[11px] text-white/60 leading-relaxed">
-            Multi-select allows multigenerational Indian households (e.g. toddlers + elderly +
-            daily commuter) to receive combined protective protocols.
+            Multi-select allows multigenerational Indian households (e.g. toddlers + elderly + daily
+            commuter) to receive combined protective protocols.
           </p>
 
           <div
@@ -186,7 +191,6 @@ export function SettingsModal({
           </div>
         </div>
 
-        {/* 4. Scientific Accuracy & Transparency Disclaimer */}
         <div className="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-1.5">
           <div className="flex items-center space-x-2 text-xs font-bold text-amber-300">
             <Info className="w-4 h-4 shrink-0" aria-hidden="true" />
@@ -205,7 +209,6 @@ export function SettingsModal({
           </p>
         </div>
 
-        {/* 5. Judges DevTools Launcher */}
         <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
           <div>
             <span className="text-xs font-bold text-white block">
@@ -227,7 +230,6 @@ export function SettingsModal({
           </button>
         </div>
 
-        {/* Save Button */}
         <button
           type="button"
           onClick={onClose}
@@ -240,15 +242,3 @@ export function SettingsModal({
     </div>
   );
 }
-
-SettingsModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  currentLang: PropTypes.string.isRequired,
-  onSelectLang: PropTypes.func.isRequired,
-  isDarkMode: PropTypes.bool.isRequired,
-  onToggleDarkMode: PropTypes.func.isRequired,
-  vulnerabilities: PropTypes.arrayOf(PropTypes.string).isRequired,
-  onToggleVulnerability: PropTypes.func.isRequired,
-  onOpenDevTools: PropTypes.func.isRequired
-};

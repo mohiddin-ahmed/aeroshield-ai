@@ -1,22 +1,42 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { SunMedium, Moon, Wind, ShieldCheck, Clock, CheckCircle } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { CheckCircle, Clock, Moon, ShieldCheck, SunMedium, Wind } from 'lucide-react';
+import type { SolarWindowStatus, SupportedLanguageCode, TimeContext } from '../types/airQuality';
 import { getDetailedTimeContext } from '../utils/geolocationEngine';
 import { translations } from '../utils/i18n';
+
+interface RoutineStepItem {
+  id: string;
+  time: string;
+  title: string;
+  description: string;
+  action: string;
+  icon: LucideIcon;
+  active: boolean;
+  iconStyleClass: string;
+  isSolarWindow?: boolean;
+}
+
+export interface SmogRoutineTimelineProps {
+  solarStatus?: SolarWindowStatus;
+  timeContext?: TimeContext;
+  currentLang?: SupportedLanguageCode;
+}
 
 /**
  * 24-Hour Clean-Air Daily Routine view highlighting ONLY the currently active time slot
  * while marking the 1:00 PM – 3:00 PM fresh-air window clearly with a warm tip badge.
- * @param {object} props - Component props.
- * @returns {JSX.Element} Diurnal routine dashboard tab.
  */
-export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'en' }) {
+export function SmogRoutineTimeline({
+  solarStatus,
+  timeContext,
+  currentLang = 'en'
+}: SmogRoutineTimelineProps) {
   const t = translations[currentLang] || translations.en;
   const currentHour = timeContext?.hour ?? new Date().getHours();
   const timeInfo = timeContext || getDetailedTimeContext();
   const solarActive = solarStatus?.isWindowActive ?? (currentHour >= 13 && currentHour < 15);
 
-  const routineSteps = [
+  const routineSteps: RoutineStepItem[] = [
     {
       id: 'morning-inversion',
       time: '07:00 AM – 10:00 AM',
@@ -25,7 +45,7 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
       action: t.routine.step1Action,
       icon: Moon,
       active: currentHour >= 6 && currentHour < 13,
-      highlightColor: '#EF4444'
+      iconStyleClass: 'bg-rose-500/15 text-rose-500'
     },
     {
       id: 'solar-lift-window',
@@ -35,7 +55,7 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
       action: t.routine.step2Action,
       icon: SunMedium,
       active: solarActive,
-      highlightColor: '#F59E0B',
+      iconStyleClass: 'bg-amber-500/15 text-amber-500',
       isSolarWindow: true
     },
     {
@@ -46,7 +66,7 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
       action: t.routine.step3Action,
       icon: Wind,
       active: currentHour >= 15 && currentHour < 20,
-      highlightColor: '#F97316'
+      iconStyleClass: 'bg-orange-500/15 text-orange-500'
     },
     {
       id: 'night-clean-room',
@@ -56,13 +76,12 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
       action: t.routine.step4Action,
       icon: ShieldCheck,
       active: currentHour >= 20 || currentHour < 6,
-      highlightColor: '#10B981'
+      iconStyleClass: 'bg-emerald-500/15 text-emerald-500'
     }
   ];
 
   return (
     <div className="space-y-5">
-      {/* Top Active Slot Hero Card */}
       <section
         aria-label="Current active atmospheric protocol"
         className="p-5 sm:p-6 rounded-3xl glass-card border border-emerald-500/35 bg-gradient-to-br from-white/95 via-white/90 to-emerald-500/10 dark:from-zinc-900/95 dark:via-zinc-900/90 dark:to-emerald-500/15 shadow-md space-y-3.5"
@@ -112,7 +131,6 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
         </div>
       </section>
 
-      {/* 24-Hour Stepped Timeline */}
       <section aria-label={t.routine.title} className="p-5 sm:p-7 rounded-3xl glass-card space-y-5">
         <div className="border-b border-zinc-200 dark:border-zinc-700/80 pb-3.5">
           <h2 className="text-lg sm:text-xl font-bold tracking-tight text-zinc-950 dark:text-white">
@@ -124,21 +142,22 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
         <div className="space-y-3.5">
           {routineSteps.map((step) => {
             const Icon = step.icon;
-
             const cardClass = step.active
               ? 'bg-emerald-50/90 dark:bg-emerald-950/35 border-emerald-500 dark:border-emerald-400 ring-1 ring-emerald-500/35 shadow-md'
               : 'bg-zinc-50/70 dark:bg-zinc-800/45 border-zinc-200 dark:border-zinc-800 opacity-90';
+            const resolvedIconClass = step.active
+              ? 'bg-emerald-500/20 text-emerald-500'
+              : step.iconStyleClass;
 
             return (
-              <div key={step.id} className={`p-4 sm:p-5 rounded-2xl transition-all border ${cardClass}`}>
+              <div
+                key={step.id}
+                className={`p-4 sm:p-5 rounded-2xl transition-all border ${cardClass}`}
+              >
                 <div className="flex items-start space-x-3.5">
                   <div
                     aria-hidden="true"
-                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xs mt-0.5"
-                    style={{
-                      backgroundColor: step.active ? '#10B98130' : `${step.highlightColor}20`,
-                      color: step.active ? '#10B981' : step.highlightColor
-                    }}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xs mt-0.5 ${resolvedIconClass}`}
                   >
                     <Icon className="w-5 h-5 stroke-[2.2]" />
                   </div>
@@ -152,7 +171,10 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
                       <div className="flex items-center gap-1.5">
                         {step.active && (
                           <span className="inline-flex items-center space-x-1 text-[10px] font-extrabold uppercase tracking-wider text-emerald-900 dark:text-emerald-200 bg-emerald-200/80 dark:bg-emerald-900/90 px-2.5 py-0.5 rounded-full border border-emerald-500/60">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
+                            <span
+                              className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"
+                              aria-hidden="true"
+                            />
                             <span>{t.routine.activeNow}</span>
                           </span>
                         )}
@@ -193,18 +215,3 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
     </div>
   );
 }
-
-SmogRoutineTimeline.propTypes = {
-  solarStatus: PropTypes.shape({
-    isWindowActive: PropTypes.bool
-  }),
-  timeContext: PropTypes.shape({
-    hour: PropTypes.number,
-    timeString: PropTypes.string,
-    phaseLabel: PropTypes.string,
-    slotTitle: PropTypes.string,
-    phaseExplainer: PropTypes.string,
-    currentUrgentPrescription: PropTypes.string
-  }),
-  currentLang: PropTypes.string
-};

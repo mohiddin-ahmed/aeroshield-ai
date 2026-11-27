@@ -1,17 +1,17 @@
-import React, { useState, useCallback, useRef, lazy, Suspense } from 'react';
+import { lazy, Suspense, useCallback, useRef, useState } from 'react';
 import { Info } from 'lucide-react';
-import { Navbar } from './components/Navbar';
-import { FloatingBottomNav } from './components/FloatingBottomNav';
 import { CommandCenterTab } from './components/CommandCenterTab';
-import { SmogRoutineTimeline } from './components/SmogRoutineTimeline';
 import { DesiJugaadLab } from './components/DesiJugaadLab';
+import { FloatingBottomNav } from './components/FloatingBottomNav';
+import { Navbar } from './components/Navbar';
 import { ResearchHub } from './components/ResearchHub';
-import { useTheme } from './hooks/useTheme';
-import { useLanguage } from './hooks/useLanguage';
+import { SmogRoutineTimeline } from './components/SmogRoutineTimeline';
 import { useAirQuality } from './hooks/useAirQuality';
 import { useDailyChecklist } from './hooks/useDailyChecklist';
+import { useLanguage } from './hooks/useLanguage';
+import { useTheme } from './hooks/useTheme';
+import type { AqiCategoryName, JugaadProtocol, TabId } from './types/airQuality';
 
-// Lazy-loaded modals to keep initial bundle lean while allowing instant flicker-free tab switching
 const DemoVideoModal = lazy(() =>
   import('./components/DemoVideoModal').then((m) => ({ default: m.DemoVideoModal }))
 );
@@ -31,15 +31,29 @@ const OnboardingModal = lazy(() =>
   import('./components/OnboardingModal').then((m) => ({ default: m.OnboardingModal }))
 );
 
+const PRIMARY_ORB_CLASSES: Record<AqiCategoryName, string> = {
+  Good: 'bg-[#CBD77E]',
+  Moderate: 'bg-[#E6CA9A]',
+  Unhealthy: 'bg-[#E07A5F]',
+  'Very Unhealthy': 'bg-[#F26419]',
+  Hazardous: 'bg-[#9B2226]'
+};
+
+const TAB_LABELS: Record<TabId, string> = {
+  commandCenter: 'Home air quality overview',
+  routine: '24-hour clean-air routine',
+  jugaad: 'DIY clean-air hacks lab',
+  research: 'Scientific studies and dosimetry calculator'
+};
+
 /**
  * Root application shell for AeroShield AI (VayuMitra OS).
  * Renders instant, silky tab transitions across Home, Routine, Hacks, and Science,
  * tracks zero-login daily savings, and keeps modals lazy-loaded for speed.
- * @returns {JSX.Element} Full responsive web application layout.
  */
 export function App() {
-  const [activeTab, setActiveTab] = useState('commandCenter');
-  const aiPlanRef = useRef(null);
+  const [activeTab, setActiveTab] = useState<TabId>('commandCenter');
+  const aiPlanRef = useRef<HTMLElement | null>(null);
 
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { currentLang, selectLanguage, t } = useLanguage();
@@ -68,7 +82,7 @@ export function App() {
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
   const [isMultiAiOpen, setIsMultiAiOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isOnboardingOpen, setIsOnboardingOpen] = useState(() => {
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     try {
       return !localStorage.getItem('aeroshield_onboarded');
@@ -76,16 +90,15 @@ export function App() {
       return false;
     }
   });
-  const [selectedJugaadItem, setSelectedJugaadItem] = useState(null);
+  const [selectedJugaadItem, setSelectedJugaadItem] = useState<JugaadProtocol | null>(null);
 
   const handleTabChange = useCallback(
-    (newTab) => {
+    (newTab: TabId) => {
       if (newTab === activeTab) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
 
-      // Snap immediately to top of newly selected tab to prevent mid-scroll visual jumps
       setActiveTab(newTab);
       if (typeof window !== 'undefined') {
         window.scrollTo({ top: 0, behavior: 'auto' });
@@ -103,13 +116,15 @@ export function App() {
     }
   }, [handleGeneratePlan]);
 
+  const primaryOrbClass = PRIMARY_ORB_CLASSES[telemetry.category] || 'bg-emerald-500';
+  const secondaryOrbClass = telemetry.category === 'Good' ? 'bg-emerald-500' : 'bg-rose-500';
+
   return (
     <div
       className={`relative min-h-screen transition-colors duration-300 font-sans pb-32 ${
         isDarkMode ? 'bg-[#09090b] text-[#f4f4f5]' : 'bg-[#F7F7F7] text-[#18181b]'
       }`}
     >
-      {/* WCAG 2.1 AA Skip-to-Content Landmark Link */}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:rounded-xl focus:bg-emerald-500 focus:text-zinc-950 focus:font-bold focus:shadow-lg"
@@ -117,19 +132,19 @@ export function App() {
         Skip to main content
       </a>
 
-      {/* Ambient Severity Glow Orbs */}
+      <div role="status" aria-live="polite" className="sr-only">
+        {`${TAB_LABELS[activeTab]} active for ${telemetry.city}, AQI ${telemetry.aqi} (${telemetry.category})`}
+      </div>
+
       <div
         aria-hidden="true"
-        className="fixed top-12 left-1/4 w-96 h-96 rounded-full blur-[140px] opacity-25 dark:opacity-20 pointer-events-none transition-colors duration-1000 -z-10 animate-float-slow"
-        style={{ backgroundColor: telemetry.categoryColor || '#10B981' }}
+        className={`fixed top-12 left-1/4 w-96 h-96 rounded-full blur-[140px] opacity-25 dark:opacity-20 pointer-events-none transition-colors duration-1000 -z-10 animate-float-slow ${primaryOrbClass}`}
       />
       <div
         aria-hidden="true"
-        className="fixed bottom-12 right-1/4 w-80 h-80 rounded-full blur-[130px] opacity-20 dark:opacity-15 pointer-events-none transition-colors duration-1000 -z-10 animate-float-delayed"
-        style={{ backgroundColor: telemetry.categoryColor === '#CBD77E' ? '#10B981' : '#EF4444' }}
+        className={`fixed bottom-12 right-1/4 w-80 h-80 rounded-full blur-[130px] opacity-20 dark:opacity-15 pointer-events-none transition-colors duration-1000 -z-10 animate-float-delayed ${secondaryOrbClass}`}
       />
 
-      {/* Sticky Header */}
       <Navbar
         locationData={locationData}
         timeContext={timeContext}
@@ -149,7 +164,6 @@ export function App() {
         onToggleDarkMode={toggleDarkMode}
       />
 
-      {/* Main Content Landmark with Keyed GPU View Transition */}
       <main
         id="main-content"
         tabIndex={-1}
@@ -204,7 +218,6 @@ export function App() {
           )}
         </div>
 
-        {/* Helpful Health Note Footer */}
         <footer className="mt-6 p-4 rounded-3xl glass-card border border-zinc-200 dark:border-zinc-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-zinc-600 dark:text-zinc-300">
           <div className="flex items-start space-x-2.5">
             <Info className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" aria-hidden="true" />
@@ -222,7 +235,6 @@ export function App() {
         </footer>
       </main>
 
-      {/* Bottom Floating Navigation Dock */}
       <FloatingBottomNav
         activeTab={activeTab}
         onSelectTab={handleTabChange}
@@ -230,7 +242,6 @@ export function App() {
         currentLang={currentLang}
       />
 
-      {/* Lazy-Loaded Modals & DevTools Drawer */}
       <Suspense fallback={null}>
         {isOnboardingOpen && (
           <OnboardingModal isOpen={isOnboardingOpen} onClose={() => setIsOnboardingOpen(false)} />

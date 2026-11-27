@@ -1,19 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { promptLogger } from '../utils/promptLogger';
-import { Terminal, Copy, Check, X, Cpu, Sparkles, Clock } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Check, Clock, Copy, Cpu, Sparkles, Terminal, X } from 'lucide-react';
 import { useModalAccessibility } from '../hooks/useModalAccessibility';
+import type { PromptLogEntry } from '../types/airQuality';
+import { promptLogger } from '../utils/promptLogger';
+
+export interface PromptInspectorProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
 /**
  * Real-time Hackathon Judges DevTools Drawer inspecting Gemini 2.5 Flash system instructions,
  * sanitized user prompt payloads, structured JSON responses, latency, and token metrics.
- * @param {object} props - Component props.
- * @returns {JSX.Element|null} DevTools drawer dialog or null when closed.
  */
-export function PromptInspector({ isOpen, onClose }) {
-  const [logs, setLogs] = useState(() => promptLogger.getLogs());
-  const [copiedId, setCopiedId] = useState(null);
-  const [selectedLog, setSelectedLog] = useState(() => promptLogger.getLogs()[0] || null);
+export function PromptInspector({ isOpen, onClose }: PromptInspectorProps) {
+  const [logs, setLogs] = useState<PromptLogEntry[]>(() => promptLogger.getLogs());
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [selectedLog, setSelectedLog] = useState<PromptLogEntry | null>(
+    () => promptLogger.getLogs()[0] || null
+  );
 
   useModalAccessibility(isOpen, onClose);
 
@@ -31,9 +36,9 @@ export function PromptInspector({ isOpen, onClose }) {
     return unsubscribe;
   }, [isOpen]);
 
-  const handleCopy = (log) => {
+  const handleCopy = (log: PromptLogEntry) => {
     if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText(JSON.stringify(log, null, 2));
+      void navigator.clipboard.writeText(JSON.stringify(log, null, 2));
     }
     setCopiedId(log.id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -49,7 +54,6 @@ export function PromptInspector({ isOpen, onClose }) {
       aria-labelledby="prompt-inspector-title"
     >
       <div className="w-full max-w-3xl bg-slate-900 border-l border-slate-800 h-full flex flex-col shadow-2xl">
-        {/* Header */}
         <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
           <div className="flex items-center space-x-3">
             <div
@@ -83,9 +87,7 @@ export function PromptInspector({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Logs List Sidebar */}
           <div className="w-2/5 border-r border-slate-800 overflow-y-auto p-3 space-y-2">
             <div className="flex items-center justify-between text-xs text-slate-400 px-2 py-1 font-medium">
               <span>PROMPT RUNS ({logs.length})</span>
@@ -103,7 +105,8 @@ export function PromptInspector({ isOpen, onClose }) {
 
             {logs.length === 0 ? (
               <div className="text-center py-12 px-4 text-slate-500 text-xs">
-                No prompt executions logged yet. Generate a smog defense plan from the home dashboard.
+                No prompt executions logged yet. Generate a smog defense plan from the home
+                dashboard.
               </div>
             ) : (
               logs.map((log) => {
@@ -148,7 +151,6 @@ export function PromptInspector({ isOpen, onClose }) {
             )}
           </div>
 
-          {/* Detailed Inspector View */}
           <div className="w-3/5 overflow-y-auto p-5 bg-slate-950/60 space-y-5 text-xs">
             {selectedLog ? (
               <>
@@ -178,11 +180,12 @@ export function PromptInspector({ isOpen, onClose }) {
                   </button>
                 </div>
 
-                {/* Metadata Grid */}
                 <div className="grid grid-cols-3 gap-2 text-[11px]">
                   <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
                     <span className="text-slate-400 block mb-1">Model:</span>
-                    <span className="font-mono text-slate-200 font-medium">{selectedLog.model}</span>
+                    <span className="font-mono text-slate-200 font-medium">
+                      {selectedLog.model}
+                    </span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
                     <span className="text-slate-400 block mb-1">Temperature:</span>
@@ -198,7 +201,6 @@ export function PromptInspector({ isOpen, onClose }) {
                   </div>
                 </div>
 
-                {/* System Instruction */}
                 <div>
                   <span className="font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
                     <Cpu className="w-3.5 h-3.5 text-indigo-400" aria-hidden="true" />
@@ -209,7 +211,6 @@ export function PromptInspector({ isOpen, onClose }) {
                   </div>
                 </div>
 
-                {/* Input Payload */}
                 <div>
                   <span className="font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-cyan-400" aria-hidden="true" />
@@ -220,13 +221,14 @@ export function PromptInspector({ isOpen, onClose }) {
                   </div>
                 </div>
 
-                {/* Output Payload */}
                 <div>
-                  <span className="font-semibold text-slate-300 block mb-1.5">Output Response:</span>
+                  <span className="font-semibold text-slate-300 block mb-1.5">
+                    Output Response:
+                  </span>
                   <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl font-mono text-emerald-300 whitespace-pre-wrap text-[11px] max-h-60 overflow-y-auto">
                     {typeof selectedLog.response === 'object'
                       ? JSON.stringify(selectedLog.response, null, 2)
-                      : selectedLog.response}
+                      : String(selectedLog.response)}
                   </div>
                 </div>
               </>
@@ -241,8 +243,3 @@ export function PromptInspector({ isOpen, onClose }) {
     </div>
   );
 }
-
-PromptInspector.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired
-};

@@ -1,19 +1,28 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { X, Bot, Copy, Check, ExternalLink, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { Bot, Check, Copy, ExternalLink, Sparkles, X } from 'lucide-react';
 import { useModalAccessibility } from '../hooks/useModalAccessibility';
+import type { AirQualityTelemetry, TimeContext } from '../types/airQuality';
 
-const AI_PLATFORMS = {
+type AiPlatformKey = 'chatgpt' | 'claude' | 'gemini';
+
+const AI_PLATFORMS: Record<AiPlatformKey, string> = {
   chatgpt: 'https://chatgpt.com/?q=',
   claude: 'https://claude.ai/new?q=',
   gemini: 'https://gemini.google.com/app?q='
 };
 
+export interface MultiAiModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  telemetry: Pick<AirQualityTelemetry, 'city' | 'aqi' | 'pm2_5'>;
+  timeContext?: Partial<TimeContext>;
+  vulnerabilities?: string[];
+  customAiPrompt?: string;
+}
+
 /**
  * One-Click Multi-AI Prompt Synthesizer modal that pre-populates live AQI, time phase,
  * and household risk parameters into ChatGPT, Claude, or Gemini in one click.
- * @param {object} props - Component props.
- * @returns {JSX.Element|null} Multi-AI prompt launcher dialog or null when closed.
  */
 export function MultiAiModal({
   isOpen,
@@ -22,7 +31,7 @@ export function MultiAiModal({
   timeContext,
   vulnerabilities = [],
   customAiPrompt
-}) {
+}: MultiAiModalProps) {
   const [copied, setCopied] = useState(false);
 
   useModalAccessibility(isOpen, onClose);
@@ -39,13 +48,13 @@ Provide immediate time-synchronized defense protocols and personalized Desi Juga
 
   const handleCopy = () => {
     if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText(promptToUse);
+      void navigator.clipboard.writeText(promptToUse);
     }
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
   };
 
-  const handleOpenAi = (platform) => {
+  const handleOpenAi = (platform: AiPlatformKey) => {
     handleCopy();
     const baseUrl = AI_PLATFORMS[platform];
     if (!baseUrl) return;
@@ -60,7 +69,6 @@ Provide immediate time-synchronized defense protocols and personalized Desi Juga
       aria-labelledby="multi-ai-modal-title"
     >
       <div className="relative w-full max-w-2xl rounded-3xl glass-card-dark p-6 sm:p-8 border border-white/20 shadow-2xl overflow-hidden">
-        {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-start sm:items-center space-x-3 min-w-0 pr-2">
             <div
@@ -97,7 +105,6 @@ Provide immediate time-synchronized defense protocols and personalized Desi Juga
           </button>
         </div>
 
-        {/* Live Context Badge */}
         <div className="p-3 rounded-2xl bg-white/5 border border-white/10 mb-4 flex items-center justify-between text-xs text-white/80">
           <div className="flex items-center space-x-2">
             <Sparkles className="w-4 h-4 text-[#34D399]" aria-hidden="true" />
@@ -108,7 +115,6 @@ Provide immediate time-synchronized defense protocols and personalized Desi Juga
           </span>
         </div>
 
-        {/* Prompt Preview Card */}
         <div className="relative rounded-2xl bg-black/40 border border-white/10 p-4 mb-5">
           <div className="flex items-center justify-between text-xs text-[#34D399] font-bold mb-2">
             <span>PRE-FILLED CONTEXTUAL AI PROMPT</span>
@@ -135,7 +141,6 @@ Provide immediate time-synchronized defense protocols and personalized Desi Juga
           </pre>
         </div>
 
-        {/* Action Buttons */}
         <div className="space-y-2 mb-6">
           <span className="text-xs font-bold text-white/60 uppercase tracking-wider block">
             Click to Copy &amp; Launch in Selected AI:
@@ -179,18 +184,3 @@ Provide immediate time-synchronized defense protocols and personalized Desi Juga
     </div>
   );
 }
-
-MultiAiModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  telemetry: PropTypes.shape({
-    city: PropTypes.string.isRequired,
-    aqi: PropTypes.number.isRequired,
-    pm2_5: PropTypes.number.isRequired
-  }).isRequired,
-  timeContext: PropTypes.shape({
-    timeString: PropTypes.string
-  }),
-  vulnerabilities: PropTypes.arrayOf(PropTypes.string),
-  customAiPrompt: PropTypes.string
-};

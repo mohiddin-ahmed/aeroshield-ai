@@ -1,19 +1,50 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { AlertTriangle, Sparkles, CheckCircle2 } from 'lucide-react';
-import { LocationHeroBanner } from './LocationHeroBanner';
+import type React from 'react';
+import { AlertTriangle, CheckCircle2, Sparkles } from 'lucide-react';
+import type { UseDailyChecklistResult } from '../hooks/useDailyChecklist';
+import type {
+  AirQualityTelemetry,
+  LocationData,
+  PersonalizedIntelligence,
+  SmogDefensePlan,
+  SolarWindowStatus,
+  SupportedLanguageCode,
+  TimeContext
+} from '../types/airQuality';
+import type { TranslationCatalog } from '../utils/i18n';
 import { AiPlanSpotlight } from './AiPlanSpotlight';
-import { RotaryAqiDial } from './RotaryAqiDial';
-import { VulnerabilityToggles } from './VulnerabilityToggles';
-import { TelemetryGrid } from './TelemetryGrid';
 import { DailyDefenseChecklist } from './DailyDefenseChecklist';
+import { LocationHeroBanner } from './LocationHeroBanner';
+import { RotaryAqiDial } from './RotaryAqiDial';
+import { TelemetryGrid } from './TelemetryGrid';
+import { VulnerabilityToggles } from './VulnerabilityToggles';
+
+export interface CommandCenterTabProps {
+  t: TranslationCatalog;
+  locationData: LocationData;
+  timeContext: TimeContext;
+  telemetry: AirQualityTelemetry;
+  solarStatus: SolarWindowStatus;
+  vulnerabilities: string[];
+  aiPlan: SmogDefensePlan | null;
+  aiPlanRef: React.RefObject<HTMLElement | null>;
+  personalizedIntel: PersonalizedIntelligence;
+  checklist: UseDailyChecklistResult;
+  currentLang: SupportedLanguageCode;
+  isDarkMode: boolean;
+  isGenerating: boolean;
+  isLoadingTelemetry: boolean;
+  onSelectCity: (cityKey: string) => void;
+  onRefreshLocation: () => void;
+  onOpenMultiAi: () => void;
+  onGeneratePlan: () => void;
+  onDismissPlan: () => void;
+  onToggleVulnerability: (id: string) => void;
+}
 
 /**
  * Primary Command Center view combining compact searchable city bar,
  * hero circular AQI chart paired with slidable family carousel & live pollutant boxes,
  * point-wise right-now action cards, and daily savings check-in.
- * @param {object} props - Component props.
- * @returns {JSX.Element} Command center dashboard layout.
  */
 export function CommandCenterTab({
   t,
@@ -36,7 +67,7 @@ export function CommandCenterTab({
   onGeneratePlan,
   onDismissPlan,
   onToggleVulnerability
-}) {
+}: CommandCenterTabProps) {
   const actionBoxes = personalizedIntel.actionBoxes || [];
 
   return (
@@ -61,7 +92,6 @@ export function CommandCenterTab({
         onDismiss={onDismissPlan}
       />
 
-      {/* High Smog Emergency Banner (When AQI > 300) */}
       {telemetry.aqi > 300 && (
         <div
           role="alert"
@@ -80,7 +110,6 @@ export function CommandCenterTab({
         </div>
       )}
 
-      {/* Hero Stage: Circular AQI Dial + Compact Slidable Family Bar + Live Pollutant Sensors Up Top */}
       <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-5 items-stretch">
         <div className="md:col-span-5">
           <RotaryAqiDial
@@ -92,14 +121,12 @@ export function CommandCenterTab({
         </div>
 
         <div className="md:col-span-7 flex flex-col justify-between gap-3.5">
-          {/* Compact Single-Row Slidable Family Selection */}
           <VulnerabilityToggles
             selected={vulnerabilities}
             onToggle={onToggleVulnerability}
             currentLang={currentLang}
           />
 
-          {/* Live Pollutant Sensor Boxes (PM2.5, PM10, NO2, O3) */}
           <section aria-label={t.sensors.title} className="flex-1 flex flex-col justify-end">
             <div className="flex items-center justify-between mb-2 px-1">
               <span className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
@@ -109,12 +136,11 @@ export function CommandCenterTab({
                 Updated {telemetry.timestamp || 'Live'} • {telemetry.city}
               </span>
             </div>
-            <TelemetryGrid telemetry={telemetry} currentLang={currentLang} compact={true} />
+            <TelemetryGrid telemetry={telemetry} currentLang={currentLang} compact />
           </section>
         </div>
       </div>
 
-      {/* Point-Wise Compact Action Boxes ("What You Should Do Right Now") */}
       <section
         aria-label="What you should do right now"
         className="p-4 sm:p-5 rounded-3xl glass-card space-y-3.5"
@@ -139,7 +165,6 @@ export function CommandCenterTab({
           </div>
         </div>
 
-        {/* AI Custom Assessment when generated OR Crisp 3-Box Point Cards */}
         {aiPlan?.assessment ? (
           <p className="text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed font-semibold p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/25">
             {aiPlan.assessment}
@@ -156,7 +181,10 @@ export function CommandCenterTab({
                     <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
                       {box.badge}
                     </span>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" aria-hidden="true" />
+                    <CheckCircle2
+                      className="w-3.5 h-3.5 text-emerald-500 shrink-0"
+                      aria-hidden="true"
+                    />
                   </div>
                   <h3 className="text-xs sm:text-sm font-extrabold text-zinc-950 dark:text-white leading-snug">
                     {box.title}
@@ -171,7 +199,6 @@ export function CommandCenterTab({
         )}
       </section>
 
-      {/* Zero-Login Personalized Daily Check-In & Clean-Air Savings */}
       <DailyDefenseChecklist
         actions={checklist.actions}
         completedIds={checklist.completedIds}
@@ -182,32 +209,3 @@ export function CommandCenterTab({
     </div>
   );
 }
-
-CommandCenterTab.propTypes = {
-  t: PropTypes.object.isRequired,
-  locationData: PropTypes.object.isRequired,
-  timeContext: PropTypes.object.isRequired,
-  telemetry: PropTypes.object.isRequired,
-  solarStatus: PropTypes.object.isRequired,
-  vulnerabilities: PropTypes.arrayOf(PropTypes.string).isRequired,
-  aiPlan: PropTypes.object,
-  aiPlanRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.any })]),
-  personalizedIntel: PropTypes.object.isRequired,
-  checklist: PropTypes.shape({
-    actions: PropTypes.array.isRequired,
-    completedIds: PropTypes.array.isRequired,
-    summary: PropTypes.object.isRequired,
-    toggleAction: PropTypes.func.isRequired,
-    updateHouseholdName: PropTypes.func.isRequired
-  }).isRequired,
-  currentLang: PropTypes.string.isRequired,
-  isDarkMode: PropTypes.bool.isRequired,
-  isGenerating: PropTypes.bool.isRequired,
-  isLoadingTelemetry: PropTypes.bool.isRequired,
-  onSelectCity: PropTypes.func.isRequired,
-  onRefreshLocation: PropTypes.func,
-  onOpenMultiAi: PropTypes.func.isRequired,
-  onGeneratePlan: PropTypes.func.isRequired,
-  onDismissPlan: PropTypes.func.isRequired,
-  onToggleVulnerability: PropTypes.func.isRequired
-};

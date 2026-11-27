@@ -1,10 +1,19 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import PropTypes from 'prop-types';
-import { MapPin, ChevronDown, Search, Check, LocateFixed } from 'lucide-react';
-import { MAJOR_CITIES_CATALOG } from '../utils/geolocationEngine';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Check, ChevronDown, LocateFixed, MapPin, Search } from 'lucide-react';
+import { MAJOR_CITIES_CATALOG } from '../data/citiesCatalog';
+import type { CityPreset } from '../types/airQuality';
 import { sanitizeText } from '../utils/inputValidator';
 
-const GROUPED_CITIES = [
+interface CityGroup {
+  region: string;
+  keys: string[];
+}
+
+interface FilteredCityItem extends CityPreset {
+  key: string;
+}
+
+const GROUPED_CITIES: CityGroup[] = [
   {
     region: 'India • Metro & Smog Corridors',
     keys: [
@@ -30,11 +39,17 @@ const GROUPED_CITIES = [
   }
 ];
 
+export interface CitySelectorProps {
+  currentCity: string;
+  onSelectCity: (cityKey: string) => void;
+  onRefreshLocation?: () => void;
+  isLoading?: boolean;
+  placeholder?: string;
+}
+
 /**
- * Searchable, accessible custom city station selector popover replacing plain native <select>.
+ * Searchable, accessible custom city station selector popover replacing plain native select.
  * Supports quick search filtering, region grouping, and one-tap GPS auto-detection.
- * @param {object} props - Component props.
- * @returns {JSX.Element} Interactive city selector popover.
  */
 export function CitySelector({
   currentCity,
@@ -42,25 +57,25 @@ export function CitySelector({
   onRefreshLocation,
   isLoading = false,
   placeholder = 'Switch City'
-}) {
+}: CitySelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const containerRef = useRef(null);
-  const searchInputRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!isOpen) return undefined;
 
-    setTimeout(() => searchInputRef.current?.focus(), 40);
+    const focusTimer = setTimeout(() => searchInputRef.current?.focus(), 40);
 
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsOpen(false);
       }
     };
 
-    const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -68,6 +83,7 @@ export function CitySelector({
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
+      clearTimeout(focusTimer);
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -77,7 +93,8 @@ export function CitySelector({
 
   const filteredGroups = useMemo(() => {
     return GROUPED_CITIES.map((group) => {
-      const items = group.keys
+      const items: FilteredCityItem[] = group.keys
+        .filter((key) => Boolean(MAJOR_CITIES_CATALOG[key]))
         .map((key) => ({ key, ...MAJOR_CITIES_CATALOG[key] }))
         .filter((item) => {
           if (!cleanQuery) return true;
@@ -91,7 +108,7 @@ export function CitySelector({
     }).filter((group) => group.items.length > 0);
   }, [cleanQuery]);
 
-  const handleChoose = (cityKey) => {
+  const handleChoose = (cityKey: string) => {
     onSelectCity(cityKey);
     setQuery('');
     setIsOpen(false);
@@ -128,7 +145,6 @@ export function CitySelector({
           aria-label="Available cities and air quality stations"
           className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-32 sm:top-full mt-2 sm:w-72 rounded-2xl bg-white dark:bg-[#18181B] border border-zinc-200 dark:border-zinc-700 shadow-2xl p-2.5 z-[60] animate-fade-in"
         >
-          {/* Search Bar */}
           <div className="relative mb-2">
             <Search
               className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none"
@@ -148,7 +164,6 @@ export function CitySelector({
             />
           </div>
 
-          {/* One-Tap Auto-Detect GPS Option */}
           {onRefreshLocation && (
             <button
               type="button"
@@ -163,7 +178,6 @@ export function CitySelector({
             </button>
           )}
 
-          {/* Grouped Scrollable Options */}
           <div className="max-h-60 overflow-y-auto space-y-2 pr-0.5">
             {filteredGroups.length === 0 ? (
               <p className="text-center text-xs text-zinc-500 dark:text-zinc-400 py-4">
@@ -204,7 +218,9 @@ export function CitySelector({
                               {item.state}, {item.country}
                             </span>
                           </div>
-                          {isActive && <Check className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
+                          {isActive && (
+                            <Check className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                          )}
                         </button>
                       );
                     })}
@@ -218,11 +234,3 @@ export function CitySelector({
     </div>
   );
 }
-
-CitySelector.propTypes = {
-  currentCity: PropTypes.string.isRequired,
-  onSelectCity: PropTypes.func.isRequired,
-  onRefreshLocation: PropTypes.func,
-  isLoading: PropTypes.bool,
-  placeholder: PropTypes.string
-};

@@ -1,11 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+export type LogoVariant = 'shield-wind' | 'vortex-leaf' | 'inversion-rings' | 'monogram-a';
+
+export interface AeroShieldLogoProps {
+  variant?: LogoVariant;
+  size?: number;
+  className?: string;
+  withWordmark?: boolean;
+  isDarkMode?: boolean;
+}
 
 /**
  * Scalable geometric SVG brand logo mark for AeroShield AI (VayuMitra OS).
  * Supports four vector variants and adaptive dark/light contrast modes.
- * @param {object} props - Logo component props.
- * @returns {JSX.Element} SVG icon mark optionally paired with the AeroShield AI wordmark.
  */
 export function AeroShieldLogo({
   variant = 'shield-wind',
@@ -13,7 +18,7 @@ export function AeroShieldLogo({
   className = '',
   withWordmark = false,
   isDarkMode = true
-}) {
+}: AeroShieldLogoProps) {
   const primaryEmerald = '#10B981';
   const mintTeal = '#34D399';
   const deepEmerald = '#059669';
@@ -206,11 +211,3 @@ export function AeroShieldLogo({
     </div>
   );
 }
-
-AeroShieldLogo.propTypes = {
-  variant: PropTypes.oneOf(['shield-wind', 'vortex-leaf', 'inversion-rings', 'monogram-a']),
-  size: PropTypes.number,
-  className: PropTypes.string,
-  withWordmark: PropTypes.bool,
-  isDarkMode: PropTypes.bool
-};

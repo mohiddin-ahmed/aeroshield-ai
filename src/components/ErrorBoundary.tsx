@@ -1,33 +1,42 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { logError } from '../utils/logger';
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+  errorInfo: React.ErrorInfo | null;
+}
 
 /**
  * Top-level React Error Boundary preventing unhandled UI rendering exceptions
  * from producing a blank screen during live hackathon evaluations.
  */
-export class ErrorBoundary extends React.Component {
-  constructor(props) {
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error, errorInfo) {
-    // Explicit ErrorBoundary guard: log context cleanly and preserve recovery UI
-    console.error('ErrorBoundary caught an unhandled error:', error, errorInfo);
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    logError('ErrorBoundary', 'Captured unhandled React render exception', { error, errorInfo });
     this.setState({ errorInfo });
   }
 
-  handleReset = () => {
+  handleReset = (): void => {
     this.setState({ hasError: false, error: null, errorInfo: null });
     window.location.reload();
   };
 
-  render() {
+  render(): React.ReactNode {
     if (this.state.hasError) {
       return (
         <div
@@ -61,7 +70,3 @@ export class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
-
-ErrorBoundary.propTypes = {
-  children: PropTypes.node.isRequired
-};

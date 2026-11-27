@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { Check, Flame, ShieldCheck, Pencil } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { Check, Flame, Pencil, ShieldCheck } from 'lucide-react';
+import type { DailyChecklistSummary, DailyDefenseAction } from '../types/airQuality';
+
+export interface DailyDefenseChecklistProps {
+  actions: DailyDefenseAction[];
+  completedIds: string[];
+  summary: DailyChecklistSummary;
+  onToggleAction: (actionId: string) => void;
+  onUpdateHouseholdName: (rawName: string) => void;
+}
 
 /**
  * Zero-login, local-first daily action check-in tracker showing how much toxic PM2.5
  * and cigarette equivalence the household avoided today plus daily comeback streak.
- * @param {object} props - Component props.
- * @returns {JSX.Element} Interactive daily check-in and savings card.
  */
 export function DailyDefenseChecklist({
   actions,
@@ -14,11 +21,11 @@ export function DailyDefenseChecklist({
   summary,
   onToggleAction,
   onUpdateHouseholdName
-}) {
+}: DailyDefenseChecklistProps) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [draftName, setDraftName] = useState(summary.householdName || '');
 
-  const handleSaveName = (event) => {
+  const handleSaveName = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onUpdateHouseholdName(draftName);
     setIsEditingName(false);
@@ -29,7 +36,6 @@ export function DailyDefenseChecklist({
       aria-label="Today's Clean-Air Check-In and Daily Savings"
       className="p-4 sm:p-5 rounded-3xl glass-card space-y-4 border border-emerald-500/20"
     >
-      {/* Header Row with Optional Local Name & Streak */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center space-x-2.5">
           <div
@@ -61,7 +67,8 @@ export function DailyDefenseChecklist({
               )}
             </div>
             <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-              Tick what you did today to see how much polluted smoke you avoided (saved on your device)
+              Tick what you did today to see how much polluted smoke you avoided (saved on your
+              device)
             </p>
           </div>
         </div>
@@ -72,7 +79,6 @@ export function DailyDefenseChecklist({
         </span>
       </div>
 
-      {/* Inline Optional Local Profile Input (Zero Login Barrier) */}
       {isEditingName && (
         <form onSubmit={handleSaveName} className="flex items-center gap-2">
           <label htmlFor="household-name-input" className="sr-only">
@@ -103,7 +109,6 @@ export function DailyDefenseChecklist({
         </form>
       )}
 
-      {/* Daily Impact Summary Strip */}
       <div className="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
         <div>
           <span className="text-[10px] font-bold uppercase text-zinc-600 dark:text-zinc-300 block">
@@ -132,8 +137,11 @@ export function DailyDefenseChecklist({
         </div>
       </div>
 
-      {/* Checklist Action Buttons */}
-      <div role="group" aria-label="Daily clean-air steps" className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <div
+        role="group"
+        aria-label="Daily clean-air steps"
+        className="grid grid-cols-1 sm:grid-cols-2 gap-2"
+      >
         {actions.map((action) => {
           const isChecked = completedIds.includes(action.id);
           return (
@@ -171,26 +179,3 @@ export function DailyDefenseChecklist({
     </section>
   );
 }
-
-DailyDefenseChecklist.propTypes = {
-  actions: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-      hint: PropTypes.string.isRequired,
-      reductionShare: PropTypes.number.isRequired
-    })
-  ).isRequired,
-  completedIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  summary: PropTypes.shape({
-    completedCount: PropTypes.number.isRequired,
-    totalCount: PropTypes.number.isRequired,
-    protectionPercent: PropTypes.number.isRequired,
-    pm25SavedTodayUg: PropTypes.number.isRequired,
-    cigarettesSavedToday: PropTypes.number.isRequired,
-    streakDays: PropTypes.number.isRequired,
-    householdName: PropTypes.string
-  }).isRequired,
-  onToggleAction: PropTypes.func.isRequired,
-  onUpdateHouseholdName: PropTypes.func.isRequired
-};

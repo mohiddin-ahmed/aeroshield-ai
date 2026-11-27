@@ -1,13 +1,23 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Compass, Bot, Sparkles } from 'lucide-react';
+import { Bot, Compass, Sparkles } from 'lucide-react';
+import type { LocationData, TimeContext } from '../types/airQuality';
+import type { TranslationCatalog } from '../utils/i18n';
 import { CitySelector } from './CitySelector';
+
+export interface LocationHeroBannerProps {
+  locationData: Pick<LocationData, 'city' | 'country'>;
+  timeContext: Pick<TimeContext, 'dateString' | 'timeString' | 'phaseLabel'>;
+  t: TranslationCatalog;
+  onSelectCity: (cityKey: string) => void;
+  onRefreshLocation?: () => void;
+  onOpenMultiAi: () => void;
+  onGeneratePlan: () => void;
+  isGenerating: boolean;
+  isLoadingTelemetry?: boolean;
+}
 
 /**
  * Compact top location/clock strip paired with searchable city picker, Ask AI button,
  * and Gemini plan CTA so the circular AQI dial sits prominently above the fold.
- * @param {object} props - Component props.
- * @returns {JSX.Element} Compact top bar for home command center.
  */
 export function LocationHeroBanner({
   locationData,
@@ -19,13 +29,12 @@ export function LocationHeroBanner({
   onGeneratePlan,
   isGenerating,
   isLoadingTelemetry
-}) {
+}: LocationHeroBannerProps) {
   return (
     <section
       aria-label="Location and quick actions"
       className="relative z-30 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl glass-card"
     >
-      {/* Compact Location + Clock */}
       <div className="flex items-center space-x-2.5 min-w-0">
         <div
           className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0"
@@ -48,14 +57,11 @@ export function LocationHeroBanner({
             <span className="font-mono text-emerald-600 dark:text-emerald-400">
               {timeContext.timeString}
             </span>{' '}
-            <span className="text-[11px] font-semibold opacity-75">
-              ({timeContext.phaseLabel})
-            </span>
+            <span className="text-[11px] font-semibold opacity-75">({timeContext.phaseLabel})</span>
           </p>
         </div>
       </div>
 
-      {/* Compact Action Strip with Custom Searchable City Selector */}
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
         <CitySelector
           currentCity={locationData.city}
@@ -97,22 +103,3 @@ export function LocationHeroBanner({
     </section>
   );
 }
-
-LocationHeroBanner.propTypes = {
-  locationData: PropTypes.shape({
-    city: PropTypes.string.isRequired,
-    country: PropTypes.string.isRequired
-  }).isRequired,
-  timeContext: PropTypes.shape({
-    dateString: PropTypes.string.isRequired,
-    timeString: PropTypes.string.isRequired,
-    phaseLabel: PropTypes.string.isRequired
-  }).isRequired,
-  t: PropTypes.object.isRequired,
-  onSelectCity: PropTypes.func.isRequired,
-  onRefreshLocation: PropTypes.func,
-  onOpenMultiAi: PropTypes.func.isRequired,
-  onGeneratePlan: PropTypes.func.isRequired,
-  isGenerating: PropTypes.bool.isRequired,
-  isLoadingTelemetry: PropTypes.bool
-};

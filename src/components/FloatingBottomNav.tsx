@@ -1,20 +1,34 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Shield, Clock, Wrench, BookOpen } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { BookOpen, Clock, Shield, Wrench } from 'lucide-react';
+import type { SupportedLanguageCode, TabId } from '../types/airQuality';
 import { translations } from '../utils/i18n';
 
+export interface FloatingBottomNavProps {
+  activeTab: TabId;
+  onSelectTab: (tab: TabId) => void;
+  isDarkMode: boolean;
+  currentLang?: SupportedLanguageCode;
+}
+
+interface NavTabItem {
+  id: TabId;
+  label: string;
+  icon: LucideIcon;
+}
+
 /**
- * Thicker, silky-smooth Oval Capsule Pill Navigation Bar.
- * Restores the signature rounded-full capsule dock where the active tab
- * expands into an elevated pill with [Icon + Label + Pulse Dot] while inactive tabs
- * stay sleek icon buttons.
- * @param {object} props - Component props.
- * @returns {JSX.Element} Oval floating capsule bottom navigation bar.
+ * Elevated oval capsule navigation dock where the active tab expands into a
+ * pill showing [Icon + Label + Pulse Indicator] while inactive tabs remain compact icon buttons.
  */
-export function FloatingBottomNav({ activeTab, onSelectTab, isDarkMode, currentLang = 'en' }) {
+export function FloatingBottomNav({
+  activeTab,
+  onSelectTab,
+  isDarkMode,
+  currentLang = 'en'
+}: FloatingBottomNavProps) {
   const t = translations[currentLang] || translations.en;
 
-  const tabs = [
+  const tabs: NavTabItem[] = [
     { id: 'commandCenter', label: t.tabs.home, icon: Shield },
     { id: 'routine', label: t.tabs.routine, icon: Clock },
     { id: 'jugaad', label: t.tabs.jugaad, icon: Wrench },
@@ -22,10 +36,7 @@ export function FloatingBottomNav({ activeTab, onSelectTab, isDarkMode, currentL
   ];
 
   return (
-    <div
-      style={{ bottom: 'max(0.9rem, env(safe-area-inset-bottom))' }}
-      className="fixed left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-md sm:w-auto"
-    >
+    <div className="fixed bottom-[max(0.9rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-md sm:w-auto">
       <nav
         aria-label="Primary application sections"
         className={`flex items-center justify-around sm:justify-center sm:space-x-2 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full transition-all duration-300 ease-out shadow-2xl backdrop-blur-2xl ${
@@ -51,8 +62,8 @@ export function FloatingBottomNav({ activeTab, onSelectTab, isDarkMode, currentL
                     ? 'bg-zinc-800 text-white shadow-lg border border-emerald-500/45 py-2.5 px-4.5 sm:px-5 space-x-2'
                     : 'bg-zinc-950 text-white shadow-lg shadow-black/25 border border-zinc-900 py-2.5 px-4.5 sm:px-5 space-x-2'
                   : isDarkMode
-                  ? 'hover:text-white hover:bg-zinc-800/70 text-zinc-400 py-2.5 px-3.5 border border-transparent'
-                  : 'hover:text-zinc-950 hover:bg-zinc-100 text-zinc-600 py-2.5 px-3.5 border border-transparent'
+                    ? 'hover:text-white hover:bg-zinc-800/70 text-zinc-400 py-2.5 px-3.5 border border-transparent'
+                    : 'hover:text-zinc-950 hover:bg-zinc-100 text-zinc-600 py-2.5 px-3.5 border border-transparent'
               }`}
             >
               <Icon
@@ -62,7 +73,6 @@ export function FloatingBottomNav({ activeTab, onSelectTab, isDarkMode, currentL
                 }`}
               />
 
-              {/* Active Label + Pulse Micro-Indicator */}
               {isActive && (
                 <div className="flex items-center space-x-1.5 animate-fade-in">
                   <span className="tracking-tight text-white font-bold whitespace-nowrap">
@@ -81,10 +91,3 @@ export function FloatingBottomNav({ activeTab, onSelectTab, isDarkMode, currentL
     </div>
   );
 }
-
-FloatingBottomNav.propTypes = {
-  activeTab: PropTypes.oneOf(['commandCenter', 'routine', 'jugaad', 'research']).isRequired,
-  onSelectTab: PropTypes.func.isRequired,
-  isDarkMode: PropTypes.bool.isRequired,
-  currentLang: PropTypes.string
-};

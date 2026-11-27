@@ -1,9 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Wind, Cigarette, SunMedium } from 'lucide-react';
+import { Cigarette, SunMedium, Wind } from 'lucide-react';
+import type {
+  AirQualityTelemetry,
+  AqiCategoryName,
+  SupportedLanguageCode
+} from '../types/airQuality';
 import { translations } from '../utils/i18n';
 
-const SIMPLE_MEANING_BY_CATEGORY = {
+const SIMPLE_MEANING_BY_CATEGORY: Record<AqiCategoryName, string> = {
   Good: 'Fresh outdoor air — safe for all activities',
   Moderate: 'Okay for most people; sensitive groups watch symptoms',
   Unhealthy: 'Polluted air — sensitive family members wear N95 outside',
@@ -11,22 +14,49 @@ const SIMPLE_MEANING_BY_CATEGORY = {
   Hazardous: 'Severe toxic smog — stay indoors & run DIY filter'
 };
 
+const CATEGORY_GLOW_CLASSES: Record<AqiCategoryName, string> = {
+  Good: 'bg-[#CBD77E]',
+  Moderate: 'bg-[#E6CA9A]',
+  Unhealthy: 'bg-[#E07A5F]',
+  'Very Unhealthy': 'bg-[#F26419]',
+  Hazardous: 'bg-[#9B2226]'
+};
+
+const CATEGORY_BADGE_CLASSES: Record<AqiCategoryName, string> = {
+  Good: 'bg-[#CBD77E]/25 border-[#CBD77E]/60 text-[#2F4F1E] dark:bg-[#CBD77E]/35 dark:text-white',
+  Moderate:
+    'bg-[#E6CA9A]/25 border-[#E6CA9A]/60 text-[#7A5618] dark:bg-[#E6CA9A]/35 dark:text-white',
+  Unhealthy:
+    'bg-[#E07A5F]/25 border-[#E07A5F]/50 text-[#9F3E23] dark:bg-[#E07A5F]/35 dark:text-white',
+  'Very Unhealthy':
+    'bg-[#F26419]/25 border-[#F26419]/50 text-[#B84106] dark:bg-[#F26419]/35 dark:text-white',
+  Hazardous:
+    'bg-[#9B2226]/25 border-[#9B2226]/50 text-[#9B2226] dark:bg-[#9B2226]/40 dark:text-white'
+};
+
+export interface RotaryAqiDialProps {
+  telemetry: Pick<
+    AirQualityTelemetry,
+    'aqi' | 'category' | 'categoryColor' | 'cigaretteEquivDaily' | 'pm2_5'
+  >;
+  isSolarActive?: boolean;
+  currentLang?: SupportedLanguageCode;
+  isDarkMode?: boolean;
+}
+
 /**
  * Prominent hero circular SVG gauge displaying AQI, clear beginner-friendly status,
  * PM2.5 density, and Berkeley Earth daily cigarette inhalation comparison.
- * @param {object} props - Component props.
- * @returns {JSX.Element} Hero Rotary AQI Dial card.
  */
 export function RotaryAqiDial({
   telemetry,
   isSolarActive = false,
   currentLang = 'en',
   isDarkMode = false
-}) {
+}: RotaryAqiDialProps) {
   const t = translations[currentLang] || translations.en;
   const { aqi, category, categoryColor, cigaretteEquivDaily, pm2_5 } = telemetry;
 
-  // Normalize 0–500 AQI linearly onto a 270-degree circular gauge arc
   const clampedAqi = Math.min(Math.max(aqi, 0), 500);
   const angle = (clampedAqi / 500) * 270;
 
@@ -34,22 +64,24 @@ export function RotaryAqiDial({
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (angle / 360) * circumference;
 
-  const translatedCategory = t.dial.categories[category] || category;
+  const categoryMap = t.dial.categories as Record<string, string | undefined>;
+  const translatedCategory = categoryMap[category] || category;
   const simpleMeaning = SIMPLE_MEANING_BY_CATEGORY[category] || '';
+  const glowClass = CATEGORY_GLOW_CLASSES[category] || 'bg-emerald-500';
+  const badgeClass =
+    CATEGORY_BADGE_CLASSES[category] ||
+    'bg-emerald-500/20 border-emerald-500/40 text-emerald-700 dark:text-white';
 
   return (
     <section
       aria-label={`${t.dial.title}: AQI ${aqi}, ${translatedCategory}`}
       className="relative flex flex-col items-center justify-center p-5 sm:p-6 rounded-3xl glass-card overflow-hidden h-full"
     >
-      {/* Ambient Severity Glow */}
       <div
         aria-hidden="true"
-        className="absolute w-72 h-72 rounded-full blur-3xl opacity-30 dark:opacity-25 -z-10 transition-all duration-700 pointer-events-none"
-        style={{ backgroundColor: categoryColor }}
+        className={`absolute w-72 h-72 rounded-full blur-3xl opacity-30 dark:opacity-25 -z-10 transition-all duration-700 pointer-events-none ${glowClass}`}
       />
 
-      {/* Dial Top Tagline */}
       <div className="flex items-center space-x-2 mb-2">
         <Wind className="w-4 h-4 text-emerald-500" aria-hidden="true" />
         <span className="text-xs font-extrabold uppercase tracking-wider text-zinc-700 dark:text-zinc-200">
@@ -57,7 +89,6 @@ export function RotaryAqiDial({
         </span>
       </div>
 
-      {/* SVG Circular Rotary Gauge */}
       <div className="relative w-60 h-60 sm:w-64 sm:h-64 flex items-center justify-center">
         <svg
           className="w-full h-full -rotate-135"
@@ -100,18 +131,12 @@ export function RotaryAqiDial({
           />
         </svg>
 
-        {/* Center Readout */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
           <span className="text-5xl sm:text-6xl font-extrabold font-mono tracking-tight text-zinc-950 dark:text-white drop-shadow-xs">
             {aqi}
           </span>
           <span
-            className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mt-1.5 transition-colors border"
-            style={{
-              backgroundColor: isDarkMode ? `${categoryColor}35` : `${categoryColor}25`,
-              color: isDarkMode ? '#FFFFFF' : categoryColor === '#CBD77E' ? '#2F4F1E' : categoryColor,
-              borderColor: `${categoryColor}50`
-            }}
+            className={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mt-1.5 transition-colors border ${badgeClass}`}
           >
             {translatedCategory}
           </span>
@@ -121,16 +146,17 @@ export function RotaryAqiDial({
         </div>
       </div>
 
-      {/* Plain-English Interpretation for First-Time Users */}
       {simpleMeaning && (
         <p className="text-[11px] font-semibold text-zinc-600 dark:text-zinc-300 text-center mt-1 px-2">
           {simpleMeaning}
         </p>
       )}
 
-      {/* Berkeley Earth Cigarette Equivalence Pill */}
       <div className="mt-3 flex items-center space-x-2 px-4 py-2 rounded-2xl bg-white/95 dark:bg-zinc-800/90 border border-zinc-200 dark:border-zinc-700 shadow-sm">
-        <Cigarette className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" aria-hidden="true" />
+        <Cigarette
+          className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0"
+          aria-hidden="true"
+        />
         <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-100">
           {t.dial.cigarettesToday}{' '}
           <strong className="text-rose-600 dark:text-rose-400 font-mono font-bold text-sm mx-1">
@@ -140,26 +166,15 @@ export function RotaryAqiDial({
         </span>
       </div>
 
-      {/* Solar Lift Window Active Banner */}
       {isSolarActive && (
         <div className="mt-2.5 flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-200 text-xs font-bold border border-emerald-400/50 animate-pulse">
-          <SunMedium className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+          <SunMedium
+            className="w-4 h-4 text-emerald-600 dark:text-emerald-400"
+            aria-hidden="true"
+          />
           <span>{t.status.solarActive}</span>
         </div>
       )}
     </section>
   );
 }
-
-RotaryAqiDial.propTypes = {
-  telemetry: PropTypes.shape({
-    aqi: PropTypes.number.isRequired,
-    category: PropTypes.string.isRequired,
-    categoryColor: PropTypes.string.isRequired,
-    cigaretteEquivDaily: PropTypes.number.isRequired,
-    pm2_5: PropTypes.number.isRequired
-  }).isRequired,
-  isSolarActive: PropTypes.bool,
-  currentLang: PropTypes.string,
-  isDarkMode: PropTypes.bool
-};
