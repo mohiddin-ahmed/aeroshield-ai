@@ -23,13 +23,13 @@ export const familyVulnerabilityProfiles = [
 const CORE_JUGAAD_PROTOCOLS = [
   {
     id: 'diy-box-fan',
-    title: '₹1,200 DIY Box-Fan HEPA Purifier (Corsi-Rosenthal Minimal)',
+    title: '₹1,250 DIY Box-Fan HEPA Purifier (Corsi-Rosenthal Minimal)',
     hindiTitle: 'देसी बॉक्स-फैन एयर प्यूरीफायर',
     category: 'Filtration Core',
     cost: '₹1,250 (Total Build)',
     commercialEquiv: '₹24,000 Branded Unit',
     impact: 'Delivers 280-310 CFM Clean Air Delivery Rate (CADR). Cleans a 200 sq.ft room in 28 minutes.',
-    badge: '22x Cost Savings',
+    badge: '19.2x Cost Savings',
     instruction: 'Attach a 20x20 MERV 13 / H13 sheet to the back of a standard 20-inch box fan with duct tape. Run on medium.',
     materialsNeeded: [
       '1x Standard 20-inch Box Fan (Havells, Orient, or local electrical store — ₹850 to ₹950)',
@@ -172,27 +172,56 @@ export function generatePersonalizedIntelligence({
 
   let currentUrgentAdvisory = '';
   let bannerTheme = 'hazel';
+  let actionBoxes = [];
 
   if (solarVentilationWindow) {
-    currentUrgentAdvisory = `Solar Thermal Lift Window ACTIVE in ${safeCity}! Peak solar radiation has temporarily broken the ground cold pool. Open opposing windows for 15 minutes of rapid air exchange right now before evening inversion reformulates.`;
+    currentUrgentAdvisory = `☀️ Good news for ${safeCity}: Sunlight has lifted outdoor smog right now. Open two opposite windows for 15 minutes to swap stale indoor air with fresher breeze.`;
     bannerTheme = 'olive';
+    actionBoxes = [
+      { id: 'open-windows', badge: 'Do Now', title: 'Open Windows (15m)', detail: 'Cross-ventilate opposite sides now while sun lifts smog.' },
+      { id: 'flush-kitchen', badge: 'Fresh Air', title: 'Clear Stale Indoor Air', detail: 'Turn on exhaust fans to push trapped cooking & CO2 air out.' },
+      { id: 'reclose-3pm', badge: 'Set Timer', title: 'Close By 3:00 PM', detail: 'Shut frames before late afternoon cool air drops back down.' }
+    ];
   } else if (timePhase === 'morning_peak') {
-    currentUrgentAdvisory = `Morning Thermal Inversion Peak: Ground radiative cooling has trapped high particulate density (${pm2_5} μg/m³). Keep all doors and windows sealed and run DIY Box-Fan filters on High.`;
+    currentUrgentAdvisory = `Morning Smog Alert: Cold air is holding heavy dust (${pm2_5} μg/m³) right near the ground. Keep windows closed and run your DIY air filter on High.`;
     bannerTheme = 'crimson';
+    actionBoxes = [
+      { id: 'seal-morning', badge: 'Priority', title: 'Keep Doors Closed', detail: 'Morning traffic fumes stay trapped low near the street.' },
+      { id: 'fan-high', badge: 'Filtration', title: 'Run DIY Filter High', detail: 'Keep box-fan purifier circulating inside bedrooms & halls.' },
+      { id: 'skip-walk', badge: 'Health Tip', title: 'Move Exercise Indoors', detail: 'Skip early outdoor jogs until afternoon sunlight.' }
+    ];
   } else if (timePhase === 'evening_rush') {
-    currentUrgentAdvisory = 'Evening Boundary Collapse: Traffic NO2 combined with cooling ground air is trapping exhaust. Commuters must wear sealed N95 respirators and seal all home windows.';
+    currentUrgentAdvisory =
+      'Evening Traffic Alert: Road fumes and cooling air are trapping pollution low. Wear a snug N95 mask outdoors and shut your windows now.';
     bannerTheme = 'crimson';
+    actionBoxes = [
+      { id: 'wear-n95', badge: 'Commute', title: 'Wear Snug N95 Mask', detail: 'Filter diesel soot along busy evening roads.' },
+      { id: 'shut-evening', badge: 'Home Seal', title: 'Shut Windows Early', detail: 'Block cool dusk smoke before 5:30 PM rush spikes.' },
+      { id: 'wet-wipe', badge: 'Post-Trip', title: 'Wash Face & Salt Mop', detail: 'Use damp mopping instead of dry brooming settled road dust.' }
+    ];
   } else if (timePhase === 'night_inversion') {
-    currentUrgentAdvisory = 'Overnight Stagnation Protocol: Cold surface air maintains elevated soot infiltration overnight. Run bedroom filtration on medium whisper mode and dampen curtain hems (Parda-Geela).';
+    currentUrgentAdvisory =
+      'Night Protection Mode: Cool night air keeps fine smog low until afternoon. Keep bedroom windows shut, run your purifier on Low, and damp-wipe curtain bottoms to catch dust.';
     bannerTheme = 'hazel';
+    actionBoxes = [
+      { id: 'night-seal', badge: 'Bedroom', title: 'Keep Windows Shut', detail: 'Cold night air traps smog right outside your window.' },
+      { id: 'whisper-mode', badge: 'Sleep Safe', title: 'Run Filter on Low', detail: 'Keep clean air gently flowing for 8 hours of sleep.' },
+      { id: 'damp-curtain', badge: 'Zero Cost', title: 'Wet Cotton Curtains', detail: 'Dampen bottom hems slightly to trap gap dust.' }
+    ];
   } else {
-    currentUrgentAdvisory = 'Mid-day Boundary Expansion: Ground warming is underway. Maintain indoor air filtration and prepare for the 1:00 PM – 3:00 PM solar ventilation window.';
+    currentUrgentAdvisory =
+      'Sunny Warm-Up: Pollution is still settling. Keep filters running indoors and prepare to open windows briefly between 1:00 PM and 3:00 PM.';
     bannerTheme = 'hazel';
+    actionBoxes = [
+      { id: 'wait-solar', badge: 'Stay Closed', title: 'Wait for 1–3 PM Window', detail: 'Keep windows closed until afternoon heat lifts smog.' },
+      { id: 'keep-filter', badge: 'Indoors', title: 'Keep Purifier Medium', detail: 'Maintain steady indoor air cleaning through noon.' },
+      { id: 'damp-mop', badge: 'Dust Hack', title: 'Wet-Mop Floors Only', detail: 'Avoid dry sweeping so settled soot stays off lungs.' }
+    ];
   }
 
   if (humidityPct > 80 && aqi > 200) {
     currentUrgentAdvisory +=
-      ' (High Humidity Alert: Moisture is binding to fine particulates—avoid unheated mist humidifiers).';
+      ' (High Humidity Tip: Moist fog clings to pollution particles—skip cool mist humidifiers right now).';
   }
 
   const customizedJugaadList = [...CORE_JUGAAD_PROTOCOLS];
@@ -221,6 +250,7 @@ Given the current time of day (${timeString}) and exact meteorological condition
 
   return {
     currentUrgentAdvisory,
+    actionBoxes,
     bannerTheme,
     customizedJugaadList,
     customAiPrompt
