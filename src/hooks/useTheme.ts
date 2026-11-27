@@ -1,11 +1,17 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+export interface UseThemeResult {
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+  setIsDarkMode: (dark: boolean) => void;
+}
 
 /**
  * Manages dark/light color theme state synchronized with `document.documentElement` and `localStorage`.
- * @returns {{ isDarkMode: boolean, toggleDarkMode: () => void, setIsDarkMode: (dark: boolean) => void }} Theme controls.
+ * @returns Theme controls.
  */
-export function useTheme() {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
+export function useTheme(): UseThemeResult {
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     try {
       const saved = localStorage.getItem('theme');

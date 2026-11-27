@@ -1,42 +1,67 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { DEFAULT_VULNERABILITIES, TELEMETRY_REFRESH_INTERVAL_MS } from '../constants/airQuality';
+import { mockCitiesAirQuality } from '../data/mockAirQualityData';
 import { fetchLiveAirQuality } from '../services/airQualityService';
 import { generateSmogDefensePlan } from '../services/gemini';
-import { getSolarWindowStatus } from '../utils/solarWindowEngine';
+import type {
+  AirQualityTelemetry,
+  LocationData,
+  PersonalizedIntelligence,
+  SmogDefensePlan,
+  SolarWindowStatus,
+  TimeContext
+} from '../types/airQuality';
 import {
   detectDeviceLocation,
   getDetailedTimeContext,
   MAJOR_CITIES_CATALOG
 } from '../utils/geolocationEngine';
-import { generatePersonalizedIntelligence } from '../utils/personalizedJugaadEngine';
-import { mockCitiesAirQuality } from '../services/mockAirQualityData';
-import { getPromptLogs } from '../utils/promptLogger';
 import { sanitizeCityKey } from '../utils/inputValidator';
-import {
-  DEFAULT_VULNERABILITIES,
-  TELEMETRY_REFRESH_INTERVAL_MS
-} from '../constants/airQuality';
+import { logError, logWarning } from '../utils/logger';
+import { generatePersonalizedIntelligence } from '../utils/personalizedJugaadEngine';
+import { getPromptLogs } from '../utils/promptLogger';
+import { getSolarWindowStatus } from '../utils/solarWindowEngine';
+
+export interface UseAirQualityResult {
+  locationData: LocationData;
+  timeContext: TimeContext;
+  isRefreshingLocation: boolean;
+  telemetry: AirQualityTelemetry;
+  solarStatus: SolarWindowStatus;
+  vulnerabilities: string[];
+  aiPlan: SmogDefensePlan | null;
+  isGenerating: boolean;
+  isLoadingTelemetry: boolean;
+  promptCount: number;
+  personalizedIntel: PersonalizedIntelligence;
+  handleAutoDetectLocation: () => Promise<void>;
+  handleManualCityChange: (cityKey: string) => Promise<void>;
+  handleGeneratePlan: () => Promise<boolean>;
+  handleToggleVulnerability: (id: string) => void;
+  clearAiPlan: () => void;
+}
 
 /**
  * Orchestrates live Open-Meteo air quality telemetry, GPS/timezone location detection,
  * diurnal solar lift state, family vulnerabilities, and Gemini AI defense plan generation.
- * @returns {object} Synchronized atmospheric state, computed intelligence, and action handlers.
+ * @returns Synchronized atmospheric state, computed intelligence, and action handlers.
  */
-export function useAirQuality() {
-  const [locationData, setLocationData] = useState({
+export function useAirQuality(): UseAirQualityResult {
+  const [locationData, setLocationData] = useState<LocationData>({
     city: 'Bengaluru',
     country: 'India',
     latitude: 12.9716,
     longitude: 77.5946,
     isAutoDetected: false
   });
-  const [timeContext, setTimeContext] = useState(() => getDetailedTimeContext());
+  const [timeContext, setTimeContext] = useState<TimeContext>(() => getDetailedTimeContext());
   const [isRefreshingLocation, setIsRefreshingLocation] = useState(false);
 
-  const [telemetry, setTelemetry] = useState(mockCitiesAirQuality.delhi);
-  const [solarStatus, setSolarStatus] = useState(() => getSolarWindowStatus());
-  const [vulnerabilities, setVulnerabilities] = useState(DEFAULT_VULNERABILITIES);
+  const [telemetry, setTelemetry] = useState<AirQualityTelemetry>(mockCitiesAirQuality.delhi);
+  const [solarStatus, setSolarStatus] = useState<SolarWindowStatus>(() => getSolarWindowStatus());
+  const [vulnerabilities, setVulnerabilities] = useState<string[]>(DEFAULT_VULNERABILITIES);
 
-  const [aiPlan, setAiPlan] = useState(null);
+  const [aiPlan, setAiPlan] = useState<SmogDefensePlan | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isLoadingTelemetry, setIsLoadingTelemetry] = useState(false);
   const [promptCount, setPromptCount] = useState(0);
@@ -60,15 +85,14 @@ export function useAirQuality() {
         country: detected.country || liveData.country
       });
     } catch (error) {
-      // Explicit fallback handler: retain safe baseline telemetry if geolocation fails
-      console.warn('Geolocation detection fallback engaged:', error);
+      logWarning('useAirQuality', 'Geolocation detection fallback engaged', error);
     } finally {
       setIsRefreshingLocation(false);
     }
   }, []);
 
   useEffect(() => {
-    handleAutoDetectLocation();
+    void handleAutoDetectLocation();
   }, [handleAutoDetectLocation]);
 
   useEffect(() => {
@@ -80,19 +104,21 @@ export function useAirQuality() {
     return () => clearInterval(timer);
   }, []);
 
-  const personalizedIntel = useMemo(() => {
-    return generatePersonalizedIntelligence({
-      timeContext,
-      telemetry,
-      vulnerabilities
-    });
-  }, [timeContext, telemetry, vulnerabilities]);
+  const personalizedIntel = useMemo(
+    () =>
+      generatePersonalizedIntelligence({
+        timeContext,
+        telemetry,
+        vulnerabilities
+      }),
+    [timeContext, telemetry, vulnerabilities]
+  );
 
   /**
    * Switches active monitoring station using a validated city catalog key.
-   * @param {string} cityKey - City identifier from preset catalog.
+   * @param cityKey - City identifier from preset catalog.
    */
-  const handleManualCityChange = useCallback(async (cityKey) => {
+  const handleManualCityChange = useCallback(async (cityKey: string) => {
     const safeKey = sanitizeCityKey(cityKey);
     setIsLoadingTelemetry(true);
     try {
@@ -114,7 +140,7 @@ export function useAirQuality() {
         isAutoDetected: false
       });
     } catch (error) {
-      console.error('Failed to switch city telemetry:', error);
+      logError('useAirQuality', 'Failed to switch city telemetry', error);
     } finally {
       setIsLoadingTelemetry(false);
     }
@@ -122,7 +148,7 @@ export function useAirQuality() {
 
   /**
    * Generates a household smog defense plan via Gemini 2.5 Flash or Zero-Crash mock fallback.
-   * @returns {Promise<boolean>} True if a valid plan payload was produced.
+   * @returns True if a valid plan payload was produced.
    */
   const handleGeneratePlan = useCallback(async () => {
     setIsGenerating(true);
@@ -141,15 +167,14 @@ export function useAirQuality() {
       setPromptCount(getPromptLogs().length);
       return false;
     } catch (error) {
-      // Explicit fallback protection: surface recoverable console error without UI crash
-      console.error('Error generating AI plan:', error);
+      logError('useAirQuality', 'Error generating AI plan', error);
       return false;
     } finally {
       setIsGenerating(false);
     }
   }, [telemetry.city, telemetry.aqi, telemetry.pm2_5, vulnerabilities]);
 
-  const handleToggleVulnerability = useCallback((id) => {
+  const handleToggleVulnerability = useCallback((id: string) => {
     setVulnerabilities((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );

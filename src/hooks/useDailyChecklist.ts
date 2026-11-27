@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BERKELEY_EARTH_PM25_PER_CIGARETTE } from '../constants/airQuality';
+import type { DailyChecklistSummary, DailyDefenseAction } from '../types/airQuality';
 import { sanitizeText } from '../utils/inputValidator';
 
 const STORAGE_KEY = 'aeroshield_daily_defense_v1';
 
-export const DAILY_DEFENSE_ACTIONS = [
+export const DAILY_DEFENSE_ACTIONS: DailyDefenseAction[] = [
   {
     id: 'seal_windows',
     label: 'Kept windows closed during morning & night smog',
@@ -37,22 +38,38 @@ export const DAILY_DEFENSE_ACTIONS = [
   }
 ];
 
-function getLocalDateKey(date = new Date()) {
+interface StoredDailyState {
+  householdName: string;
+  lastActiveDate: string;
+  completedIds: string[];
+  streakDays: number;
+  totalLifetimeUgSaved: number;
+}
+
+export interface UseDailyChecklistResult {
+  actions: DailyDefenseAction[];
+  completedIds: string[];
+  summary: DailyChecklistSummary;
+  toggleAction: (actionId: string) => void;
+  updateHouseholdName: (rawName: string) => void;
+}
+
+function getLocalDateKey(date: Date = new Date()): string {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
 }
 
-function getYesterdayKey(date = new Date()) {
+function getYesterdayKey(date: Date = new Date()): string {
   const prev = new Date(date);
   prev.setDate(prev.getDate() - 1);
   return getLocalDateKey(prev);
 }
 
-function loadInitialState() {
+function loadInitialState(): StoredDailyState {
   const todayKey = getLocalDateKey();
-  const fallback = {
+  const fallback: StoredDailyState = {
     householdName: '',
     lastActiveDate: todayKey,
     completedIds: ['seal_windows', 'run_purifier'],
@@ -65,12 +82,12 @@ function loadInitialState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return fallback;
-    const parsed = JSON.parse(raw);
+    const parsed = JSON.parse(raw) as Partial<StoredDailyState> | null;
     if (!parsed || typeof parsed !== 'object') return fallback;
 
     const validIds = new Set(DAILY_DEFENSE_ACTIONS.map((a) => a.id));
     const savedCompleted = Array.isArray(parsed.completedIds)
-      ? parsed.completedIds.filter((id) => validIds.has(id))
+      ? parsed.completedIds.filter((id): id is string => typeof id === 'string' && validIds.has(id))
       : [];
 
     if (parsed.lastActiveDate === todayKey) {
@@ -83,8 +100,8 @@ function loadInitialState() {
       };
     }
 
-    // New calendar day: preserve streak if user checked in yesterday
-    const continuedStreak = parsed.lastActiveDate === getYesterdayKey() && savedCompleted.length > 0;
+    const continuedStreak =
+      parsed.lastActiveDate === getYesterdayKey() && savedCompleted.length > 0;
     return {
       householdName: sanitizeText(parsed.householdName || '', 32),
       lastActiveDate: todayKey,
@@ -100,11 +117,11 @@ function loadInitialState() {
 /**
  * Manages zero-login daily clean-air check-ins, daily PM2.5/cigarette savings,
  * optional local household greeting, and streak persistence in `localStorage`.
- * @param {number} pm25 - Current ambient PM2.5 reading in μg/m³.
- * @returns {object} Daily savings metrics, completion state, and toggle handlers.
+ * @param pm25 - Current ambient PM2.5 reading in μg/m³.
+ * @returns Daily savings metrics, completion state, and toggle handlers.
  */
-export function useDailyChecklist(pm25 = 180) {
-  const [state, setState] = useState(loadInitialState);
+export function useDailyChecklist(pm25 = 180): UseDailyChecklistResult {
+  const [state, setState] = useState<StoredDailyState>(loadInitialState);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -115,7 +132,7 @@ export function useDailyChecklist(pm25 = 180) {
     }
   }, [state]);
 
-  const toggleAction = useCallback((actionId) => {
+  const toggleAction = useCallback((actionId: string) => {
     setState((prev) => {
       const exists = prev.completedIds.includes(actionId);
       const nextCompleted = exists
@@ -129,18 +146,19 @@ export function useDailyChecklist(pm25 = 180) {
     });
   }, []);
 
-  const updateHouseholdName = useCallback((rawName) => {
+  const updateHouseholdName = useCallback((rawName: string) => {
     const clean = sanitizeText(rawName, 32);
     setState((prev) => ({ ...prev, householdName: clean }));
   }, []);
 
-  const summary = useMemo(() => {
+  const summary = useMemo<DailyChecklistSummary>(() => {
     const safePm25 = Number.isFinite(pm25) && pm25 > 0 ? pm25 : 40;
     const completedSet = new Set(state.completedIds);
 
-    const totalShareBlocked = DAILY_DEFENSE_ACTIONS.reduce((sum, item) => {
-      return completedSet.has(item.id) ? sum + item.reductionShare : sum;
-    }, 0);
+    const totalShareBlocked = DAILY_DEFENSE_ACTIONS.reduce(
+      (sum, item) => (completedSet.has(item.id) ? sum + item.reductionShare : sum),
+      0
+    );
 
     // Cap indoor combined mitigation realistically at 92% of ambient intake
     const protectionPercent = Math.min(92, Math.round(totalShareBlocked * 100));

@@ -6,26 +6,60 @@
  */
 
 import { GoogleGenAI } from '@google/genai';
-import { logPromptExecution } from '../utils/promptLogger';
 import {
   BERKELEY_EARTH_PM25_PER_CIGARETTE,
   DEFAULT_GEMINI_MODEL,
   DEFAULT_GEMINI_TEMPERATURE
 } from '../constants/airQuality';
+import type { SmogDefensePlan } from '../types/airQuality';
 import {
   clampNumber,
   parseSafeAiPlan,
   sanitizeText,
   sanitizeVulnerabilities
 } from '../utils/inputValidator';
+import { logWarning } from '../utils/logger';
+import { logPromptExecution } from '../utils/promptLogger';
+
+export interface GeminiClientLike {
+  models: {
+    generateContent: (params: {
+      model: string;
+      contents: string;
+      config: {
+        systemInstruction: string;
+        temperature: number;
+        responseMimeType: string;
+      };
+    }) => Promise<{
+      text?: string;
+      usageMetadata?: { totalTokenCount?: number };
+    }>;
+  };
+}
+
+export interface SmogDefensePlanParams {
+  city?: string;
+  aqi?: number;
+  pm25?: number;
+  vulnerabilities?: string[];
+}
+
+export interface SmogDefensePlanResult {
+  success: boolean;
+  data: SmogDefensePlan;
+  isMock: boolean;
+  latencyMs: number;
+}
 
 const envApiKey = sanitizeText(import.meta.env?.VITE_GEMINI_API_KEY || '', 256);
-const configuredKey =
-  envApiKey && envApiKey !== 'your_gemini_api_key_here' ? envApiKey : '';
+const configuredKey = envApiKey && envApiKey !== 'your_gemini_api_key_here' ? envApiKey : '';
 const configuredModel =
   sanitizeText(import.meta.env?.VITE_GEMINI_MODEL || '', 64) || DEFAULT_GEMINI_MODEL;
 
-const defaultAiClient = configuredKey ? new GoogleGenAI({ apiKey: configuredKey }) : null;
+const defaultAiClient: GeminiClientLike | null = configuredKey
+  ? (new GoogleGenAI({ apiKey: configuredKey }) as unknown as GeminiClientLike)
+  : null;
 
 const SYSTEM_INSTRUCTION = `You are VayuMitra AI, an elite atmospheric chemist and public health physician specializing in winter thermal inversion smog defense in South Asian and dense urban environments.
 Your goal is to provide actionable, low-cost daily survival strategies, scientifically explain the 1:00 PM - 3:00 PM solar thermal lift window, and prescribe Desi Jugaad indoor filtration hacks.
@@ -38,17 +72,20 @@ Format your output strictly as a JSON object with:
 /**
  * Builds deterministic heuristic clean-air defense data when Gemini API is unconfigured,
  * offline, rate-limited, or returns malformed JSON (Zero-Crash guarantee).
- * @param {object} params - Sanitized environmental and family profile inputs.
- * @param {string} params.city - Target city name.
- * @param {number} params.pm25 - Ambient PM2.5 reading in μg/m³.
- * @param {string} params.vulnSummary - Comma-separated vulnerability labels.
- * @returns {object} Validated clean-air protocol object matching the strict JSON schema.
+ * @param params - Sanitized environmental and family profile inputs.
+ * @returns Validated clean-air protocol object matching the strict JSON schema.
  */
-export function buildFallbackDefensePlan({ city, pm25, vulnSummary }) {
+export function buildFallbackDefensePlan({
+  city,
+  pm25,
+  vulnSummary
+}: {
+  city: string;
+  pm25: number;
+  vulnSummary: string;
+}): SmogDefensePlan {
   const pm25AvoidedUg = Math.round(pm25 * 1.8);
-  const cigarettesAvoided = Number(
-    (pm25AvoidedUg / BERKELEY_EARTH_PM25_PER_CIGARETTE).toFixed(1)
-  );
+  const cigarettesAvoided = Number((pm25AvoidedUg / BERKELEY_EARTH_PM25_PER_CIGARETTE).toFixed(1));
 
   return {
     assessment: `Atmospheric thermal inversion is compressing particulate mass near street level in ${city}. Vulnerable members (${vulnSummary}) require active indoor particulate suppression and sealed ventilation protocols today.`,
@@ -104,8 +141,6 @@ export function buildFallbackDefensePlan({ city, pm25, vulnSummary }) {
 
 /**
  * Records fallback plan execution to Judges DevTools and returns unified response shape.
- * @param {object} context - Request & timing metadata for fallback invocation.
- * @returns {object} Standardized GenAI response with `isMock: true`.
  */
 function executeFallbackResponse({
   city,
@@ -114,7 +149,14 @@ function executeFallbackResponse({
   userPrompt,
   startTime,
   error = null
-}) {
+}: {
+  city: string;
+  pm25: number;
+  vulnSummary: string;
+  userPrompt: string;
+  startTime: number;
+  error?: string | null;
+}): SmogDefensePlanResult {
   const latencyMs = Math.max(120, Math.round(performance.now() - startTime));
   const fallbackData = buildFallbackDefensePlan({ city, pm25, vulnSummary });
   const engineLabel = error
@@ -144,18 +186,19 @@ function executeFallbackResponse({
 
 /**
  * Synthesizes a customized household smog defense plan via Gemini API or non-recursive fallback.
- * @param {object} params - Environmental and household parameters.
- * @param {string} [params.city='New Delhi (NCR)'] - Active city name.
- * @param {number} [params.aqi=300] - US AQI value.
- * @param {number} [params.pm25=180] - PM2.5 mass concentration (μg/m³).
- * @param {string[]} [params.vulnerabilities=[]] - Active household vulnerability IDs.
- * @param {object|null} [clientOverride=null] - Optional injected Gemini client for testing.
- * @returns {Promise<{ success: boolean, data: object, isMock: boolean, latencyMs: number }>} Plan result.
+ * @param params - Environmental and household parameters.
+ * @param clientOverride - Optional injected Gemini client for testing.
+ * @returns Standardized GenAI plan result.
  */
 export async function generateSmogDefensePlan(
-  { city = 'New Delhi (NCR)', aqi = 300, pm25 = 180, vulnerabilities = [] } = {},
-  clientOverride = null
-) {
+  {
+    city = 'New Delhi (NCR)',
+    aqi = 300,
+    pm25 = 180,
+    vulnerabilities = []
+  }: SmogDefensePlanParams = {},
+  clientOverride: GeminiClientLike | null = null
+): Promise<SmogDefensePlanResult> {
   const startTime = performance.now();
   const safeCity = sanitizeText(city, 80) || 'New Delhi (NCR)';
   const safeAqi = Math.round(clampNumber(aqi, 0, 1000, 300));
@@ -217,15 +260,15 @@ Calculate the daily defense plan, solar thermal window instructions, and customi
       latencyMs
     };
   } catch (error) {
-    // Non-recursive fallback: directly invoke heuristic engine on API/schema error
-    console.warn('[Gemini API Fallback Engaged]', error?.message || error);
+    const message = error instanceof Error ? error.message : String(error);
+    logWarning('Gemini API Fallback Engaged', message);
     return executeFallbackResponse({
       city: safeCity,
       pm25: safePm25,
       vulnSummary,
       userPrompt,
       startTime,
-      error: error?.message || String(error)
+      error: message
     });
   }
 }

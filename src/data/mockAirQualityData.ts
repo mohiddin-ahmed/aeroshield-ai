@@ -1,14 +1,18 @@
 /**
- * High-Fidelity Mock Air Quality Dataset
- * Ensures 100% resilient zero-crash execution for evaluators without network or API key dependencies.
+ * @module data/mockAirQualityData
+ * High-fidelity reference telemetry ensuring zero-crash execution
+ * across offline or API-unavailable environments.
  */
 
-export const mockCitiesAirQuality = {
-  'delhi': {
+import type { AirQualityTelemetry } from '../types/airQuality';
+
+/** Deterministic baseline telemetry for major monitoring cities. */
+export const mockCitiesAirQuality: Record<string, AirQualityTelemetry> = {
+  delhi: {
     city: 'New Delhi (NCR)',
     country: 'India',
     latitude: 28.6139,
-    longitude: 77.2090,
+    longitude: 77.209,
     aqi: 425,
     category: 'Hazardous',
     categoryColor: '#9B2226',
@@ -22,14 +26,20 @@ export const mockCitiesAirQuality = {
     humidityPct: 78,
     windSpeedKmh: 4.2,
     inversionRisk: 'Extreme',
-    cigaretteEquivDaily: 28.5, // 627 μg total exposure / 22 μg
-    summary: 'Severe ground thermal inversion has locked industrial and stubble smoke in the troposphere. Inhalation is equivalent to smoking ~28 cigarettes today.',
-    advisoryPills: ['N95 Respirator Mandatory', 'Seal All Windows', 'Run DIY Purifiers High', 'Zero Outdoor Exercise']
+    cigaretteEquivDaily: 28.5,
+    summary:
+      'Severe ground thermal inversion has locked industrial and stubble smoke in the troposphere. Inhalation is equivalent to smoking ~28 cigarettes today.',
+    advisoryPills: [
+      'N95 Respirator Mandatory',
+      'Seal All Windows',
+      'Run DIY Purifiers High',
+      'Zero Outdoor Exercise'
+    ]
   },
-  'mumbai': {
+  mumbai: {
     city: 'Mumbai',
     country: 'India',
-    latitude: 19.0760,
+    latitude: 19.076,
     longitude: 72.8777,
     aqi: 168,
     category: 'Unhealthy',
@@ -45,10 +55,15 @@ export const mockCitiesAirQuality = {
     windSpeedKmh: 9.8,
     inversionRisk: 'Moderate',
     cigaretteEquivDaily: 7.6,
-    summary: 'Moderate coastal sea breeze is assisting dispersion, but vehicular exhaust along construction corridors poses risks to sensitive groups.',
-    advisoryPills: ['Sensitive Groups Mask Up', 'Avoid Seafront Jogging', 'Keep Air Filters on Medium']
+    summary:
+      'Moderate coastal sea breeze is assisting dispersion, but vehicular exhaust along construction corridors poses risks to sensitive groups.',
+    advisoryPills: [
+      'Sensitive Groups Mask Up',
+      'Avoid Seafront Jogging',
+      'Keep Air Filters on Medium'
+    ]
   },
-  'kolkata': {
+  kolkata: {
     city: 'Kolkata',
     country: 'India',
     latitude: 22.5726,
@@ -67,10 +82,15 @@ export const mockCitiesAirQuality = {
     windSpeedKmh: 5.6,
     inversionRisk: 'High',
     cigaretteEquivDaily: 14.8,
-    summary: 'Winter boundary layer compression over the Gangetic delta is trapping localized solid fuel burning and road dust.',
-    advisoryPills: ['N95 for Two-Wheelers', 'Ventilate at 1:30 PM Only', 'Rock-Salt Wet Mopping Required']
+    summary:
+      'Winter boundary layer compression over the Gangetic delta is trapping localized solid fuel burning and road dust.',
+    advisoryPills: [
+      'N95 for Two-Wheelers',
+      'Ventilate at 1:30 PM Only',
+      'Rock-Salt Wet Mopping Required'
+    ]
   },
-  'lahore': {
+  lahore: {
     city: 'Lahore',
     country: 'Pakistan',
     latitude: 31.5204,
@@ -89,10 +109,15 @@ export const mockCitiesAirQuality = {
     windSpeedKmh: 3.5,
     inversionRisk: 'Catastrophic',
     cigaretteEquivDaily: 31.2,
-    summary: 'Dense smog blanket with stagnant air masses. Emergency air defense measures and positive-pressure clean rooms are critical.',
-    advisoryPills: ['Zero Outdoor Exposure', 'Seal Window Drafts with Damp Cloth', 'Continuous DIY Box-Fan Operation']
+    summary:
+      'Dense smog blanket with stagnant air masses. Emergency air defense measures and positive-pressure clean rooms are critical.',
+    advisoryPills: [
+      'Zero Outdoor Exposure',
+      'Seal Window Drafts with Damp Cloth',
+      'Continuous DIY Box-Fan Operation'
+    ]
   },
-  'london': {
+  london: {
     city: 'London',
     country: 'United Kingdom',
     latitude: 51.5074,
@@ -111,14 +136,19 @@ export const mockCitiesAirQuality = {
     windSpeedKmh: 18.2,
     inversionRisk: 'Low',
     cigaretteEquivDaily: 0.8,
-    summary: 'Strong North Atlantic winds ensure rapid particulate dispersion. Air quality is well within WHO recommended thresholds.',
-    advisoryPills: ['Air Quality Safe', 'Outdoor Activities Encouraged', 'Standard Home Ventilation']
+    summary:
+      'Strong North Atlantic winds ensure rapid particulate dispersion. Air quality is well within WHO recommended thresholds.',
+    advisoryPills: [
+      'Air Quality Safe',
+      'Outdoor Activities Encouraged',
+      'Standard Home Ventilation'
+    ]
   },
-  'newyork': {
+  newyork: {
     city: 'New York City',
     country: 'United States',
     latitude: 40.7128,
-    longitude: -74.0060,
+    longitude: -74.006,
     aqi: 38,
     category: 'Good',
     categoryColor: '#CBD77E',
@@ -133,7 +163,8 @@ export const mockCitiesAirQuality = {
     windSpeedKmh: 16.4,
     inversionRisk: 'Low',
     cigaretteEquivDaily: 0.6,
-    summary: 'Clean oceanic air flow with minimal particulate retention. No special air purification required today.',
+    summary:
+      'Clean oceanic air flow with minimal particulate retention. No special air purification required today.',
     advisoryPills: ['Ideal Air Quality', 'Great for Running', 'Natural Ventilation Safe']
   }
 };

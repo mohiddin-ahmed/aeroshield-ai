@@ -4,6 +4,16 @@
  * for AeroShield AI (VayuMitra OS).
  */
 
+import type { AqiCategoryName } from '../types/airQuality';
+
+export interface AqiThresholdBand {
+  max: number;
+  category: AqiCategoryName;
+  color: string;
+  risk: string;
+  advisoryPills: string[];
+}
+
 /** Cache duration for live Open-Meteo telemetry responses (15 minutes). */
 export const CACHE_TTL_MS = 15 * 60 * 1000;
 
@@ -41,10 +51,10 @@ export const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash';
 export const DEFAULT_GEMINI_TEMPERATURE = 0.3;
 
 /** Default household vulnerability profile tags active on first load. */
-export const DEFAULT_VULNERABILITIES = ['toddler', 'asthma'];
+export const DEFAULT_VULNERABILITIES: string[] = ['toddler', 'asthma'];
 
 /** Declarative US AQI classification thresholds, accessible colors, and risk advisories. */
-export const AQI_THRESHOLDS = [
+export const AQI_THRESHOLDS: AqiThresholdBand[] = [
   {
     max: 50,
     category: 'Good',
@@ -57,14 +67,22 @@ export const AQI_THRESHOLDS = [
     category: 'Moderate',
     color: '#E6CA9A',
     risk: 'Mild',
-    advisoryPills: ['Sensitive Groups Stay Alert', 'Avoid Rush-Hour Roads', 'Ventilate Mid-Afternoon']
+    advisoryPills: [
+      'Sensitive Groups Stay Alert',
+      'Avoid Rush-Hour Roads',
+      'Ventilate Mid-Afternoon'
+    ]
   },
   {
     max: 200,
     category: 'Unhealthy',
     color: '#E07A5F',
     risk: 'High',
-    advisoryPills: ['Sensitive Groups Mask Up', 'Keep Box-Fan Filter On', 'Limit Strenuous Outdoor Effort']
+    advisoryPills: [
+      'Sensitive Groups Mask Up',
+      'Keep Box-Fan Filter On',
+      'Limit Strenuous Outdoor Effort'
+    ]
   },
   {
     max: 300,
@@ -78,6 +96,11 @@ export const AQI_THRESHOLDS = [
     category: 'Hazardous',
     color: '#9B2226',
     risk: 'Extreme',
-    advisoryPills: ['N95 Respirator Mandatory', 'Seal All Windows & Drafts', 'Run DIY Purifiers High', 'Zero Outdoor Exercise']
+    advisoryPills: [
+      'N95 Respirator Mandatory',
+      'Seal All Windows & Drafts',
+      'Run DIY Purifiers High',
+      'Zero Outdoor Exercise'
+    ]
   }
 ];

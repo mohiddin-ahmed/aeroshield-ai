@@ -4,26 +4,15 @@
  * Identifies the 1:00 PM – 3:00 PM solar convection window when ground cold pools disperse.
  */
 
-import {
-  SOLAR_WINDOW_END_HOUR,
-  SOLAR_WINDOW_START_HOUR
-} from '../constants/airQuality';
+import { SOLAR_WINDOW_END_HOUR, SOLAR_WINDOW_START_HOUR } from '../constants/airQuality';
+import type { SolarWindowStatus } from '../types/airQuality';
 
 /**
  * Evaluates whether the 1:00 PM – 3:00 PM convective ventilation window is active, upcoming, or closed.
- * @param {Date} [date=new Date()] - Local device date/time to analyze.
- * @returns {{
- *   isWindowActive: boolean,
- *   isBeforeWindow: boolean,
- *   isAfterWindow: boolean,
- *   currentHour: number,
- *   statusText: string,
- *   badgeColor: string,
- *   thermalLiftIntensity: number,
- *   safeAction: string
- * }} Solar window diagnostics and ventilation directive.
+ * @param date - Local device date/time to analyze.
+ * @returns Solar window diagnostics and ventilation directive.
  */
-export function getSolarWindowStatus(date = new Date()) {
+export function getSolarWindowStatus(date: Date = new Date()): SolarWindowStatus {
   const validDate = date instanceof Date && !Number.isNaN(date.getTime()) ? date : new Date();
   const currentHour = validDate.getHours();
   const currentMinutes = validDate.getMinutes();
@@ -47,10 +36,7 @@ export function getSolarWindowStatus(date = new Date()) {
     const minutesUntil = Math.round((SOLAR_WINDOW_START_HOUR - timeDecimal) * 60);
     statusText = `UPCOMING: Solar Window opens in ${Math.floor(minutesUntil / 60)}h ${minutesUntil % 60}m`;
     badgeColor = 'winter-hazel';
-    thermalLiftIntensity = Math.max(
-      10,
-      Math.round((timeDecimal / SOLAR_WINDOW_START_HOUR) * 40)
-    );
+    thermalLiftIntensity = Math.max(10, Math.round((timeDecimal / SOLAR_WINDOW_START_HOUR) * 40));
   } else {
     statusText = 'CLOSED: Evening Inversion Lid Forming (Windows Sealed)';
     badgeColor = 'deep-crimson';

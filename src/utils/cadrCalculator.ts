@@ -9,9 +9,17 @@ import {
   MAX_ROOM_SQFT,
   MIN_ROOM_SQFT
 } from '../constants/airQuality';
+import type { CadrStats, FanSpeed } from '../types/airQuality';
 import { clampNumber } from './inputValidator';
 
-const SPEED_MULTIPLIERS = {
+interface FanSpeedSpec {
+  cfm: number;
+  efficiency: number;
+  noiseDb: number;
+  watts: number;
+}
+
+const SPEED_MULTIPLIERS: Record<FanSpeed, FanSpeedSpec> = {
   low: { cfm: 220, efficiency: 0.94, noiseDb: 42, watts: 38 },
   medium: { cfm: 310, efficiency: 0.91, noiseDb: 51, watts: 55 },
   high: { cfm: 420, efficiency: 0.86, noiseDb: 62, watts: 82 }
@@ -20,16 +28,16 @@ const SPEED_MULTIPLIERS = {
 /**
  * Calculates required airflow (CFM) for a room to achieve target Air Changes per Hour (ACH).
  * Formula: Required CFM = (Volume * Target ACH) / 60.
- * @param {number} roomSqft - Floor area in square feet.
- * @param {number} [targetAch=5] - Desired full room air exchanges per hour.
- * @param {number} [ceilingHeightFt=9] - Room height in feet.
- * @returns {number} Required Clean Air Delivery Rate in CFM.
+ * @param roomSqft - Floor area in square feet.
+ * @param targetAch - Desired full room air exchanges per hour.
+ * @param ceilingHeightFt - Room height in feet.
+ * @returns Required Clean Air Delivery Rate in CFM.
  */
 export function calculateRequiredCfm(
-  roomSqft,
+  roomSqft: number,
   targetAch = 5,
   ceilingHeightFt = DEFAULT_CEILING_HEIGHT_FT
-) {
+): number {
   const safeSqft = clampNumber(roomSqft, MIN_ROOM_SQFT, MAX_ROOM_SQFT, DEFAULT_ROOM_SQFT);
   const safeAch = clampNumber(targetAch, 1, 20, 5);
   const safeHeight = clampNumber(ceilingHeightFt, 6, 30, DEFAULT_CEILING_HEIGHT_FT);
@@ -39,14 +47,18 @@ export function calculateRequiredCfm(
 
 /**
  * Calculates DIY Box-Fan + MERV 13 / HEPA Purifier performance and cost efficiency vs commercial units.
- * @param {number} [roomSqft=200] - Target room floor area in square feet (clamped 50–2000).
- * @param {'low'|'medium'|'high'} [fanSpeed='medium'] - Operating speed setting.
- * @returns {object} Fluid dynamics output metrics (CADR, ACH, noise, power, savings, clean time).
+ * @param roomSqft - Target room floor area in square feet (clamped 50–2000).
+ * @param fanSpeed - Operating speed setting.
+ * @returns Fluid dynamics output metrics (CADR, ACH, noise, power, savings, clean time).
  */
-export function calculateDiyPurifierStats(roomSqft = 200, fanSpeed = 'medium') {
+export function calculateDiyPurifierStats(
+  roomSqft = 200,
+  fanSpeed: FanSpeed | string = 'medium'
+): CadrStats {
   const safeSqft = clampNumber(roomSqft, MIN_ROOM_SQFT, MAX_ROOM_SQFT, 200);
-  const selected = SPEED_MULTIPLIERS[fanSpeed] || SPEED_MULTIPLIERS.medium;
-  const normalizedSpeed = SPEED_MULTIPLIERS[fanSpeed] ? fanSpeed : 'medium';
+  const normalizedSpeed: FanSpeed =
+    fanSpeed === 'low' || fanSpeed === 'medium' || fanSpeed === 'high' ? fanSpeed : 'medium';
+  const selected = SPEED_MULTIPLIERS[normalizedSpeed];
   const effectiveCadrCfm = Math.round(selected.cfm * selected.efficiency);
 
   const roomVolumeCuFt = safeSqft * DEFAULT_CEILING_HEIGHT_FT;
