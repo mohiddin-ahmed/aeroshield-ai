@@ -11,17 +11,17 @@ import { useModalAccessibility } from '../hooks/useModalAccessibility';
  * @returns {JSX.Element|null} DevTools drawer dialog or null when closed.
  */
 export function PromptInspector({ isOpen, onClose }) {
-  const [logs, setLogs] = useState([]);
+  const [logs, setLogs] = useState(() => promptLogger.getLogs());
   const [copiedId, setCopiedId] = useState(null);
-  const [selectedLog, setSelectedLog] = useState(null);
+  const [selectedLog, setSelectedLog] = useState(() => promptLogger.getLogs()[0] || null);
 
   useModalAccessibility(isOpen, onClose);
 
   useEffect(() => {
-    const initialLogs = promptLogger.getLogs();
-    setLogs(initialLogs);
-    if (initialLogs.length > 0) {
-      setSelectedLog((current) => current || initialLogs[0]);
+    const latestLogs = promptLogger.getLogs();
+    setLogs(latestLogs);
+    if (latestLogs.length > 0) {
+      setSelectedLog((current) => current || latestLogs[0]);
     }
 
     const unsubscribe = promptLogger.subscribe((updatedLogs) => {
@@ -29,7 +29,7 @@ export function PromptInspector({ isOpen, onClose }) {
       setSelectedLog((current) => current || updatedLogs[0] || null);
     });
     return unsubscribe;
-  }, []);
+  }, [isOpen]);
 
   const handleCopy = (log) => {
     if (navigator?.clipboard?.writeText) {
