@@ -38,7 +38,7 @@ flowchart TD
 * **Foundation Model:** Google Gemini 2.5 Flash API (`temperature: 0.3`, strict `application/json` schema validation)
 * **Atmospheric Data Pipeline:** Open-Meteo Copernicus CAMS 11km model grid ($\text{PM}_{2.5}$, $\text{PM}_{10}$, $\text{NO}_2$, $\text{O}_3$) with 4s `AbortController` timeouts
 * **Frontend Platform:** React 19 (modular custom hooks, `PropTypes`, lazy-loaded modals & tabs), Tailwind CSS v4, Vite 8 (Rolldown vendor chunk splitting)
-* **Quality, Security & Accessibility:** ESLint 9 (`jsx-a11y` zero-warning enforcement), CSP/HSTS security headers (`vercel.json`), and 30 automated Vitest + Testing Library unit/security/accessibility/integration tests
+* **Quality, Security & Accessibility:** ESLint 9 (`jsx-a11y` zero-warning enforcement), CSP/HSTS security headers (`vercel.json`), iOS/Android safe-area responsiveness, and 34 automated Vitest + Testing Library unit/security/accessibility/integration tests
 
 ---
 
@@ -60,13 +60,13 @@ We engineered a specialized **5-Pillar Clinical Prompt Architecture**:
 * **Our Solution:** Separated deterministic heuristic synthesis (`buildFallbackDefensePlan`) from `generateSmogDefensePlan`, ensuring single-pass non-recursive failover backed by a top-level React `ErrorBoundary` and `AbortController` API timeouts.
 
 ### Challenge 2: Bundle Bloat vs Mobile Responsiveness & Accessibility
-* **The Problem:** Loading all interactive modals, charts, and scientific hubs upfront created a >500 kB single JavaScript bundle, while overlays needed full keyboard control.
-* **Our Solution:** Code-split secondary views and modals using `React.lazy()` + `<Suspense>` and configured Vite 8 `codeSplitting.groups`, reducing main entry JS to **134.4 kB (41.6 kB gzip)**. Added a shared `useModalAccessibility` Escape-key hook, skip-to-content landmarks, `aria-pressed` states, and `eslint-plugin-jsx-a11y` CI checks.
+* **The Problem:** Loading all heavy modals upfront bloated initial page load, while mobile/iOS/Android devices needed instant tab switching, safe-area support, and full keyboard accessibility.
+* **Our Solution:** Code-split all 6 modal dialogs using `React.lazy()` + `<Suspense>` and configured Vite 8 `codeSplitting.groups`, separating vendor chunks while keeping primary tabs instant-switchable (~182 kB entry JS / ~53 kB gzip). Added `viewport-fit=cover` + iOS safe-area insets, a shared `useModalAccessibility` Escape-key hook, skip-to-content landmarks, `aria-pressed` states, and `eslint-plugin-jsx-a11y` checks.
 
 ---
 
 ## 5. Verification & Conclusion
 
-Running `npm run validate` verifies all 10 automated checks end to end: ESLint (`--max-warnings=0`), all 30 Vitest tests across 5 suites, code-split Vite compilation, CSP/HSTS headers, and prompt registry integrity.
+Running `npm run validate` verifies all 10 automated checks end to end: ESLint (`--max-warnings=0`), all 34 Vitest tests across 5 suites, code-split Vite compilation, CSP/HSTS headers, and prompt registry integrity.
 
 AeroShield AI (VayuMitra OS) demonstrates how intent-driven engineering with Google Antigravity and Gemini 2.5 Flash can deliver clinically grounded, accessible environmental protection software at zero household cost.

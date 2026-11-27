@@ -10,6 +10,10 @@ import { TelemetryGrid } from '../src/components/TelemetryGrid';
 import { DemoVideoModal } from '../src/components/DemoVideoModal';
 import { SettingsModal } from '../src/components/SettingsModal';
 import { ErrorBoundary } from '../src/components/ErrorBoundary';
+import { SmogRoutineTimeline } from '../src/components/SmogRoutineTimeline';
+import { DailyDefenseChecklist } from '../src/components/DailyDefenseChecklist';
+import { CitySelector } from '../src/components/CitySelector';
+import { DAILY_DEFENSE_ACTIONS } from '../src/hooks/useDailyChecklist';
 
 const sampleTelemetry = {
   city: 'New Delhi (NCR)',
@@ -36,7 +40,7 @@ describe('AeroShield AI: UI Components & WCAG 2.1 AA Accessibility Tests', () =>
     expect(screen.getByRole('img', { name: /AQI Rotary Gauge showing 425/i })).toBeInTheDocument();
     expect(screen.getByText('425')).toBeInTheDocument();
     expect(screen.getByText(/14\.8/)).toBeInTheDocument();
-    expect(screen.getByText(/Solar Convective Lift Window Active/i)).toBeInTheDocument();
+    expect(screen.getByText(/Safe to Open Windows Now/i)).toBeInTheDocument();
   });
 
   it('toggles household vulnerability profiles with accessible aria-pressed states', () => {
@@ -45,7 +49,7 @@ describe('AeroShield AI: UI Components & WCAG 2.1 AA Accessibility Tests', () =>
       <VulnerabilityToggles selected={['toddler']} onToggle={onToggle} currentLang="en" />
     );
 
-    const toddlerBtn = screen.getByRole('button', { name: /Toddler/i });
+    const toddlerBtn = screen.getByRole('button', { name: /Young Kids/i });
     const asthmaBtn = screen.getByRole('button', { name: /Asthma/i });
 
     expect(toddlerBtn).toHaveAttribute('aria-pressed', 'true');
@@ -154,5 +158,82 @@ describe('AeroShield AI: UI Components & WCAG 2.1 AA Accessibility Tests', () =>
     expect(screen.getByText(/Simulated UI Crash/i)).toBeInTheDocument();
 
     consoleSpy.mockRestore();
+  });
+
+  it('highlights only the single active nighttime slot in SmogRoutineTimeline without confusing 1-3 PM badge', () => {
+    render(
+      <SmogRoutineTimeline
+        solarStatus={{ isWindowActive: false }}
+        timeContext={{
+          hour: 1,
+          timeString: '01:00 AM',
+          phaseLabel: 'Night • Keep Closed',
+          slotTitle: 'Night Protection — Keep Bedroom Sealed',
+          currentUrgentPrescription: 'Keep bedroom windows closed tight.'
+        }}
+        currentLang="en"
+      />
+    );
+
+    const activeBadges = screen.getAllByText('Active Right Now');
+    expect(activeBadges).toHaveLength(1);
+    expect(screen.getByText(/Safe Window Tip/i)).toBeInTheDocument();
+  });
+
+  it('tracks checked actions and computes daily PM2.5 and cigarette savings in DailyDefenseChecklist', () => {
+    const onToggle = vi.fn();
+    render(
+      <DailyDefenseChecklist
+        actions={DAILY_DEFENSE_ACTIONS}
+        completedIds={['seal_windows', 'run_purifier']}
+        summary={{
+          completedCount: 2,
+          totalCount: 5,
+          protectionPercent: 63,
+          pm25SavedTodayUg: 139,
+          cigarettesSavedToday: 6.3,
+          streakDays: 3,
+          householdName: 'Ahmed Family'
+        }}
+        onToggleAction={onToggle}
+        onUpdateHouseholdName={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText(/Ahmed Family's Daily Clean-Air Score/i)).toBeInTheDocument();
+    expect(screen.getByText('63%')).toBeInTheDocument();
+    expect(screen.getByText('6.3')).toBeInTheDocument();
+    expect(screen.getByText(/3 Day Streak/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Wet-mopped floors/i }));
+    expect(onToggle).toHaveBeenCalledWith('wet_mop');
+  });
+
+  it('opens searchable CitySelector popover, filters cities, and selects chosen station', () => {
+    const onSelectCity = vi.fn();
+    render(
+      <CitySelector
+        currentCity="Bengaluru"
+        onSelectCity={onSelectCity}
+        onRefreshLocation={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /Change monitoring city/i }));
+    const searchBox = screen.getByPlaceholderText(/Search city or state/i);
+    fireEvent.change(searchBox, { target: { value: 'mumbai' } });
+
+    const mumbaiOption = screen.getByRole('option', { name: /Mumbai/i });
+    fireEvent.click(mumbaiOption);
+    expect(onSelectCity).toHaveBeenCalledWith('mumbai');
+  });
+
+  it('exposes accessible horizontal scroll arrow buttons on slidable VulnerabilityToggles', () => {
+    render(
+      <VulnerabilityToggles selected={['toddler']} onToggle={vi.fn()} currentLang="en" />
+    );
+
+    expect(screen.getByRole('button', { name: /Scroll family profiles left/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Scroll family profiles right/i })).toBeInTheDocument();
   });
 });

@@ -1,7 +1,7 @@
 # 🛡️ AeroShield AI (VayuMitra OS) — Urban Air Quality Defense Companion
 
 [![ESLint](https://img.shields.io/badge/ESLint-0%20Errors%20%7C%200%20Warnings-emerald?style=for-the-badge&logo=eslint)](./eslint.config.js)
-[![Tests](https://img.shields.io/badge/Vitest-30%20Passing%20Tests-indigo?style=for-the-badge&logo=vitest)](./tests)
+[![Tests](https://img.shields.io/badge/Vitest-34%20Passing%20Tests-indigo?style=for-the-badge&logo=vitest)](./tests)
 [![AI Engine](https://img.shields.io/badge/Gemini%20API-2.5%20Flash-blue?style=for-the-badge&logo=google)](https://aistudio.google.com)
 [![Accessibility](https://img.shields.io/badge/WCAG%202.1%20AA-Compliant-teal?style=for-the-badge)](./src/App.jsx)
 [![Security](https://img.shields.io/badge/CSP%20%26%20HSTS-Hardened-amber?style=for-the-badge)](./vercel.json)
@@ -22,11 +22,12 @@ Every winter across the Indo-Gangetic Plains (Delhi NCR, Patna, Lucknow, Kolkata
 **AeroShield AI (VayuMitra OS)** is a production-grade GenAI clean-air defense companion delivering:
 1. ☀️ **1–3 PM Diurnal Solar Convective Lift Detector:** Computes when afternoon solar heating breaks the nocturnal cold-pool inversion boundary, unlocking a safe 15-minute cross-ventilation window.
 2. 🚬 **Berkeley Earth Inhaled Dosimetry Engine:** Converts ambient $\text{PM}_{2.5}$ ($\mu\text{g/m}^3$) directly into daily cigarette equivalence ($22\,\mu\text{g/m}^3 \approx 1\text{ cigarette}$) calibrated to 9 household vulnerability profiles (toddlers, asthmatics, elderly, commuters, pregnant mothers, students, athletes, pets, renters).
-3. 🛠️ **₹1,250 Desi Jugaad Clean-Air Lab & CADR Calculator:** Fluid-dynamics simulator computing Clean Air Delivery Rate (CFM), Air Changes per Hour (ACH), and 90% particulate clean-time for a DIY Box-Fan + MERV 13/HEPA build at over 19x lower cost than commercial purifiers.
-4. 🤖 **One-Click Multi-AI Prompt Synthesizer:** Auto-crafts context-synchronized clinical prompts injected with live weather, AQI, time phase, and vulnerability profiles for instant execution across Google Gemini, OpenAI ChatGPT, and Anthropic Claude.
-5. 🔬 **Judges Live Prompt Inspector (DevTools):** Audits Gemini 2.5 Flash system instructions, sanitized user payloads, token counts, temperature, and latency in real time.
-6. 🛡️ **Non-Recursive Zero-Crash Fallback Engine:** Guarantees zero blank screens during evaluator reviews when API keys are omitted, offline, or rate-limited (`429`).
-7. 🌐 **WCAG 2.1 AA Accessible & Multilingual UI:** Full localization across 7 Indian languages (English, Hindi, Bengali, Telugu, Tamil, Kannada, Marathi) with high-contrast Dark/Light themes.
+3. 🛠️ **₹1,250 Desi Jugaad Clean-Air Lab & CADR Calculator:** Fluid-dynamics simulator computing Clean Air Delivery Rate (CFM), Air Changes per Hour (ACH), and 90% particulate clean-time for a DIY Box-Fan + MERV 13/HEPA build at 19.2x lower cost than commercial ₹24,000 purifiers.
+4. 📊 **Zero-Login Daily Clean-Air Check-In & Streak:** Local-first daily action checklist (`localStorage`) calculating blocked $\text{PM}_{2.5}$ dust (μg), cigarette equivalents avoided, and daily comeback streaks without any blocking login wall.
+5. 🤖 **One-Click Multi-AI Prompt Synthesizer:** Auto-crafts context-synchronized clinical prompts injected with live weather, AQI, time phase, and vulnerability profiles for instant execution across Google Gemini, OpenAI ChatGPT, and Anthropic Claude.
+6. 🔬 **Judges Live Prompt Inspector (DevTools):** Audits Gemini 2.5 Flash system instructions, sanitized user payloads, token counts, temperature, and latency in real time.
+7. 🛡️ **Non-Recursive Zero-Crash Fallback Engine:** Guarantees zero blank screens during evaluator reviews when API keys are omitted, offline, or rate-limited (`429`).
+8. 🌐 **Cross-Device Responsive & WCAG 2.1 AA Accessible:** Engineered for iOS (`viewport-fit=cover`, notch safe-area insets), Android Chrome, tablets, and desktops across 7 Indian languages with high-contrast Dark/Light themes.
 
 ---
 
@@ -49,8 +50,8 @@ Architected for multi-generational households, renters, commuters, and vulnerabl
 
 The codebase follows strict modular separation of concerns with static enforcement:
 - **ESLint 9 Flat Config (`--max-warnings=0`):** Enforces `@eslint/js` recommended rules, `eslint-plugin-react`, `eslint-plugin-react-hooks`, and `eslint-plugin-jsx-a11y` across every file (`eslint.config.js`).
-- **Custom Hook Decomposition (`src/hooks/`):** Decouples state management from presentation across `useAirQuality`, `useTheme`, `useLanguage`, and shared modal keyboard hook `useModalAccessibility`.
-- **Decomposed UI Components (`src/components/`):** `App.jsx` orchestrates clean, focused components (`LocationHeroBanner`, `AiPlanSpotlight`, `CommandCenterTab`, `RotaryAqiDial`, `TelemetryGrid`, etc.).
+- **Custom Hook Decomposition (`src/hooks/`):** Decouples state management from presentation across `useAirQuality`, `useTheme`, `useLanguage`, `useDailyChecklist`, and shared modal keyboard hook `useModalAccessibility`.
+- **Decomposed UI Components (`src/components/`):** `App.jsx` orchestrates focused modules (`LocationHeroBanner`, `CitySelector`, `AiPlanSpotlight`, `CommandCenterTab`, `RotaryAqiDial`, `VulnerabilityToggles`, `TelemetryGrid`, `DailyDefenseChecklist`, etc.) with one-click Home return via header logo.
 - **Explicit Runtime Contracts:** All UI components enforce runtime `PropTypes` validation alongside JSDoc `@param`/`@returns` contracts on services, hooks, and utilities.
 - **Centralized Constants (`src/constants/airQuality.js`):** Eliminates magic numbers and encodes declarative `AQI_THRESHOLDS`.
 
@@ -80,8 +81,7 @@ flowchart TD
 
 ## ⚡ Performance & Bundle Optimization
 
-- **Code Splitting (`React.lazy` + `Suspense`):** Secondary tabs (`SmogRoutineTimeline`, `DesiJugaadLab`, `ResearchHub`) and all 6 dialogs load on demand, reducing initial application JS bundle size from 532 kB to **134.4 kB (41.6 kB gzip)**.
-- **Vite 8 Vendor Chunking (`vite.config.js`):** Separates cacheable vendor chunks (`vendor-react`, `vendor-genai`, `vendor-icons`) with zero build size warnings.
+- **Code Splitting (`React.lazy` + `Suspense`) & Zero-Flash Navigation:** All 6 modal dialogs load lazily on demand while primary tabs switch instantaneously in memory, keeping initial JS lean (~182 kB raw / ~53 kB gzip) and separating vendor chunks (`vendor-react`, `vendor-genai`, `vendor-icons`) via Vite 8 with zero build size warnings.
 - **Resilient Networking:** Uses `AbortController` 4-second timeouts on Open-Meteo and Nominatim requests plus 15-minute in-memory coordinate caching.
 
 ---
@@ -96,21 +96,21 @@ flowchart TD
 
 ## 🧪 Automated Testing & Pre-Flight QA
 
-All checks are automated across unit tests, security guardrails, GenAI failover tests, UI accessibility tests, and end-to-end flows (**5 test files, 30 passing tests**):
+All checks are automated across unit tests, security guardrails, GenAI failover tests, UI accessibility tests, and end-to-end flows (**5 test files, 34 passing tests**):
 
 | Suite File | Focus Areas Covered | Environment |
 |---|---|---|
 | `tests/airQuality.test.js` | CADR math, Solar Window boundaries, Berkeley Earth rule, AQI classification, Open-Meteo caching & 503 fallback | Node |
 | `tests/inputValidator.test.js` | HTML/control-char sanitization, key normalization, coordinate validation, numeric clamping, AI JSON schema parser | Node |
 | `tests/geminiService.test.js` | Offline fallback, injected live client token logging, non-recursive `429` error failover verification, log buffer bounds | Node |
-| `tests/components.test.jsx` | Rotary dial ARIA gauge, Vulnerability `aria-pressed`, CADR slider recalc, Modal Escape keys, ErrorBoundary alert | jsdom + RTL |
-| `tests/integration.test.jsx` | Onboarding dismissal, Plan generation -> Judges DevTools inspection, BottomNav `aria-current`, Hindi language switch | jsdom + RTL |
+| `tests/components.test.jsx` | Rotary dial ARIA gauge, Vulnerability slider & toggles, CitySelector search, Daily checklist, Modal Escape keys, ErrorBoundary alert | jsdom + RTL |
+| `tests/integration.test.jsx` | Onboarding dismissal, Plan generation -> Judges DevTools, BottomNav `aria-current`, App icon Home navigation, Hindi language switch | jsdom + RTL |
 
 ### Local Verification Commands
 ```bash
 npm install
 npm run lint       # ESLint (--max-warnings=0 across src, tests, scripts)
-npm test           # Runs all 30 unit, security, component, and integration tests
+npm test           # Runs all 34 unit, security, component, and integration tests
 npm run build      # Compiles code-split production bundle in dist/
 npm run validate   # Executes the 10-point Submission Pre-Flight Auditor CLI
 ```
@@ -144,10 +144,10 @@ aeroshield-ai/
 ├── src/
 │   ├── components/                 # Accessible, PropTypes-validated React UI & lazy modals
 │   ├── constants/                  # Centralized meteorological, AQI, and timing constants
-│   ├── hooks/                      # Custom hooks (useAirQuality, useTheme, useLanguage, useModalAccessibility)
+│   ├── hooks/                      # Custom hooks (useAirQuality, useDailyChecklist, useTheme, useLanguage, useModalAccessibility)
 │   ├── services/                   # Open-Meteo CAMS client, Gemini 2.5 Flash service, citations
 │   └── utils/                      # CADR math, solar window, geolocation, input validator, i18n
-├── tests/                          # Vitest + Testing Library suites (5 files, 30 passing tests)
+├── tests/                          # Vitest + Testing Library suites (5 files, 34 passing tests)
 ├── eslint.config.js                # ESLint 9 flat config (React, Hooks, jsx-a11y)
 ├── vercel.json                     # Hardened security headers (CSP, HSTS, Referrer-Policy)
 └── vite.config.js                  # Vite 8 + Rolldown vendor chunk optimization

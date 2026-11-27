@@ -137,8 +137,8 @@ describe('AeroShield AI: Mathematical, Atmospheric & Telemetry Tests', () => {
       telemetry,
       vulnerabilities: ['asthma', 'commuter']
     });
-    expect(targeted.currentUrgentAdvisory).toContain('Morning Thermal Inversion Peak');
-    expect(targeted.currentUrgentAdvisory).toContain('High Humidity Alert');
+    expect(targeted.currentUrgentAdvisory).toContain('Morning Smog Alert');
+    expect(targeted.currentUrgentAdvisory).toContain('High Humidity Tip');
     expect(targeted.customizedJugaadList.length).toBe(5);
     expect(targeted.customAiPrompt).toContain('asthma, commuter');
   });

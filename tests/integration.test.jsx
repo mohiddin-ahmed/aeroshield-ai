@@ -58,7 +58,7 @@ describe('AeroShield AI: End-to-End Application Flow Integration Tests', () => {
     expect(localStorage.getItem('aeroshield_onboarded')).toBe('true');
 
     // Generate AI Smog Defense Plan
-    const generateBtn = screen.getByRole('button', { name: /Generate AI Plan/i });
+    const generateBtn = screen.getByRole('button', { name: /Get AI Plan/i });
     fireEvent.click(generateBtn);
 
     const planHeading = await screen.findByText(/Generated Smog Defense Plan for Your Family/i);
@@ -77,24 +77,29 @@ describe('AeroShield AI: End-to-End Application Flow Integration Tests', () => {
     render(<App />);
 
     const homeNav = screen.getByRole('button', { name: 'Home' });
-    const jugaadNav = screen.getByRole('button', { name: 'Jugaad' });
-    const researchNav = screen.getByRole('button', { name: 'Research' });
+    const hacksNav = screen.getByRole('button', { name: 'Hacks' });
+    const scienceNav = screen.getByRole('button', { name: 'Science' });
 
     expect(homeNav).toHaveAttribute('aria-current', 'page');
 
-    fireEvent.click(jugaadNav);
+    fireEvent.click(hacksNav);
     await waitFor(() => {
-      expect(screen.getByText(/Personalized Indoor Air Quality Hacks/i)).toBeInTheDocument();
+      expect(screen.getByText(/Simple DIY Clean-Air Hacks for Any Home/i)).toBeInTheDocument();
     });
-    expect(jugaadNav).toHaveAttribute('aria-current', 'page');
+    expect(hacksNav).toHaveAttribute('aria-current', 'page');
 
-    fireEvent.click(researchNav);
+    fireEvent.click(scienceNav);
     await waitFor(() => {
       expect(
-        screen.getByText(/Scientific Research & Particulate Dosimetry Hub/i)
+        screen.getByText(/How Clean-Air Steps Protect Your Lungs/i)
       ).toBeInTheDocument();
     });
-    expect(researchNav).toHaveAttribute('aria-current', 'page');
+    expect(scienceNav).toHaveAttribute('aria-current', 'page');
+
+    // Clicking the header App Icon / Brand button navigates right back to Home
+    const brandHomeBtn = screen.getByRole('button', { name: /Return to AeroShield AI Home/i });
+    fireEvent.click(brandHomeBtn);
+    expect(homeNav).toHaveAttribute('aria-current', 'page');
   });
 
   it('switches language localized labels when selecting हिन्दी from Navbar dropdown', async () => {
