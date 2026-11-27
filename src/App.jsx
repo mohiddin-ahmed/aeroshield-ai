@@ -1,25 +1,45 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, lazy, Suspense } from 'react';
 import { Info } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { FloatingBottomNav } from './components/FloatingBottomNav';
 import { CommandCenterTab } from './components/CommandCenterTab';
-import { SmogRoutineTimeline } from './components/SmogRoutineTimeline';
-import { DesiJugaadLab } from './components/DesiJugaadLab';
-import { ResearchHub } from './components/ResearchHub';
-import { DemoVideoModal } from './components/DemoVideoModal';
-import { SettingsModal } from './components/SettingsModal';
-import { JugaadDetailModal } from './components/JugaadDetailModal';
-import { MultiAiModal } from './components/MultiAiModal';
-import { PromptInspector } from './components/PromptInspector';
-import { OnboardingModal } from './components/OnboardingModal';
 import { useTheme } from './hooks/useTheme';
 import { useLanguage } from './hooks/useLanguage';
 import { useAirQuality } from './hooks/useAirQuality';
 import { SCROLL_MEMORY_WINDOW_MS } from './constants/airQuality';
 
+// Lazy-loaded secondary tabs and modals to minimize initial JS bundle size
+const SmogRoutineTimeline = lazy(() =>
+  import('./components/SmogRoutineTimeline').then((m) => ({ default: m.SmogRoutineTimeline }))
+);
+const DesiJugaadLab = lazy(() =>
+  import('./components/DesiJugaadLab').then((m) => ({ default: m.DesiJugaadLab }))
+);
+const ResearchHub = lazy(() =>
+  import('./components/ResearchHub').then((m) => ({ default: m.ResearchHub }))
+);
+const DemoVideoModal = lazy(() =>
+  import('./components/DemoVideoModal').then((m) => ({ default: m.DemoVideoModal }))
+);
+const SettingsModal = lazy(() =>
+  import('./components/SettingsModal').then((m) => ({ default: m.SettingsModal }))
+);
+const JugaadDetailModal = lazy(() =>
+  import('./components/JugaadDetailModal').then((m) => ({ default: m.JugaadDetailModal }))
+);
+const MultiAiModal = lazy(() =>
+  import('./components/MultiAiModal').then((m) => ({ default: m.MultiAiModal }))
+);
+const PromptInspector = lazy(() =>
+  import('./components/PromptInspector').then((m) => ({ default: m.PromptInspector }))
+);
+const OnboardingModal = lazy(() =>
+  import('./components/OnboardingModal').then((m) => ({ default: m.OnboardingModal }))
+);
+
 /**
  * Root application shell for AeroShield AI (VayuMitra OS).
- * Coordinates theme, localization, live atmospheric telemetry, adaptive scroll memory,
+ * Coordinates theme, localization, live atmospheric telemetry, lazy-loaded views,
  * and WCAG 2.1 AA accessible modal dialogs.
  * @returns {JSX.Element} Full responsive web application layout.
  */
@@ -177,33 +197,45 @@ export function App() {
           />
         )}
 
-        {activeTab === 'routine' && (
-          <div className="animate-page-enter">
-            <SmogRoutineTimeline
-              solarStatus={solarStatus}
-              timeContext={timeContext}
-              currentLang={currentLang}
-            />
-          </div>
-        )}
+        <Suspense
+          fallback={
+            <div
+              role="status"
+              aria-live="polite"
+              className="p-8 rounded-3xl glass-card text-center text-xs font-semibold text-zinc-500 dark:text-zinc-400"
+            >
+              Loading VayuMitra OS module...
+            </div>
+          }
+        >
+          {activeTab === 'routine' && (
+            <div className="animate-page-enter">
+              <SmogRoutineTimeline
+                solarStatus={solarStatus}
+                timeContext={timeContext}
+                currentLang={currentLang}
+              />
+            </div>
+          )}
 
-        {activeTab === 'jugaad' && (
-          <div className="animate-page-enter">
-            <DesiJugaadLab
-              onOpenMultiAi={() => setIsMultiAiOpen(true)}
-              personalizedIntel={personalizedIntel}
-              timeContext={timeContext}
-              onSelectJugaad={(item) => setSelectedJugaadItem(item)}
-              currentLang={currentLang}
-            />
-          </div>
-        )}
+          {activeTab === 'jugaad' && (
+            <div className="animate-page-enter">
+              <DesiJugaadLab
+                onOpenMultiAi={() => setIsMultiAiOpen(true)}
+                personalizedIntel={personalizedIntel}
+                timeContext={timeContext}
+                onSelectJugaad={(item) => setSelectedJugaadItem(item)}
+                currentLang={currentLang}
+              />
+            </div>
+          )}
 
-        {activeTab === 'research' && (
-          <div className="animate-page-enter">
-            <ResearchHub telemetry={telemetry} currentLang={currentLang} />
-          </div>
-        )}
+          {activeTab === 'research' && (
+            <div className="animate-page-enter">
+              <ResearchHub telemetry={telemetry} currentLang={currentLang} />
+            </div>
+          )}
+        </Suspense>
 
         {/* Scientific & Public Health Disclaimer Footer */}
         <footer className="mt-8 p-4 rounded-3xl glass-card border border-zinc-200 dark:border-zinc-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-zinc-600 dark:text-zinc-300">
@@ -231,40 +263,54 @@ export function App() {
         currentLang={currentLang}
       />
 
-      {/* Accessible Modals & DevTools Drawer */}
-      <OnboardingModal isOpen={isOnboardingOpen} onClose={() => setIsOnboardingOpen(false)} />
+      {/* Lazy-Loaded Modals & DevTools Drawer */}
+      <Suspense fallback={null}>
+        {isOnboardingOpen && (
+          <OnboardingModal isOpen={isOnboardingOpen} onClose={() => setIsOnboardingOpen(false)} />
+        )}
 
-      <DemoVideoModal isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)} />
+        {isVideoModalOpen && (
+          <DemoVideoModal isOpen={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)} />
+        )}
 
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        currentLang={currentLang}
-        onSelectLang={selectLanguage}
-        isDarkMode={isDarkMode}
-        onToggleDarkMode={toggleDarkMode}
-        vulnerabilities={vulnerabilities}
-        onToggleVulnerability={handleToggleVulnerability}
-        onOpenDevTools={() => setIsInspectorOpen(true)}
-      />
+        {isSettingsOpen && (
+          <SettingsModal
+            isOpen={isSettingsOpen}
+            onClose={() => setIsSettingsOpen(false)}
+            currentLang={currentLang}
+            onSelectLang={selectLanguage}
+            isDarkMode={isDarkMode}
+            onToggleDarkMode={toggleDarkMode}
+            vulnerabilities={vulnerabilities}
+            onToggleVulnerability={handleToggleVulnerability}
+            onOpenDevTools={() => setIsInspectorOpen(true)}
+          />
+        )}
 
-      <JugaadDetailModal
-        item={selectedJugaadItem}
-        isOpen={Boolean(selectedJugaadItem)}
-        onClose={() => setSelectedJugaadItem(null)}
-        onOpenMultiAi={() => setIsMultiAiOpen(true)}
-      />
+        {selectedJugaadItem && (
+          <JugaadDetailModal
+            item={selectedJugaadItem}
+            isOpen={Boolean(selectedJugaadItem)}
+            onClose={() => setSelectedJugaadItem(null)}
+            onOpenMultiAi={() => setIsMultiAiOpen(true)}
+          />
+        )}
 
-      <MultiAiModal
-        isOpen={isMultiAiOpen}
-        onClose={() => setIsMultiAiOpen(false)}
-        telemetry={telemetry}
-        timeContext={timeContext}
-        vulnerabilities={vulnerabilities}
-        customAiPrompt={personalizedIntel.customAiPrompt}
-      />
+        {isMultiAiOpen && (
+          <MultiAiModal
+            isOpen={isMultiAiOpen}
+            onClose={() => setIsMultiAiOpen(false)}
+            telemetry={telemetry}
+            timeContext={timeContext}
+            vulnerabilities={vulnerabilities}
+            customAiPrompt={personalizedIntel.customAiPrompt}
+          />
+        )}
 
-      <PromptInspector isOpen={isInspectorOpen} onClose={() => setIsInspectorOpen(false)} />
+        {isInspectorOpen && (
+          <PromptInspector isOpen={isInspectorOpen} onClose={() => setIsInspectorOpen(false)} />
+        )}
+      </Suspense>
     </div>
   );
 }
