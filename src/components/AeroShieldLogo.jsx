@@ -1,19 +1,18 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
- * AeroShield AI (VayuMitra OS) — Professional SVG Logo System
- * Provides 4 distinct, scalable, mathematically precise vector logo marks:
- * - 'shield-wind' (Concept 1: Aerodynamic Shield with Laminar Airflow Curves)
- * - 'vortex-leaf' (Concept 2: Continuous Vayu Clean-Air Loop & Renewal)
- * - 'inversion-rings' (Concept 3: Concentric Atmospheric Barrier & Core Defense)
- * - 'monogram-a' (Concept 4: High-Tech Geometric Monogram 'A' Shield)
+ * Scalable geometric SVG brand logo mark for AeroShield AI (VayuMitra OS).
+ * Supports four vector variants and adaptive dark/light contrast modes.
+ * @param {object} props - Logo component props.
+ * @returns {JSX.Element} SVG icon mark optionally paired with the AeroShield AI wordmark.
  */
-export function AeroShieldLogo({ 
-  variant = 'shield-wind', 
-  size = 40, 
-  className = '', 
+export function AeroShieldLogo({
+  variant = 'shield-wind',
+  size = 40,
+  className = '',
   withWordmark = false,
-  isDarkMode = true 
+  isDarkMode = true
 }) {
   const primaryEmerald = '#10B981';
   const mintTeal = '#34D399';
@@ -23,32 +22,41 @@ export function AeroShieldLogo({
     switch (variant) {
       case 'vortex-leaf':
         return (
-          <svg 
-            width={size} 
-            height={size} 
-            viewBox="0 0 100 100" 
-            fill="none" 
+          <svg
+            width={size}
+            height={size}
+            viewBox="0 0 100 100"
+            fill="none"
             xmlns="http://www.w3.org/2000/svg"
             className={className}
+            role="img"
+            aria-label="AeroShield AI Vayu clean-air logo"
           >
-            <circle cx="50" cy="50" r="46" fill={isDarkMode ? '#18181B' : '#F4F4F5'} stroke={isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'} strokeWidth="1.5"/>
-            <path 
-              d="M50 16C31.22 16 16 31.22 16 50C16 68.78 31.22 84 50 84C68.78 84 84 68.78 84 50C84 31.22 68.78 16 50 16ZM50 76C35.64 76 24 64.36 24 50C24 35.64 35.64 24 50 24C60.2 24 69.04 29.86 73.32 38.38C69.58 35.62 64.96 34 60 34C48.95 34 40 42.95 40 54C40 65.05 48.95 74 60 74C64.96 74 69.58 72.38 73.32 69.62C69.04 78.14 60.2 84 50 84Z" 
+            <title>AeroShield AI Vayu Clean-Air Emblem</title>
+            <circle
+              cx="50"
+              cy="50"
+              r="46"
+              fill={isDarkMode ? '#18181B' : '#F4F4F5'}
+              stroke={isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'}
+              strokeWidth="1.5"
+            />
+            <path
+              d="M50 16C31.22 16 16 31.22 16 50C16 68.78 31.22 84 50 84C68.78 84 84 68.78 84 50C84 31.22 68.78 16 50 16ZM50 76C35.64 76 24 64.36 24 50C24 35.64 35.64 24 50 24C60.2 24 69.04 29.86 73.32 38.38C69.58 35.62 64.96 34 60 34C48.95 34 40 42.95 40 54C40 65.05 48.95 74 60 74C64.96 74 69.58 72.38 73.32 69.62C69.04 78.14 60.2 84 50 84Z"
               fill={primaryEmerald}
               opacity="0.2"
             />
-            {/* Aerodynamic Vayu Circulation Spiral */}
-            <path 
-              d="M32 50C32 40.06 40.06 32 50 32C59.94 32 68 40.06 68 50C68 59.94 59.94 68 50 68" 
-              stroke={primaryEmerald} 
-              strokeWidth="6" 
+            <path
+              d="M32 50C32 40.06 40.06 32 50 32C59.94 32 68 40.06 68 50C68 59.94 59.94 68 50 68"
+              stroke={primaryEmerald}
+              strokeWidth="6"
               strokeLinecap="round"
             />
-            <path 
-              d="M50 20C66.57 20 80 33.43 80 50C80 66.57 66.57 80 50 80" 
-              stroke={mintTeal} 
-              strokeWidth="4" 
-              strokeLinecap="round" 
+            <path
+              d="M50 20C66.57 20 80 33.43 80 50C80 66.57 66.57 80 50 80"
+              stroke={mintTeal}
+              strokeWidth="4"
+              strokeLinecap="round"
               strokeDasharray="4 8"
             />
             <circle cx="50" cy="50" r="6" fill={isDarkMode ? '#FFFFFF' : '#18181B'} />
@@ -57,28 +65,35 @@ export function AeroShieldLogo({
 
       case 'inversion-rings':
         return (
-          <svg 
-            width={size} 
-            height={size} 
-            viewBox="0 0 100 100" 
-            fill="none" 
+          <svg
+            width={size}
+            height={size}
+            viewBox="0 0 100 100"
+            fill="none"
             xmlns="http://www.w3.org/2000/svg"
             className={className}
+            role="img"
+            aria-label="AeroShield AI inversion barrier logo"
           >
+            <title>AeroShield AI Inversion Barrier Emblem</title>
             <rect width="100" height="100" rx="28" fill={isDarkMode ? '#18181B' : '#F4F4F5'} />
-            {/* Outer particulate boundary shield */}
-            <circle cx="50" cy="50" r="38" stroke={isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'} strokeWidth="3" strokeDasharray="3 6"/>
-            {/* Thermal Inversion Lift Arc */}
-            <path 
-              d="M20 50A30 30 0 0 1 80 50" 
-              stroke={primaryEmerald} 
-              strokeWidth="6" 
+            <circle
+              cx="50"
+              cy="50"
+              r="38"
+              stroke={isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'}
+              strokeWidth="3"
+              strokeDasharray="3 6"
+            />
+            <path
+              d="M20 50A30 30 0 0 1 80 50"
+              stroke={primaryEmerald}
+              strokeWidth="6"
               strokeLinecap="round"
             />
-            {/* Clean Oxygen Core Drop */}
-            <path 
-              d="M50 28C50 28 36 44 36 54C36 61.73 42.27 68 50 68C57.73 68 64 61.73 64 54C64 44 50 28 50 28Z" 
-              fill={mintTeal} 
+            <path
+              d="M50 28C50 28 36 44 36 54C36 61.73 42.27 68 50 68C57.73 68 64 61.73 64 54C64 44 50 28 50 28Z"
+              fill={mintTeal}
               opacity="0.9"
             />
             <circle cx="50" cy="54" r="5" fill={isDarkMode ? '#18181B' : '#FFFFFF'} />
@@ -87,23 +102,31 @@ export function AeroShieldLogo({
 
       case 'monogram-a':
         return (
-          <svg 
-            width={size} 
-            height={size} 
-            viewBox="0 0 100 100" 
-            fill="none" 
+          <svg
+            width={size}
+            height={size}
+            viewBox="0 0 100 100"
+            fill="none"
             xmlns="http://www.w3.org/2000/svg"
             className={className}
+            role="img"
+            aria-label="AeroShield AI monogram logo"
           >
-            <rect width="100" height="100" rx="28" fill={isDarkMode ? '#18181B' : '#FFFFFF'} stroke={isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'} strokeWidth="2"/>
-            {/* Geometric Lettermark A + Protective Apex */}
-            <path 
-              d="M50 18L22 76H36L44 58H56L64 76H78L50 18Z" 
+            <title>AeroShield AI Monogram Emblem</title>
+            <rect
+              width="100"
+              height="100"
+              rx="28"
+              fill={isDarkMode ? '#18181B' : '#FFFFFF'}
+              stroke={isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'}
+              strokeWidth="2"
+            />
+            <path
+              d="M50 18L22 76H36L44 58H56L64 76H78L50 18Z"
               fill={isDarkMode ? '#FFFFFF' : '#18181B'}
             />
-            {/* Intersecting Clean Air Vector Shield Beam */}
-            <path 
-              d="M50 18L32 64C38 61 44 60 50 60C56 60 62 61 68 64L50 18Z" 
+            <path
+              d="M50 18L32 64C38 61 44 60 50 60C56 60 62 61 68 64L50 18Z"
               fill={primaryEmerald}
             />
             <circle cx="50" cy="46" r="4.5" fill={mintTeal} />
@@ -113,47 +136,50 @@ export function AeroShieldLogo({
       case 'shield-wind':
       default:
         return (
-          <svg 
-            width={size} 
-            height={size} 
-            viewBox="0 0 100 100" 
-            fill="none" 
+          <svg
+            width={size}
+            height={size}
+            viewBox="0 0 100 100"
+            fill="none"
             xmlns="http://www.w3.org/2000/svg"
             className={className}
+            role="img"
+            aria-label="AeroShield AI protective wind shield logo"
           >
-            {/* Background Rounded Shield Tile */}
-            <rect width="100" height="100" rx="26" fill={isDarkMode ? '#18181B' : '#FFFFFF'} stroke={isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'} strokeWidth="2"/>
-            
-            {/* Protective Shield Silhouette */}
-            <path 
-              d="M50 20C64 24 74 22 74 22V48C74 65 62 76 50 82C38 76 26 65 26 48V22C26 22 36 24 50 20Z" 
+            <title>AeroShield AI Protective Shield Emblem</title>
+            <rect
+              width="100"
+              height="100"
+              rx="26"
+              fill={isDarkMode ? '#18181B' : '#FFFFFF'}
+              stroke={isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'}
+              strokeWidth="2"
+            />
+            <path
+              d="M50 20C64 24 74 22 74 22V48C74 65 62 76 50 82C38 76 26 65 26 48V22C26 22 36 24 50 20Z"
               fill={isDarkMode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)'}
-              stroke={primaryEmerald} 
-              strokeWidth="4" 
+              stroke={primaryEmerald}
+              strokeWidth="4"
               strokeLinejoin="round"
             />
-            
-            {/* Dynamic Laminar Clean Airflow Ribbons */}
-            <path 
-              d="M36 42C42 42 45 38 52 38C58 38 62 41 66 41" 
-              stroke={mintTeal} 
-              strokeWidth="4" 
+            <path
+              d="M36 42C42 42 45 38 52 38C58 38 62 41 66 41"
+              stroke={mintTeal}
+              strokeWidth="4"
               strokeLinecap="round"
             />
-            <path 
-              d="M32 50C40 50 44 46 52 46C60 46 63 50 68 50" 
-              stroke={primaryEmerald} 
-              strokeWidth="4.5" 
+            <path
+              d="M32 50C40 50 44 46 52 46C60 46 63 50 68 50"
+              stroke={primaryEmerald}
+              strokeWidth="4.5"
               strokeLinecap="round"
             />
-            <path 
-              d="M38 58C44 58 47 54 52 54C57 54 60 57 64 57" 
-              stroke={deepEmerald} 
-              strokeWidth="3.5" 
+            <path
+              d="M38 58C44 58 47 54 52 54C57 54 60 57 64 57"
+              stroke={deepEmerald}
+              strokeWidth="3.5"
               strokeLinecap="round"
             />
-            
-            {/* Sparkle Clean Air Accent */}
             <circle cx="68" cy="32" r="2.5" fill={mintTeal} />
           </svg>
         );
@@ -180,3 +206,11 @@ export function AeroShieldLogo({
     </div>
   );
 }
+
+AeroShieldLogo.propTypes = {
+  variant: PropTypes.oneOf(['shield-wind', 'vortex-leaf', 'inversion-rings', 'monogram-a']),
+  size: PropTypes.number,
+  className: PropTypes.string,
+  withWordmark: PropTypes.bool,
+  isDarkMode: PropTypes.bool
+};

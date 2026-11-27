@@ -2,16 +2,20 @@
   "name": "aeroshield-ai",
   "version": "1.0.0",
   "description": "AeroShield AI (VayuMitra OS) — GenAI Urban Air Quality Defense Companion & Household Smog Defense OS for PromptWars Virtual",
-  "homepage": "https://aeroshield.ummeedlabs.com",
+  "homepage": "https://aeroshield-ai-sandy.vercel.app/",
   "repository": {
     "type": "git",
     "url": "https://github.com/mohiddin-ahmed/aeroshield-ai.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "lint": "eslint . --max-warnings=0",
     "test": "vitest run",
     "validate": "node scripts/validate-submission.mjs",
     "check:submission": "node scripts/validate-submission.mjs"
@@ -24,19 +28,28 @@
     "google-for-developers",
     "antigravity"
   ],
-  "author": "Antigravity Builder",
+  "author": "Mohiddin Ahmed",
   "license": "MIT",
   "dependencies": {
     "@google/genai": "^3.0.0",
     "lucide-react": "^1.70.0",
+    "prop-types": "^15.8.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@tailwindcss/vite": "^4.3.5",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@vitejs/plugin-react": "^6.3.0",
     "autoprefixer": "^10.6.2",
-    "ffmpeg-static": "^5.3.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^17.5.0",
+    "jsdom": "^29.0.2",
     "postcss": "^8.5.32",
     "tailwindcss": "^4.3.5",
     "vite": "^8.3.7",

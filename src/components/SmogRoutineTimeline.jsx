@@ -1,15 +1,24 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { SunMedium, Moon, Wind, ShieldCheck, Clock, CheckCircle } from 'lucide-react';
 import { getDetailedTimeContext } from '../utils/geolocationEngine';
 import { translations } from '../utils/i18n';
 
+/**
+ * 24-Hour Smog-Safe Daily Routine view highlighting the currently active diurnal
+ * boundary-layer slot and prescribing time-synchronized ventilation or clean-room actions.
+ * @param {object} props - Component props.
+ * @returns {JSX.Element} Diurnal routine dashboard tab.
+ */
 export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'en' }) {
   const t = translations[currentLang] || translations.en;
   const currentHour = timeContext?.hour ?? new Date().getHours();
   const timeInfo = timeContext || getDetailedTimeContext();
+  const solarActive = solarStatus?.isWindowActive ?? (currentHour >= 13 && currentHour < 15);
 
   const routineSteps = [
     {
+      id: 'morning-inversion',
       time: '07:00 AM – 10:00 AM',
       title: t.routine.step1Title,
       description: t.routine.step1Desc,
@@ -19,16 +28,18 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
       highlightColor: '#EF4444'
     },
     {
+      id: 'solar-lift-window',
       time: '01:00 PM – 03:00 PM',
       title: t.routine.step2Title,
       description: t.routine.step2Desc,
       action: t.routine.step2Action,
       icon: SunMedium,
-      active: currentHour >= 13 && currentHour < 15,
+      active: solarActive,
       highlightColor: '#10B981',
       isSolarWindow: true
     },
     {
+      id: 'evening-collapse',
       time: '05:30 PM – 07:30 PM',
       title: t.routine.step3Title,
       description: t.routine.step3Desc,
@@ -38,6 +49,7 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
       highlightColor: '#F97316'
     },
     {
+      id: 'night-clean-room',
       time: '09:00 PM – Overnight',
       title: t.routine.step4Title,
       description: t.routine.step4Desc,
@@ -50,21 +62,24 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
 
   return (
     <div className="space-y-6">
-      
-      {/* Top Dedicated "Right Now: Active Slot & Prescribed Action" Hero Card */}
-      <div className="p-6 sm:p-7 rounded-3xl glass-card border border-emerald-500/30 bg-gradient-to-br from-white/95 via-white/90 to-emerald-500/10 dark:from-zinc-900/95 dark:via-zinc-900/90 dark:to-emerald-500/20 shadow-md space-y-4">
-        
+      {/* Top Active Slot Hero Card */}
+      <section
+        aria-label="Current active atmospheric protocol"
+        className="p-6 sm:p-7 rounded-3xl glass-card border border-emerald-500/30 bg-gradient-to-br from-white/95 via-white/90 to-emerald-500/10 dark:from-zinc-900/95 dark:via-zinc-900/90 dark:to-emerald-500/20 shadow-md space-y-4"
+      >
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-200 dark:border-zinc-700/80 pb-3">
           <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" aria-hidden="true" />
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
               {t.hero.rightNow}
             </span>
           </div>
 
           <div className="flex items-center space-x-2 text-xs font-mono font-bold px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100">
-            <Clock className="w-3.5 h-3.5 text-emerald-500" />
-            <span>{timeInfo.timeString} ({timeInfo.phaseLabel})</span>
+            <Clock className="w-3.5 h-3.5 text-emerald-500" aria-hidden="true" />
+            <span>
+              {timeInfo.timeString} ({timeInfo.phaseLabel})
+            </span>
           </div>
         </div>
 
@@ -77,9 +92,11 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
           </p>
         </div>
 
-        {/* Highlighted Prescribed Action */}
         <div className="p-4 rounded-2xl bg-emerald-100/70 dark:bg-emerald-950/70 border border-emerald-400/50 dark:border-emerald-600/60 flex items-start space-x-3">
-          <CheckCircle className="w-5 h-5 text-emerald-700 dark:text-emerald-300 shrink-0 mt-0.5" />
+          <CheckCircle
+            className="w-5 h-5 text-emerald-700 dark:text-emerald-300 shrink-0 mt-0.5"
+            aria-hidden="true"
+          />
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 block mb-0.5">
               {t.hero.prescribedAction}
@@ -89,29 +106,24 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
             </p>
           </div>
         </div>
+      </section>
 
-      </div>
-
-      {/* 24-Hour Stepped Timeline Container */}
-      <div className="p-6 sm:p-8 rounded-3xl glass-card space-y-6">
-        
+      {/* 24-Hour Stepped Timeline */}
+      <section aria-label={t.routine.title} className="p-6 sm:p-8 rounded-3xl glass-card space-y-6">
         <div className="border-b border-zinc-200 dark:border-zinc-700/80 pb-4">
           <h2 className="text-xl font-bold tracking-tight text-zinc-950 dark:text-white">
             {t.routine.title}
           </h2>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
-            {t.routine.subtitle}
-          </p>
+          <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">{t.routine.subtitle}</p>
         </div>
 
-        {/* Stepped Timeline */}
         <div className="space-y-4">
-          {routineSteps.map((step, idx) => {
+          {routineSteps.map((step) => {
             const Icon = step.icon;
 
             return (
-              <div 
-                key={idx}
+              <div
+                key={step.id}
                 className={`p-4 sm:p-5 rounded-2xl transition-all border ${
                   step.isSolarWindow && step.active
                     ? 'bg-gradient-to-r from-emerald-500/25 via-emerald-500/10 to-transparent border-emerald-500 dark:border-emerald-400 ring-1 ring-emerald-500/40 shadow-md'
@@ -123,8 +135,9 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
                 }`}
               >
                 <div className="flex items-start space-x-3.5">
-                  <div 
-                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-2xs mt-0.5"
+                  <div
+                    aria-hidden="true"
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xs mt-0.5"
                     style={{ backgroundColor: `${step.highlightColor}25`, color: step.highlightColor }}
                   >
                     <Icon className="w-5 h-5 stroke-[2.2]" />
@@ -150,9 +163,15 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
                     </p>
 
                     <div className="mt-2.5 p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-900/70 border border-zinc-200 dark:border-zinc-700/80 flex items-start space-x-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                      <CheckCircle
+                        className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5"
+                        aria-hidden="true"
+                      />
                       <span className="text-xs font-medium text-zinc-800 dark:text-zinc-200">
-                        <strong className="text-zinc-950 dark:text-white">{t.hero.prescribedAction}</strong> {step.action}
+                        <strong className="text-zinc-950 dark:text-white">
+                          {t.hero.prescribedAction}
+                        </strong>{' '}
+                        {step.action}
                       </span>
                     </div>
                   </div>
@@ -161,9 +180,21 @@ export function SmogRoutineTimeline({ solarStatus, timeContext, currentLang = 'e
             );
           })}
         </div>
-
-      </div>
-
+      </section>
     </div>
   );
 }
+
+SmogRoutineTimeline.propTypes = {
+  solarStatus: PropTypes.shape({
+    isWindowActive: PropTypes.bool
+  }),
+  timeContext: PropTypes.shape({
+    hour: PropTypes.number,
+    timeString: PropTypes.string,
+    phaseLabel: PropTypes.string,
+    slotTitle: PropTypes.string,
+    currentUrgentPrescription: PropTypes.string
+  }),
+  currentLang: PropTypes.string
+};
