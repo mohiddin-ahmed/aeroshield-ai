@@ -37,7 +37,13 @@
     font-family: 'JetBrains Mono', monospace;
   }
 
-  /* High-visibility WCAG 2.1 AA keyboard focus rings */
+  /* High-visibility WCAG 2.1 AA keyboard focus rings & clean mobile touch feel */
+  button,
+  a,
+  select {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   button:focus-visible,
   a:focus-visible,
   select:focus-visible,
@@ -98,18 +104,18 @@
 @keyframes pageEnter {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.995);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
 @keyframes fadeInScale {
   from {
     opacity: 0;
-    transform: scale(0.94);
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
@@ -118,7 +124,7 @@
 }
 
 .animate-page-enter {
-  animation: pageEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: pageEnter 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   will-change: opacity, transform;
 }
 
@@ -181,4 +187,13 @@ button:active {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(16, 185, 129, 0.5);
+}
+
+/* Hide scrollbars cleanly for slidable horizontal carousels */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

@@ -38,61 +38,67 @@ const DIURNAL_PHASES = [
     minHour: 6,
     maxHour: 10,
     timePhase: 'morning_peak',
-    phaseLabel: 'Morning Thermal Inversion Peak',
-    slotTitle: 'High Inversion Lockout Window',
+    phaseLabel: 'Morning Smog Peak',
+    slotTitle: 'Morning Heavy Smog — Keep Windows Closed',
+    phaseExplainer: 'Cold morning air holds traffic smoke and fine dust down at street level.',
     solarVentilationWindow: false,
     currentUrgentPrescription:
-      'Keep all exterior windows and doors sealed. Run DIY Box-Fan Purifiers on High. Absolutely avoid morning outdoor jogging or school assemblies.'
+      'Keep all outside doors and windows closed. Turn on your DIY box-fan filter on High, and skip early morning outdoor jogs or walks.'
   },
   {
     minHour: 10,
     maxHour: 13,
     timePhase: 'late_morning',
-    phaseLabel: 'Pre-Convection Warming',
-    slotTitle: 'Pre-Convective Soil Warming',
+    phaseLabel: 'Air Warming Up',
+    slotTitle: 'Wait for the 1:00 PM Fresh-Air Window',
+    phaseExplainer: 'Sunlight is warming the city, slowly loosening trapped pollution.',
     solarVentilationWindow: false,
     currentUrgentPrescription:
-      'Boundary layer is expanding as ambient sunlight heats the soil. Maintain indoor air filtration and prepare for the 1:00 PM – 3:00 PM solar ventilation window.'
+      'Keep windows closed for a little longer and leave indoor air filters running. Get ready to open windows for 15 minutes at 1:00 PM.'
   },
   {
     minHour: 13,
     maxHour: 15,
     timePhase: 'solar_window',
-    phaseLabel: 'Solar Convective Lift Window',
-    slotTitle: 'The Solar Convective Lift Ventilation Slot (ACTIVE NOW)',
+    phaseLabel: 'Safe Open-Window Hours',
+    slotTitle: '☀️ Best Time to Open Windows (Active Now)',
+    phaseExplainer: 'Warm afternoon sun lifts smog upward, making outdoor air exchange safe.',
     solarVentilationWindow: true,
     currentUrgentPrescription:
-      'Perform 15 minutes of rapid cross-ventilation right now! Peak solar heating has temporarily broken the shallow nocturnal lid. Flush out indoor CO2 and cooking fumes.'
+      'Open opposite windows for 15 minutes right now! This sunny afternoon break clears stale indoor air safely.'
   },
   {
     minHour: 15,
     maxHour: 17,
     timePhase: 'late_afternoon',
-    phaseLabel: 'Late Afternoon Dispersion',
-    slotTitle: 'Post-Ventilation Seal-Down',
+    phaseLabel: 'Close Windows Soon',
+    slotTitle: 'Time to Shut Windows Before Evening',
+    phaseExplainer: 'Cooling afternoon air will soon sink exhaust and dust back near the ground.',
     solarVentilationWindow: false,
     currentUrgentPrescription:
-      'Re-seal all windows and doors before the sun lowers. Clean air trapped indoors must be conserved before nocturnal cooling commences.'
+      'Shut all windows and balcony doors before sunset so clean indoor air stays trapped inside for the night.'
   },
   {
     minHour: 17,
     maxHour: 20,
     timePhase: 'evening_rush',
-    phaseLabel: 'Evening Boundary Collapse & Rush',
-    slotTitle: 'Evening Commuter & Rush Defense',
+    phaseLabel: 'Evening Traffic & Smog',
+    slotTitle: 'Evening Rush Hour — Mask Up Outdoors',
+    phaseExplainer: 'Sunset cooling + rush-hour vehicle smoke raise pollution fast near roads.',
     solarVentilationWindow: false,
     currentUrgentPrescription:
-      'All commuters on two-wheelers and foot must wear sealed N95 respirators. Vehicular nitrogen oxides combined with re-settling cold air creates peak toxicity.'
+      'Wear a tight N95 mask if commuting outdoors, keep home windows closed, and run your indoor air purifier on Medium.'
   }
 ];
 
 const NIGHT_PHASE_DEFAULT = {
   timePhase: 'night_inversion',
-  phaseLabel: 'Night Clean-Room Lock',
-  slotTitle: 'Overnight Cold Pool Stagnation Protocol',
+  phaseLabel: 'Night • Keep Closed',
+  slotTitle: 'Night Protection — Keep Bedroom Sealed',
+  phaseExplainer: 'Cold night air locks fine pollution close to street level until tomorrow afternoon.',
   solarVentilationWindow: false,
   currentUrgentPrescription:
-    'Maintain clean-room positive pressure. Run bedroom filtration on whisper mode and dampen curtain hems (Parda-Geela) to catch drafting soot.'
+    'Keep bedroom windows closed tight. Run your DIY fan purifier on quiet Low speed, and lightly wet cotton curtain bottoms to catch incoming dust.'
 };
 
 /**
@@ -123,6 +129,7 @@ export function getDetailedTimeContext(date = new Date()) {
     timePhase: matchedPhase.timePhase,
     phaseLabel: matchedPhase.phaseLabel,
     slotTitle: matchedPhase.slotTitle,
+    phaseExplainer: matchedPhase.phaseExplainer,
     currentUrgentPrescription: matchedPhase.currentUrgentPrescription,
     solarVentilationWindow: matchedPhase.solarVentilationWindow
   };

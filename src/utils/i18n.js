@@ -22,22 +22,22 @@ export const translations = {
     tabs: {
       home: 'Home',
       routine: 'Routine',
-      jugaad: 'Jugaad',
-      research: 'Research'
+      jugaad: 'Hacks',
+      research: 'Science'
     },
     status: {
-      autoDetected: 'Auto-Detected Device Location & Time',
-      liveFeed: 'Live CAMS Feed',
-      offlineVerified: 'Offline Verified',
-      solarActive: '☀️ Solar Convective Lift Window Active'
+      autoDetected: 'Your Area & Time',
+      liveFeed: 'Live Air Data',
+      offlineVerified: 'Saved Data Ready',
+      solarActive: '☀️ Safe to Open Windows Now (1–3 PM)'
     },
     actions: {
       askAi: 'Ask AI',
-      generatePlan: 'Generate AI Plan',
-      analyzing: 'Analyzing Inversion...',
+      generatePlan: 'Get AI Plan',
+      analyzing: 'Creating Plan...',
       autoDetect: 'Auto-Detect',
-      switchCity: 'Switch City...',
-      viewMore: 'View Detailed Guide & Science',
+      switchCity: 'Change City...',
+      viewMore: 'See Step-by-Step Guide',
       watchVideo: 'Watch Demo Video',
       devTools: 'Judges DevTools',
       settings: 'Settings',
@@ -48,93 +48,94 @@ export const translations = {
       copied: 'Copied!'
     },
     dial: {
-      title: 'Atmospheric Inversion Index',
-      cigarettesToday: 'Equivalent to smoking',
+      title: "Today's Air Quality (AQI)",
+      cigarettesToday: 'Breathing this air equals',
       cigarettesUnit: 'cigarettes today',
       categories: {
-        Good: 'Good',
+        Good: 'Good • Safe',
         Moderate: 'Moderate',
         Unhealthy: 'Unhealthy',
+        'Very Unhealthy': 'Very Unhealthy',
         VeryUnhealthy: 'Very Unhealthy',
-        Hazardous: 'Hazardous'
+        Hazardous: 'Hazardous • Stay In'
       }
     },
     hero: {
-      rightNow: 'Right Now • Current Active Time Slot',
-      prescribedAction: 'Prescribed Immediate Action:',
-      emergencyTitle: 'Emergency Ground Thermal Inversion Alert',
-      emergencyBody: 'Atmospheric boundary layer is trapped below 150 meters. Inhaling ambient air today is hazardous. Seal windows, run DIY box-fan filtration continuously, and ventilate only during the 1:00 PM – 3:00 PM solar window.'
+      rightNow: 'Right Now • What to Do',
+      prescribedAction: 'Best Next Step:',
+      emergencyTitle: 'High Smog Warning — Stay Indoors',
+      emergencyBody: 'Heavy pollution is trapped near the ground today. Keep windows shut, run your DIY box-fan filter, and only open windows briefly between 1:00 PM and 3:00 PM when sunlight lifts the smog.'
     },
     familyProfiles: {
-      title: 'Family Vulnerability Profile',
-      subtitle: 'Tailors daily routine & AI advice (Multi-Select)',
-      toddler: 'Toddler (0-5y)',
-      elderly: 'Elderly (60+)',
-      asthma: 'Asthma / COPD',
-      commuter: 'Open Commuter',
-      pet: 'Domestic Pets',
-      pregnant: 'Pregnant Mother',
-      athlete: 'Runner / Athlete',
-      student: 'Student / Exam Prep',
-      renter: 'Apartment Renter'
+      title: 'Who Is at Home?',
+      subtitle: 'Pick family members for custom tips',
+      toddler: 'Young Kids (0-5y)',
+      elderly: 'Seniors (60+)',
+      asthma: 'Asthma / Breathing',
+      commuter: 'Outdoor Commuter',
+      pet: 'Pets at Home',
+      pregnant: 'Expecting Mom',
+      athlete: 'Runner / Workout',
+      student: 'Student Studying',
+      renter: 'Apartment / Renter'
     },
     sensors: {
-      title: 'Open-Meteo High-Resolution Atmospheric Sensors',
-      pm25: 'PM2.5 (Fine Particles)',
-      pm10: 'PM10 (Coarse Dust)',
-      no2: 'Nitrogen Dioxide (NO2)',
+      title: 'Live Air Pollution Breakdown (Open-Meteo)',
+      pm25: 'Fine Dust (PM2.5)',
+      pm10: 'Coarse Dust (PM10)',
+      no2: 'Traffic Fumes (NO2)',
       o3: 'Ground Ozone (O3)',
-      safePrefix: 'Safe Threshold:'
+      safePrefix: 'Safe Limit:'
     },
     routine: {
-      title: '24-Hour Smog-Safe Automations & Daily Routine',
-      subtitle: 'Synchronized with diurnal atmospheric boundary layer physics & solar convection cycles.',
-      activeNow: 'Active Now',
-      step1Title: 'Morning Inversion Peak (Windows Locked)',
-      step1Desc: 'Radiative cooling forms an impenetrable inversion lid. Ground PM2.5 is at peak toxicity.',
-      step1Action: 'Run DIY Box-Fan Purifiers on High. Absolutely no outdoor jogging or morning school assemblies.',
-      step2Title: '☀️ The Solar Thermal Lift Window (Cross-Ventilation)',
-      step2Desc: 'Peak solar insolation warms the soil, breaking the boundary lid and creating convective upward draft.',
-      step2Action: 'Open opposing windows for 15 minutes of rapid air exchange to flush stagnant CO2 and VOCs.',
-      step3Title: 'Evening Rush & Boundary Collapse',
-      step3Desc: 'Nocturnal inversion reformulates rapidly as sun sets. Vehicular NO2 and dust peak.',
-      step3Action: 'All commuters must wear sealed N95 respirators. Close all window drafts and curtains.',
-      step4Title: 'Night Clean-Room Positive Pressure Protocol',
-      step4Desc: 'Stagnant cold air settles until sunrise. Indoor filtration maintains clean alveolar zones.',
-      step4Action: 'Dampen curtain hems (Parda-Geela) to catch drafting soot. Run bedroom purifier on medium whisper mode.'
+      title: 'Simple 24-Hour Clean-Air Routine',
+      subtitle: 'Follow nature’s sunlight cycle to know exactly when to keep windows closed or open.',
+      activeNow: 'Active Right Now',
+      step1Title: 'Morning Heavy Smog (Keep Windows Shut)',
+      step1Desc: 'Cold morning air holds car exhaust and dust close to the ground where we breathe.',
+      step1Action: 'Keep doors closed and run your DIY air filter fan on high. Skip early morning outdoor walks.',
+      step2Title: '☀️ Best Time to Open Windows (1:00 PM – 3:00 PM)',
+      step2Desc: 'Afternoon sun warms the ground and lifts dirty air up high, letting cleaner air flow.',
+      step2Action: 'Open two opposite windows for 15 minutes to bring fresh air in and clear stale indoor air.',
+      step3Title: 'Evening Rush & Cooling Air (Keep Masked)',
+      step3Desc: 'As the sun sets, evening traffic smoke gets trapped low again near roads and homes.',
+      step3Action: 'Wear a tight N95 mask outdoors and shut house windows before 5:00 PM.',
+      step4Title: 'Nighttime Clean-Room Sleep Setup',
+      step4Desc: 'While you sleep for 8 hours, cold outdoor dust slowly leaks through window gaps.',
+      step4Action: 'Lightly wet the bottom edge of cotton curtains to trap incoming dust, and leave bedroom filter fan on low.'
     },
     jugaad: {
-      headerBadge: 'Desi Jugaad Lab • Tailored for You',
-      zeroCost: 'Zero-Cost Clean Air',
-      title: 'Personalized Indoor Air Quality Hacks',
-      description: 'Clean air is a fundamental human right. You do not need ₹25,000 imported appliances. These field-tested, science-backed household hacks are dynamically tailored to your current weather, local time, and family vulnerabilities.',
-      boxFanTitle: '₹1,200 DIY Box-Fan HEPA Purifier (Corsi-Rosenthal Minimal)',
-      boxFanSubtitle: '20-inch standard box fan + MERV 13 / H13 sheet. Outperforms ₹24,000 branded units.',
-      costEfficientBadge: '22x More Cost-Efficient',
-      targetRoomSize: 'Target Room Size',
-      fanSpeed: 'Fan Speed Setting',
-      deliveredCadr: 'Delivered CADR',
-      ach: 'Air Changes/Hr (ACH)',
-      cleanTime: '90% Clean Time',
-      costPerCfm: 'Cost / CFM Clean Air',
-      commercialCompare: 'vs ₹96 commercial',
-      tailoredSectionTitle: 'Tailored Solutions for Your Profile & Weather',
-      viewGuideBtn: 'View Detailed Guide & Science'
+      headerBadge: 'Low-Cost DIY Lab • Made for Homes',
+      zeroCost: 'Budget Clean Air',
+      title: 'Simple DIY Clean-Air Hacks for Any Home',
+      description: 'Clean air shouldn’t cost ₹25,000. Try these proven, budget-friendly household steps tailored to today’s weather and your family.',
+      boxFanTitle: '₹1,250 DIY Box-Fan Air Purifier',
+      boxFanSubtitle: 'A regular 20-inch box fan + MERV 13 filter gives the power of a ₹24,000 purifier.',
+      costEfficientBadge: 'Cheaper',
+      targetRoomSize: 'Your Room Size',
+      fanSpeed: 'Fan Speed',
+      deliveredCadr: 'Clean Air Output',
+      ach: 'Room Air Refreshes / Hr',
+      cleanTime: 'Time to Clean 90%',
+      costPerCfm: 'Cost per CFM',
+      commercialCompare: 'vs ₹96 store units',
+      tailoredSectionTitle: 'Smart Steps Picked for Your Home Today',
+      viewGuideBtn: 'Open Step-by-Step Build Guide'
     },
     research: {
-      badge: 'Peer-Reviewed Evidence Hub',
-      academicCitations: 'Academic Citations',
-      title: 'Scientific Research & Particulate Dosimetry Hub',
-      description: 'AeroShield AI is grounded in peer-reviewed atmospheric physics and clinical epidemiology. All calculations adhere to Berkeley Earth cigarette equivalence rule, clinical autopsy findings from AIIMS/Medanta, and boundary layer measurements from IIT Kanpur.',
-      calculatorTitle: 'Personalized Inhaled Dosimetry Calculator',
-      calculatorSubtitle: 'Calculate the direct mass of alveolar PM2.5 and equivalent cigarettes prevented today.',
-      totalAvoided: 'Total Inhaled PM2.5 Avoided',
-      cigarettesPrevented: 'Equivalent Cigarettes Prevented',
-      readJournalBtn: 'Read Full Journal Article'
+      badge: 'Backed by Peer-Reviewed Science',
+      academicCitations: 'Medical & Physics Studies',
+      title: 'How Clean-Air Steps Protect Your Lungs',
+      description: 'Every number in AeroShield AI comes from real health studies by Berkeley Earth, The Lancet, Harvard, and IIT Kanpur—explained simply.',
+      calculatorTitle: 'Daily Lung Protection Calculator',
+      calculatorSubtitle: 'See how much toxic dust and equivalent cigarette smoke these steps stop today.',
+      totalAvoided: 'Harmful Dust Blocked Today',
+      cigarettesPrevented: 'Cigarette Smoke Avoided',
+      readJournalBtn: 'Read Original Study'
     },
     disclaimer: {
-      title: 'Scientific & Transparency Disclaimer',
-      text: 'Atmospheric telemetry is modeled using satellite Copernicus/CAMS feeds and local meteorological stations. Recommendations are evidence-informed public health advisories for health betterment and harm reduction, not a substitute for clinical medical devices.'
+      title: 'Helpful Health Note',
+      text: 'Air quality readings come from European Copernicus / Open-Meteo satellites. These steps help reduce daily smoke exposure at home and do not replace medical inhalers or doctor care.'
     }
   },
 

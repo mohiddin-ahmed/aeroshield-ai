@@ -26,6 +26,7 @@ import { AeroShieldLogo } from './AeroShieldLogo';
 export function Navbar({
   locationData,
   timeContext,
+  onGoHome,
   onRefreshLocation,
   isRefreshingLocation,
   isLiveFeed = false,
@@ -80,29 +81,37 @@ export function Navbar({
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand & Wordmark */}
-        <div className="flex items-center space-x-2.5 sm:space-x-3">
-          <div className="shrink-0">
-            <AeroShieldLogo variant="vortex-leaf" size={38} isDarkMode={isDarkMode} />
-          </div>
-          <div className="flex flex-col justify-center">
-            <div className="flex items-center leading-none">
-              <span className="font-extrabold text-base sm:text-lg tracking-tight whitespace-nowrap">
-                {t.appTitle}
-              </span>
+        {/* Brand & Wordmark (Click App Icon / Title to Return Home) */}
+        <div className="flex items-center space-x-2">
+          <button
+            type="button"
+            onClick={onGoHome}
+            aria-label="Return to AeroShield AI Home"
+            title="Go to Home"
+            className="flex items-center space-x-2.5 sm:space-x-3 text-left rounded-2xl p-1 -ml-1 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+          >
+            <div className="shrink-0">
+              <AeroShieldLogo variant="vortex-leaf" size={38} isDarkMode={isDarkMode} />
             </div>
-            <div className="flex items-center space-x-1.5 mt-1">
-              <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-[#059669] dark:text-[#34D399] bg-[#10B981]/15 dark:bg-[#10B981]/25 px-1.5 py-0.5 rounded-md inline-block leading-none">
-                {t.subBrand}
-              </span>
-              <span
-                className="text-[9px] font-mono opacity-70 hidden sm:inline"
-                title={isLiveFeed ? t.status.liveFeed : t.status.offlineVerified}
-              >
-                • {isLiveFeed ? 'Live CAMS' : 'Cached'}
-              </span>
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center leading-none">
+                <span className="font-extrabold text-base sm:text-lg tracking-tight whitespace-nowrap">
+                  {t.appTitle}
+                </span>
+              </div>
+              <div className="flex items-center space-x-1.5 mt-1">
+                <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-[#059669] dark:text-[#34D399] bg-[#10B981]/15 dark:bg-[#10B981]/25 px-1.5 py-0.5 rounded-md inline-block leading-none">
+                  {t.subBrand}
+                </span>
+              </div>
             </div>
-          </div>
+          </button>
+          <span
+            className="text-[9px] font-mono opacity-70 hidden sm:inline self-end pb-1"
+            title={isLiveFeed ? t.status.liveFeed : t.status.offlineVerified}
+          >
+            • {isLiveFeed ? 'Live CAMS' : 'Cached'}
+          </span>
         </div>
 
         {/* Center: Location & Time Badge (Desktop) */}
@@ -368,6 +377,7 @@ Navbar.propTypes = {
   timeContext: PropTypes.shape({
     timeString: PropTypes.string
   }).isRequired,
+  onGoHome: PropTypes.func,
   onRefreshLocation: PropTypes.func.isRequired,
   isRefreshingLocation: PropTypes.bool.isRequired,
   isLiveFeed: PropTypes.bool,

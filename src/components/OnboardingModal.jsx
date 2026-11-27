@@ -15,57 +15,57 @@ const ONBOARDING_SLIDES = [
   {
     id: 'welcome',
     badge: 'Welcome to VayuMitra OS',
-    title: 'Turn Winter Smog Anxiety Into Daily Clean-Air Strategy',
+    title: 'Turn Winter Smog Worry Into Daily Clean-Air Action',
     subtitle:
-      'Over 300 million citizens across the Indo-Gangetic Plains breathe toxic air equal to 25–30 cigarettes a day. AeroShield AI gives you science-backed, low-cost defense protocols.',
+      'Over 300 million citizens across northern cities breathe air equal to smoking 25–30 cigarettes a day. AeroShield AI gives your home simple, science-backed daily protection.',
     icon: Shield,
     accentColor: '#10B981',
     highlights: [
-      { label: 'Real-Time Telemetry', desc: 'Auto-detected device GPS & Copernicus CAMS satellite atmospheric sensors.' },
-      { label: 'Cigarette Equivalence', desc: 'Translates PM2.5 (μg/m³) into real-world daily smoked cigarettes per Berkeley Earth.' },
-      { label: 'Zero-Cost Harm Reduction', desc: 'Affordable household defense designed for renters, students, and families.' }
+      { label: 'Live Local Air', desc: 'Auto-detects your city, time of day & live Copernicus CAMS sensors.' },
+      { label: 'Cigarette Check', desc: 'Shows ambient PM2.5 (μg/m³) in clear everyday cigarette equivalents.' },
+      { label: 'Daily Savings Streak', desc: 'Tick daily actions with zero sign-up to track blocked dust & cigarettes.' }
     ]
   },
   {
     id: 'solar',
-    badge: 'Scientific Innovation',
-    title: 'The 1–3 PM Diurnal Solar Lift Window',
+    badge: 'Afternoon Window',
+    title: 'Best Time to Open Windows: 1:00 PM – 3:00 PM',
     subtitle:
-      'Never ventilate blindly! Thermal ground cooling traps toxic smog near street level all night and morning. Peak solar radiation breaks this inversion temporarily.',
+      'Never open windows blindly during cold smog! Morning and night air traps pollution near the ground—until afternoon sunlight warms and lifts it.',
     icon: SunMedium,
     accentColor: '#F59E0B',
     highlights: [
-      { label: 'Morning & Night Inversion Trap', desc: 'Keep windows strictly sealed during cold pool boundary collapse.' },
-      { label: '1–3 PM Natural Ventilation', desc: 'Open opposing windows for 15 minutes of safe cross-air exchange during thermal lift.' },
-      { label: '24-Hour Stepped Routine', desc: 'Tab 2 gives you time-synchronized hourly protocols for your active slot.' }
+      { label: 'Morning & Night Seal', desc: 'Keep bedroom windows shut tight when street-level pollution peaks.' },
+      { label: '1–3 PM Safe Breeze', desc: 'Open opposite windows for 15 minutes during afternoon sun lift.' },
+      { label: '24-Hour Routine Tab', desc: 'Clearly highlights the exact active slot for right now.' }
     ]
   },
   {
     id: 'jugaad',
-    badge: 'Democratizing Clean Air',
-    title: '₹1,200 Desi Jugaad Lab & CADR Physics',
+    badge: 'Budget Clean Air',
+    title: '₹1,250 DIY Clean-Air Hacks & CADR Physics',
     subtitle:
-      'Commercial purifiers cost ₹25,000+. Our fluid dynamics calculator proves a ₹1,250 DIY Box-Fan matches commercial HEPA filtration efficiency.',
+      'Commercial purifiers cost ₹24,000+. Our fluid dynamics calculator proves a ₹1,250 DIY Box-Fan + MERV 13 filter cleans rooms at 19.2x lower cost.',
     icon: Wrench,
     accentColor: '#34D399',
     highlights: [
-      { label: 'Interactive Room Slider', desc: 'Calculate CFM, Air Changes/Hour (ACH), and clean-time from 80 to 600 sq ft.' },
-      { label: 'Household Life-Hacks', desc: 'Rock-salt wet mopping, window curtain dampening, and N95 fit guidance.' },
-      { label: 'In-Place Step Guides', desc: 'Click any hack for assembly steps, materials list, and fluid dynamics science.' }
+      { label: 'Interactive Room Slider', desc: 'Calculate CFM, air changes/hour, and clean time for 80–600 sq ft rooms.' },
+      { label: 'Zero-Cost Home Steps', desc: 'Rock-salt wet mopping, damp curtain soot trap & snug N95 mask guide.' },
+      { label: 'Step-by-Step Guides', desc: 'Tap any hack card for simple materials checklist & build instructions.' }
     ]
   },
   {
     id: 'ai-tools',
-    badge: 'Intelligence & DevTools',
+    badge: 'Smart AI & DevTools',
     title: 'One-Click Multi-AI Engine & Judges DevTools',
     subtitle:
-      'Connect your micro-climate directly to ChatGPT, Claude, and Gemini with auto-crafted prompts, and inspect real-time prompt engineering metrics.',
+      'Launch ChatGPT, Claude, or Gemini pre-filled with your city, weather & family profile in one click, and inspect Gemini 2.5 Flash prompts live.',
     icon: Bot,
     accentColor: '#6366F1',
     highlights: [
-      { label: 'Auto-Synchronized AI Prompts', desc: 'Pre-fills your exact city, AQI, and family profile into ChatGPT, Claude, and Gemini.' },
-      { label: 'Judges DevTools Inspector', desc: 'Click top-right Terminal icon to audit Gemini 2.5 Flash token counts and latency.' },
-      { label: '7 Indian Languages', desc: 'Fully localized in English, Hindi, Bengali, Telugu, Tamil, Kannada, and Marathi.' }
+      { label: 'Context-Ready Prompts', desc: 'Auto-injects your live air readings and selected household tags.' },
+      { label: 'Judges DevTools', desc: 'Audit Gemini system instructions, latency & token counts in real time.' },
+      { label: '7 Indian Languages', desc: 'Switch effortlessly between English, Hindi, Bengali, Telugu, Tamil, Kannada & Marathi.' }
     ]
   }
 ];

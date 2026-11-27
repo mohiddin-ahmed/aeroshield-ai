@@ -3,21 +3,15 @@ import { Info } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { FloatingBottomNav } from './components/FloatingBottomNav';
 import { CommandCenterTab } from './components/CommandCenterTab';
+import { SmogRoutineTimeline } from './components/SmogRoutineTimeline';
+import { DesiJugaadLab } from './components/DesiJugaadLab';
+import { ResearchHub } from './components/ResearchHub';
 import { useTheme } from './hooks/useTheme';
 import { useLanguage } from './hooks/useLanguage';
 import { useAirQuality } from './hooks/useAirQuality';
-import { SCROLL_MEMORY_WINDOW_MS } from './constants/airQuality';
+import { useDailyChecklist } from './hooks/useDailyChecklist';
 
-// Lazy-loaded secondary tabs and modals to minimize initial JS bundle size
-const SmogRoutineTimeline = lazy(() =>
-  import('./components/SmogRoutineTimeline').then((m) => ({ default: m.SmogRoutineTimeline }))
-);
-const DesiJugaadLab = lazy(() =>
-  import('./components/DesiJugaadLab').then((m) => ({ default: m.DesiJugaadLab }))
-);
-const ResearchHub = lazy(() =>
-  import('./components/ResearchHub').then((m) => ({ default: m.ResearchHub }))
-);
+// Lazy-loaded modals to keep initial bundle lean while allowing instant flicker-free tab switching
 const DemoVideoModal = lazy(() =>
   import('./components/DemoVideoModal').then((m) => ({ default: m.DemoVideoModal }))
 );
@@ -39,13 +33,12 @@ const OnboardingModal = lazy(() =>
 
 /**
  * Root application shell for AeroShield AI (VayuMitra OS).
- * Coordinates theme, localization, live atmospheric telemetry, lazy-loaded views,
- * and WCAG 2.1 AA accessible modal dialogs.
+ * Renders instant, silky tab transitions across Home, Routine, Hacks, and Science,
+ * tracks zero-login daily savings, and keeps modals lazy-loaded for speed.
  * @returns {JSX.Element} Full responsive web application layout.
  */
 export function App() {
   const [activeTab, setActiveTab] = useState('commandCenter');
-  const scrollMemoryRef = useRef({});
   const aiPlanRef = useRef(null);
 
   const { isDarkMode, toggleDarkMode } = useTheme();
@@ -69,6 +62,8 @@ export function App() {
     clearAiPlan
   } = useAirQuality();
 
+  const checklist = useDailyChecklist(telemetry.pm2_5);
+
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
   const [isMultiAiOpen, setIsMultiAiOpen] = useState(false);
@@ -90,26 +85,11 @@ export function App() {
         return;
       }
 
-      if (typeof window !== 'undefined') {
-        scrollMemoryRef.current[activeTab] = {
-          scrollY: window.scrollY,
-          timestamp: Date.now()
-        };
-      }
-
+      // Snap immediately to top of newly selected tab to prevent mid-scroll visual jumps
       setActiveTab(newTab);
-
-      const targetMemory = scrollMemoryRef.current[newTab];
-      const isRecentlyEngaged =
-        targetMemory && Date.now() - targetMemory.timestamp < SCROLL_MEMORY_WINDOW_MS;
-
-      setTimeout(() => {
-        if (isRecentlyEngaged && targetMemory.scrollY > 40) {
-          window.scrollTo({ top: targetMemory.scrollY, behavior: 'smooth' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      }, 40);
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      }
     },
     [activeTab]
   );
@@ -125,7 +105,7 @@ export function App() {
 
   return (
     <div
-      className={`relative min-h-screen transition-colors duration-300 font-sans pb-28 ${
+      className={`relative min-h-screen transition-colors duration-300 font-sans pb-32 ${
         isDarkMode ? 'bg-[#09090b] text-[#f4f4f5]' : 'bg-[#F7F7F7] text-[#18181b]'
       }`}
     >
@@ -137,7 +117,7 @@ export function App() {
         Skip to main content
       </a>
 
-      {/* Dynamic Ambient Background Severity Glow Orbs */}
+      {/* Ambient Severity Glow Orbs */}
       <div
         aria-hidden="true"
         className="fixed top-12 left-1/4 w-96 h-96 rounded-full blur-[140px] opacity-25 dark:opacity-20 pointer-events-none transition-colors duration-1000 -z-10 animate-float-slow"
@@ -153,6 +133,7 @@ export function App() {
       <Navbar
         locationData={locationData}
         timeContext={timeContext}
+        onGoHome={() => handleTabChange('commandCenter')}
         onRefreshLocation={handleAutoDetectLocation}
         isRefreshingLocation={isRefreshingLocation}
         isLiveFeed={telemetry.isLiveFeed}
@@ -168,77 +149,63 @@ export function App() {
         onToggleDarkMode={toggleDarkMode}
       />
 
-      {/* Main Content Landmark */}
+      {/* Main Content Landmark with Keyed GPU View Transition */}
       <main
         id="main-content"
         tabIndex={-1}
-        className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 space-y-6 focus:outline-none"
+        className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 space-y-5 focus:outline-none"
       >
-        {activeTab === 'commandCenter' && (
-          <CommandCenterTab
-            t={t}
-            locationData={locationData}
-            timeContext={timeContext}
-            telemetry={telemetry}
-            solarStatus={solarStatus}
-            vulnerabilities={vulnerabilities}
-            aiPlan={aiPlan}
-            aiPlanRef={aiPlanRef}
-            personalizedIntel={personalizedIntel}
-            currentLang={currentLang}
-            isDarkMode={isDarkMode}
-            isGenerating={isGenerating}
-            isLoadingTelemetry={isLoadingTelemetry}
-            onSelectCity={handleManualCityChange}
-            onOpenMultiAi={() => setIsMultiAiOpen(true)}
-            onGeneratePlan={handleGenerateAndScroll}
-            onDismissPlan={clearAiPlan}
-            onToggleVulnerability={handleToggleVulnerability}
-          />
-        )}
+        <div key={activeTab} className="animate-page-enter">
+          {activeTab === 'commandCenter' && (
+            <CommandCenterTab
+              t={t}
+              locationData={locationData}
+              timeContext={timeContext}
+              telemetry={telemetry}
+              solarStatus={solarStatus}
+              vulnerabilities={vulnerabilities}
+              aiPlan={aiPlan}
+              aiPlanRef={aiPlanRef}
+              personalizedIntel={personalizedIntel}
+              checklist={checklist}
+              currentLang={currentLang}
+              isDarkMode={isDarkMode}
+              isGenerating={isGenerating}
+              isLoadingTelemetry={isLoadingTelemetry}
+              onSelectCity={handleManualCityChange}
+              onRefreshLocation={handleAutoDetectLocation}
+              onOpenMultiAi={() => setIsMultiAiOpen(true)}
+              onGeneratePlan={handleGenerateAndScroll}
+              onDismissPlan={clearAiPlan}
+              onToggleVulnerability={handleToggleVulnerability}
+            />
+          )}
 
-        <Suspense
-          fallback={
-            <div
-              role="status"
-              aria-live="polite"
-              className="p-8 rounded-3xl glass-card text-center text-xs font-semibold text-zinc-500 dark:text-zinc-400"
-            >
-              Loading VayuMitra OS module...
-            </div>
-          }
-        >
           {activeTab === 'routine' && (
-            <div className="animate-page-enter">
-              <SmogRoutineTimeline
-                solarStatus={solarStatus}
-                timeContext={timeContext}
-                currentLang={currentLang}
-              />
-            </div>
+            <SmogRoutineTimeline
+              solarStatus={solarStatus}
+              timeContext={timeContext}
+              currentLang={currentLang}
+            />
           )}
 
           {activeTab === 'jugaad' && (
-            <div className="animate-page-enter">
-              <DesiJugaadLab
-                onOpenMultiAi={() => setIsMultiAiOpen(true)}
-                personalizedIntel={personalizedIntel}
-                timeContext={timeContext}
-                onSelectJugaad={(item) => setSelectedJugaadItem(item)}
-                currentLang={currentLang}
-              />
-            </div>
+            <DesiJugaadLab
+              onOpenMultiAi={() => setIsMultiAiOpen(true)}
+              personalizedIntel={personalizedIntel}
+              timeContext={timeContext}
+              onSelectJugaad={(item) => setSelectedJugaadItem(item)}
+              currentLang={currentLang}
+            />
           )}
 
           {activeTab === 'research' && (
-            <div className="animate-page-enter">
-              <ResearchHub telemetry={telemetry} currentLang={currentLang} />
-            </div>
+            <ResearchHub telemetry={telemetry} currentLang={currentLang} />
           )}
-        </Suspense>
+        </div>
 
-        {/* Scientific & Public Health Disclaimer Footer */}
-        <footer className="mt-8 p-4 rounded-3xl glass-card border border-zinc-200 dark:border-zinc-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-zinc-600 dark:text-zinc-300">
+        {/* Helpful Health Note Footer */}
+        <footer className="mt-6 p-4 rounded-3xl glass-card border border-zinc-200 dark:border-zinc-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-zinc-600 dark:text-zinc-300">
           <div className="flex items-start space-x-2.5">
             <Info className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" aria-hidden="true" />
             <p className="leading-relaxed">
@@ -250,12 +217,12 @@ export function App() {
             onClick={() => setIsSettingsOpen(true)}
             className="shrink-0 text-emerald-600 dark:text-emerald-400 font-bold hover:underline cursor-pointer"
           >
-            Review Transparency &amp; Sources →
+            Data Sources &amp; Settings →
           </button>
         </footer>
       </main>
 
-      {/* Bottom Floating Capsule Navigation */}
+      {/* Bottom Floating Navigation Dock */}
       <FloatingBottomNav
         activeTab={activeTab}
         onSelectTab={handleTabChange}
