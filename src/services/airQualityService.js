@@ -1,80 +1,131 @@
 /**
- * Open-Meteo Air Quality Live API Service
- * Fetches free, non-authenticated high-resolution global atmospheric telemetry.
- * Automatically falls back to high-fidelity mock data if offline or network fails.
+ * @module services/airQualityService
+ * Live atmospheric telemetry client powered by Open-Meteo and European Copernicus CAMS.
+ * Includes TTL in-memory caching, input validation, AbortController timeouts,
+ * and deterministic offline fallback for zero-crash resilience.
  */
 
 import { mockCitiesAirQuality } from './mockAirQualityData';
+import {
+  API_TIMEOUT_MS,
+  AQI_THRESHOLDS,
+  BERKELEY_EARTH_PM25_PER_CIGARETTE,
+  CACHE_TTL_MS
+} from '../constants/airQuality';
+import {
+  clampNumber,
+  sanitizeCityKey,
+  validateCoordinates
+} from '../utils/inputValidator';
 
-const CACHE_TTL_MS = 15 * 60 * 1000; // 15-minute in-memory cache
 const telemetryCache = new Map();
 
 /**
- * Calculates US AQI category and theme color.
+ * Clears the in-memory telemetry cache (primarily used for deterministic testing and forced refreshes).
+ */
+export function clearTelemetryCache() {
+  telemetryCache.clear();
+}
+
+/**
+ * Resolves the full AQI classification band (category, accessible color, risk level, advisory pills).
+ * @param {number} aqi - US Air Quality Index value (0–500+).
+ * @returns {{ category: string, color: string, risk: string, advisoryPills: string[] }} Band metadata.
+ */
+function resolveAqiBand(aqi) {
+  const safeAqi = clampNumber(aqi, 0, 1000, 0);
+  return (
+    AQI_THRESHOLDS.find((band) => safeAqi <= band.max) ||
+    AQI_THRESHOLDS[AQI_THRESHOLDS.length - 1]
+  );
+}
+
+/**
+ * Maps numeric US AQI to its standard health category, hex severity color, and risk label.
+ * @param {number} aqi - US AQI numerical reading.
+ * @returns {{ category: string, color: string, risk: string }} Category descriptor.
  */
 export function getAqiCategory(aqi) {
-  if (aqi <= 50) return { category: 'Good', color: '#CBD77E', risk: 'Low' };
-  if (aqi <= 100) return { category: 'Moderate', color: '#E6CA9A', risk: 'Mild' };
-  if (aqi <= 200) return { category: 'Unhealthy', color: '#E07A5F', risk: 'High' };
-  if (aqi <= 300) return { category: 'Very Unhealthy', color: '#F26419', risk: 'Very High' };
-  return { category: 'Hazardous', color: '#9B2226', risk: 'Extreme' };
+  const { category, color, risk } = resolveAqiBand(aqi);
+  return { category, color, risk };
 }
 
 /**
- * Calculates Berkeley Earth cigarette equivalent from PM2.5 in μg/m³
- * Rule: 22 μg/m³ over 24h = 1 cigarette.
+ * Returns localized-ready dynamic protective advisory pills matched to AQI severity.
+ * @param {number} aqi - US AQI numerical reading.
+ * @returns {string[]} Concise household action pills.
+ */
+export function getAqiAdvisories(aqi) {
+  return [...resolveAqiBand(aqi).advisoryPills];
+}
+
+/**
+ * Computes Berkeley Earth inhaled particulate equivalence in daily smoked cigarettes.
+ * Epidemiological baseline: 22 μg/m³ of PM2.5 inhaled over 24 hours ≈ 1 cigarette.
+ * @param {number} pm25 - Ambient fine particulate concentration (μg/m³).
+ * @returns {number} Estimated daily cigarette equivalence rounded to 1 decimal place.
  */
 export function calculateCigarettesFromPm25(pm25) {
-  if (!pm25 || pm25 <= 0) return 0;
-  return Number((pm25 / 22.0).toFixed(1));
+  if (!Number.isFinite(pm25) || pm25 <= 0) return 0;
+  return Number((pm25 / BERKELEY_EARTH_PM25_PER_CIGARETTE).toFixed(1));
 }
 
 /**
- * Fetches real-time atmospheric telemetry from Open-Meteo or fallback.
+ * Fetches live atmospheric telemetry from Open-Meteo Copernicus CAMS grid with 15-min caching
+ * and automatic timeout fallback so the UI never encounters an unhandled network failure.
+ * @param {string} [cityKey='delhi'] - Sanitized preset city identifier or `'custom'`.
+ * @param {{ lat: number, lon: number }|null} [customCoords=null] - Explicit WGS84 coordinates.
+ * @returns {Promise<object>} Normalized air quality telemetry payload.
  */
 export async function fetchLiveAirQuality(cityKey = 'delhi', customCoords = null) {
-  const fallback = mockCitiesAirQuality[cityKey] || mockCitiesAirQuality['delhi'];
-  const lat = customCoords?.lat ?? fallback.latitude;
-  const lon = customCoords?.lon ?? fallback.longitude;
+  const safeCityKey = sanitizeCityKey(cityKey);
+  const presetFallback = mockCitiesAirQuality[safeCityKey] || mockCitiesAirQuality.delhi;
+  const validatedCoords = customCoords
+    ? validateCoordinates(customCoords.lat, customCoords.lon)
+    : { valid: false };
+
+  const lat = validatedCoords.valid ? validatedCoords.lat : presetFallback.latitude;
+  const lon = validatedCoords.valid ? validatedCoords.lon : presetFallback.longitude;
   const cacheKey = `${lat.toFixed(3)},${lon.toFixed(3)}`;
 
-  // Check cache
   const cached = telemetryCache.get(cacheKey);
-  if (cached && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
     return cached.data;
   }
 
   const endpoint = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=pm10,pm2_5,nitrogen_dioxide,sulphur_dioxide,ozone,us_aqi&hourly=pm2_5,pm10,us_aqi&timezone=auto`;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
 
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000); // 4-sec timeout
-
     const response = await fetch(endpoint, { signal: controller.signal });
-    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`Open-Meteo HTTP error ${response.status}`);
     }
 
     const data = await response.json();
-    const current = data.current || {};
-    const usAqi = current.us_aqi ?? fallback.aqi;
-    const pm25 = current.pm2_5 ?? fallback.pm2_5;
-    const pm10 = current.pm10 ?? fallback.pm10;
-    const no2 = current.nitrogen_dioxide ?? fallback.no2;
-    const so2 = current.sulphur_dioxide ?? fallback.so2;
-    const o3 = current.ozone ?? fallback.ozone;
+    const current = data?.current || {};
+    const usAqi = clampNumber(current.us_aqi, 0, 1000, presetFallback.aqi);
+    const pm25 = clampNumber(current.pm2_5, 0, 2000, presetFallback.pm2_5);
+    const pm10 = clampNumber(current.pm10, 0, 3000, presetFallback.pm10);
+    const no2 = clampNumber(current.nitrogen_dioxide, 0, 1000, presetFallback.no2);
+    const so2 = clampNumber(current.sulphur_dioxide, 0, 1000, presetFallback.so2);
+    const o3 = clampNumber(current.ozone, 0, 1000, presetFallback.ozone);
 
     const { category, color, risk } = getAqiCategory(usAqi);
     const cigarettes = calculateCigarettesFromPm25(pm25);
+    const dynamicPills =
+      safeCityKey !== 'custom' && presetFallback.advisoryPills && usAqi > 200
+        ? presetFallback.advisoryPills
+        : getAqiAdvisories(usAqi);
 
     const result = {
-      city: fallback.city,
-      country: fallback.country,
+      city: safeCityKey === 'custom' ? 'Local Area' : presetFallback.city,
+      country: safeCityKey === 'custom' ? 'Detected Region' : presetFallback.country,
       latitude: lat,
       longitude: lon,
-      aqi: usAqi,
+      aqi: Math.round(usAqi),
       category,
       categoryColor: color,
       inversionRisk: risk,
@@ -85,11 +136,11 @@ export async function fetchLiveAirQuality(cityKey = 'delhi', customCoords = null
       so2: Number(so2.toFixed(1)),
       ozone: Number(o3.toFixed(1)),
       cigaretteEquivDaily: cigarettes,
-      temperatureC: fallback.temperatureC,
-      humidityPct: fallback.humidityPct,
-      windSpeedKmh: fallback.windSpeedKmh,
-      summary: fallback.summary,
-      advisoryPills: fallback.advisoryPills,
+      temperatureC: presetFallback.temperatureC,
+      humidityPct: presetFallback.humidityPct,
+      windSpeedKmh: presetFallback.windSpeedKmh,
+      summary: `${category} ambient air quality (${Math.round(usAqi)} US AQI, PM2.5 ${pm25.toFixed(1)} μg/m³). Estimated inhalation: ${cigarettes} cigarettes/day.`,
+      advisoryPills: dynamicPills,
       isLiveFeed: true,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
@@ -97,12 +148,16 @@ export async function fetchLiveAirQuality(cityKey = 'delhi', customCoords = null
     telemetryCache.set(cacheKey, { timestamp: Date.now(), data: result });
     return result;
   } catch (error) {
+    // Graceful network fallback: never allow external telemetry timeout to crash dashboard
     console.warn(`[Open-Meteo Live API] Fallback engaged: ${error.message}`);
-    const fallbackResult = {
-      ...fallback,
+    return {
+      ...presetFallback,
+      latitude: lat,
+      longitude: lon,
       isLiveFeed: false,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
-    return fallbackResult;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }

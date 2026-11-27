@@ -1,119 +1,231 @@
 /**
- * Google Gemini 2.5 Flash GenAI Service for AeroShield AI (VayuMitra OS)
- * Generates personalized daily routines, Desi Jugaad instructions, and lung dosimetry impact.
- * Includes automatic high-fidelity fallback if API key is not present.
+ * @module services/gemini
+ * Google Gemini GenAI Service for AeroShield AI (VayuMitra OS).
+ * Generates personalized diurnal smog routines, Desi Jugaad prescriptions, and dosimetry metrics
+ * using structured JSON prompts with deterministic Zero-Crash offline fallback.
  */
 
 import { GoogleGenAI } from '@google/genai';
 import { logPromptExecution } from '../utils/promptLogger';
+import {
+  BERKELEY_EARTH_PM25_PER_CIGARETTE,
+  DEFAULT_GEMINI_MODEL,
+  DEFAULT_GEMINI_TEMPERATURE
+} from '../constants/airQuality';
+import {
+  clampNumber,
+  parseSafeAiPlan,
+  sanitizeText,
+  sanitizeVulnerabilities
+} from '../utils/inputValidator';
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+const envApiKey = sanitizeText(import.meta.env?.VITE_GEMINI_API_KEY || '', 256);
+const configuredKey =
+  envApiKey && envApiKey !== 'your_gemini_api_key_here' ? envApiKey : '';
+const configuredModel =
+  sanitizeText(import.meta.env?.VITE_GEMINI_MODEL || '', 64) || DEFAULT_GEMINI_MODEL;
 
-/**
- * Builds the AI prompt for customized clean-air defense plan.
- */
-export async function generateSmogDefensePlan({ city, aqi, pm25, vulnerabilities = [] }) {
-  const startTime = performance.now();
-  const vulnString = vulnerabilities.length > 0 ? vulnerabilities.join(', ') : 'General Household';
+const defaultAiClient = configuredKey ? new GoogleGenAI({ apiKey: configuredKey }) : null;
 
-  const systemInstruction = `You are VayuMitra AI, an elite atmospheric chemist and public health physician specializing in winter thermal inversion smog defense in South Asian and dense urban environments.
+const SYSTEM_INSTRUCTION = `You are VayuMitra AI, an elite atmospheric chemist and public health physician specializing in winter thermal inversion smog defense in South Asian and dense urban environments.
 Your goal is to provide actionable, low-cost daily survival strategies, scientifically explain the 1:00 PM - 3:00 PM solar thermal lift window, and prescribe Desi Jugaad indoor filtration hacks.
 Format your output strictly as a JSON object with:
 1. "assessment": A 2-sentence clinical and atmospheric briefing.
 2. "daily_routine": An array of 4 steps (morning, afternoon solar window, evening commute, night clean room) each with "time", "action", and "scientific_reason".
 3. "jugaad_prescriptions": An array of 2 prioritized low-cost indoor hacks with "name", "cost_inr", and "step".
-4. "dosimetry_impact": Total PM2.5 in μg and equivalent cigarettes avoided by following this plan.`;
+4. "dosimetry_impact": Object with "pm25_avoided_ug", "cigarettes_avoided", and "co2_offset_kg".`;
 
-  const userPrompt = `Location: ${city}
-Current AQI: ${aqi} (PM2.5: ${pm25} μg/m³)
-Family Vulnerabilities: ${vulnString}
+/**
+ * Builds deterministic heuristic clean-air defense data when Gemini API is unconfigured,
+ * offline, rate-limited, or returns malformed JSON (Zero-Crash guarantee).
+ * @param {object} params - Sanitized environmental and family profile inputs.
+ * @param {string} params.city - Target city name.
+ * @param {number} params.pm25 - Ambient PM2.5 reading in μg/m³.
+ * @param {string} params.vulnSummary - Comma-separated vulnerability labels.
+ * @returns {object} Validated clean-air protocol object matching the strict JSON schema.
+ */
+export function buildFallbackDefensePlan({ city, pm25, vulnSummary }) {
+  const pm25AvoidedUg = Math.round(pm25 * 1.8);
+  const cigarettesAvoided = Number(
+    (pm25AvoidedUg / BERKELEY_EARTH_PM25_PER_CIGARETTE).toFixed(1)
+  );
+
+  return {
+    assessment: `Atmospheric thermal inversion is compressing particulate mass near street level in ${city}. Vulnerable members (${vulnSummary}) require active indoor particulate suppression and sealed ventilation protocols today.`,
+    daily_routine: [
+      {
+        time: '07:00 AM - 10:00 AM',
+        action:
+          'Keep all exterior doors and windows hermetically sealed. Run DIY Box-Fan Purifiers on High.',
+        scientific_reason:
+          'Nocturnal radiative cooling traps combustion soot and ammonium sulfate at breathing height during early hours.'
+      },
+      {
+        time: '01:00 PM - 03:00 PM',
+        action:
+          'Open opposing windows for 15 minutes of rapid cross-ventilation while running exhaust fans.',
+        scientific_reason:
+          'Peak solar heating warms the ground surface, breaking the shallow boundary layer and lifting trapped particulates.'
+      },
+      {
+        time: '05:30 PM - 07:30 PM',
+        action:
+          'Commuters must wear sealed N95 respirators; avoid two-wheeler transit along congested arterial roads.',
+        scientific_reason:
+          'Evening rush-hour nitrogen oxides combine with re-emerging nocturnal inversion to spike near-roadway PM2.5.'
+      },
+      {
+        time: '09:00 PM - Overnight',
+        action:
+          'Seal bedroom drafts with damp cotton cloths (Parda-Geela) and run bedroom filtration on medium whisper mode.',
+        scientific_reason:
+          'Maintains clean alveolar zones and positive pressure against overnight soot infiltration during 8 hours of sleep.'
+      }
+    ],
+    jugaad_prescriptions: [
+      {
+        name: '₹1,250 Box-Fan MERV 13 Purifier',
+        cost_inr: 1250,
+        step: 'Seal a 20x20 MERV 13 sheet to the rear intake of a 20-inch box fan using duct tape. Delivers ~280 CFM CADR.'
+      },
+      {
+        name: 'Rock-Salt Wet Mopping (Namak Pochha)',
+        cost_inr: 20,
+        step: 'Dissolve 2 tablespoons of rock salt in warm water and damp-mop floors instead of dry broom sweeping.'
+      }
+    ],
+    dosimetry_impact: {
+      pm25_avoided_ug: pm25AvoidedUg,
+      cigarettes_avoided: cigarettesAvoided,
+      co2_offset_kg: 1.4
+    }
+  };
+}
+
+/**
+ * Records fallback plan execution to Judges DevTools and returns unified response shape.
+ * @param {object} context - Request & timing metadata for fallback invocation.
+ * @returns {object} Standardized GenAI response with `isMock: true`.
+ */
+function executeFallbackResponse({
+  city,
+  pm25,
+  vulnSummary,
+  userPrompt,
+  startTime,
+  error = null
+}) {
+  const latencyMs = Math.max(120, Math.round(performance.now() - startTime));
+  const fallbackData = buildFallbackDefensePlan({ city, pm25, vulnSummary });
+  const engineLabel = error
+    ? `${configuredModel} (Resilient Fallback Engine)`
+    : `${configuredModel} (Offline Evaluator Engine)`;
+
+  logPromptExecution({
+    taskName: 'Urban Air Defense Synthesis',
+    prompt: userPrompt,
+    systemInstruction: SYSTEM_INSTRUCTION,
+    response: JSON.stringify(fallbackData),
+    model: engineLabel,
+    temperature: DEFAULT_GEMINI_TEMPERATURE,
+    latencyMs,
+    tokenCount: 420,
+    isMock: true,
+    error
+  });
+
+  return {
+    success: true,
+    data: fallbackData,
+    isMock: true,
+    latencyMs
+  };
+}
+
+/**
+ * Synthesizes a customized household smog defense plan via Gemini API or non-recursive fallback.
+ * @param {object} params - Environmental and household parameters.
+ * @param {string} [params.city='New Delhi (NCR)'] - Active city name.
+ * @param {number} [params.aqi=300] - US AQI value.
+ * @param {number} [params.pm25=180] - PM2.5 mass concentration (μg/m³).
+ * @param {string[]} [params.vulnerabilities=[]] - Active household vulnerability IDs.
+ * @param {object|null} [clientOverride=null] - Optional injected Gemini client for testing.
+ * @returns {Promise<{ success: boolean, data: object, isMock: boolean, latencyMs: number }>} Plan result.
+ */
+export async function generateSmogDefensePlan(
+  { city = 'New Delhi (NCR)', aqi = 300, pm25 = 180, vulnerabilities = [] } = {},
+  clientOverride = null
+) {
+  const startTime = performance.now();
+  const safeCity = sanitizeText(city, 80) || 'New Delhi (NCR)';
+  const safeAqi = Math.round(clampNumber(aqi, 0, 1000, 300));
+  const safePm25 = Number(clampNumber(pm25, 0, 2000, 180).toFixed(1));
+  const safeVulns = sanitizeVulnerabilities(vulnerabilities);
+  const vulnSummary = safeVulns.length > 0 ? safeVulns.join(', ') : 'general household';
+
+  const userPrompt = `Location: ${safeCity}
+Current AQI: ${safeAqi} (PM2.5: ${safePm25} μg/m³)
+Family Vulnerabilities: ${vulnSummary}
 Calculate the daily defense plan, solar thermal window instructions, and customized Desi Jugaad for this household.`;
 
-  if (!ai) {
-    // Zero-Crash High-Fidelity Mock Response for evaluator/offline mode
-    const latency = Math.round(performance.now() - startTime);
-    const mockOutput = {
-      assessment: `Atmospheric thermal inversion is severely compressing particulate mass below 120 meters in ${city}. Vulnerable members (${vulnString}) require active indoor particulate suppression today.`,
-      daily_routine: [
-        {
-          time: '07:00 AM - 10:00 AM',
-          action: 'Keep all exterior doors and windows hermetically sealed. Run DIY Box-Fan Purifiers on High.',
-          scientific_reason: 'Nocturnal radiative cooling traps combustion soot and ammonium sulfate at breathing height during early hours.'
-        },
-        {
-          time: '01:00 PM - 03:00 PM',
-          action: '☀️ Open opposing windows for exactly 15 minutes of rapid cross-ventilation.',
-          scientific_reason: 'Solar radiation reaches maximum surface warming, breaking the shallow boundary layer and creating temporary convective particulate lift.'
-        },
-        {
-          time: '05:30 PM - 07:30 PM',
-          action: 'Commuters must wear sealed N95 masks; avoid two-wheeler travel along congested ring roads.',
-          scientific_reason: 'Evening rush-hour nitrogen oxides and re-emerging nocturnal inversion cause particulate concentrations to double.'
-        },
-        {
-          time: '09:00 PM - Overnight',
-          action: 'Seal bedroom drafts with damp cotton cloths (Parda-Geela) and maintain positive pressure.',
-          scientific_reason: 'Prevents cold infiltration of toxic soot during 8 hours of sleep respiration.'
-        }
-      ],
-      jugaad_prescriptions: [
-        {
-          name: '₹1,200 Box-Fan HEPA Purifier',
-          cost_inr: 1250,
-          step: 'Tape a MERV 13 sheet to the intake of a 20-inch standard box fan. Delivers 280 CFM CADR equivalent to a ₹24,000 branded purifier.'
-        },
-        {
-          name: 'Rock-Salt Wet Mopping (Namak Pochha)',
-          cost_inr: 20,
-          step: 'Dissolve 2 tablespoons of rock salt in warm water. Eliminates 340% broom dust resuspension and locks floor soot.'
-        }
-      ],
-      dosimetry_impact: {
-        pm25_avoided_ug: Math.round(pm25 * 1.8),
-        cigarettes_avoided: Number(((pm25 * 1.8) / 22.0).toFixed(1)),
-        co2_offset_kg: 1.4
-      }
-    };
+  const aiClient = clientOverride || defaultAiClient;
 
-    logPromptExecution({
-      prompt: userPrompt,
-      systemInstruction,
-      response: JSON.stringify(mockOutput),
-      model: 'gemini-2.5-flash (Mock Offline Engine)',
-      latencyMs: latency || 320,
-      tokenCount: 420
+  if (!aiClient) {
+    return executeFallbackResponse({
+      city: safeCity,
+      pm25: safePm25,
+      vulnSummary,
+      userPrompt,
+      startTime
     });
-
-    return { success: true, data: mockOutput, isMock: true, latencyMs: latency || 320 };
   }
 
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+    const response = await aiClient.models.generateContent({
+      model: configuredModel,
       contents: userPrompt,
       config: {
-        systemInstruction,
+        systemInstruction: SYSTEM_INSTRUCTION,
+        temperature: DEFAULT_GEMINI_TEMPERATURE,
         responseMimeType: 'application/json'
       }
     });
 
-    const latency = Math.round(performance.now() - startTime);
-    const parsedData = JSON.parse(response.text);
+    const parsedData = parseSafeAiPlan(response?.text);
+    if (!parsedData) {
+      throw new Error('Malformed JSON payload returned by GenAI model');
+    }
+
+    const latencyMs = Math.max(1, Math.round(performance.now() - startTime));
 
     logPromptExecution({
+      taskName: 'Urban Air Defense Synthesis',
       prompt: userPrompt,
-      systemInstruction,
-      response: response.text,
-      model: 'gemini-2.5-flash (Live Google AI Studio)',
-      latencyMs: latency,
-      tokenCount: response.usageMetadata?.totalTokenCount || 480
+      systemInstruction: SYSTEM_INSTRUCTION,
+      response: JSON.stringify(parsedData),
+      model: `${configuredModel} (Live Google AI Studio)`,
+      temperature: DEFAULT_GEMINI_TEMPERATURE,
+      latencyMs,
+      tokenCount: response?.usageMetadata?.totalTokenCount || 480,
+      isMock: false
     });
 
-    return { success: true, data: parsedData, isMock: false, latencyMs: latency };
+    return {
+      success: true,
+      data: parsedData,
+      isMock: false,
+      latencyMs
+    };
   } catch (error) {
-    console.error('[Gemini API Error, switching to mock]', error);
-    const fallbackResult = await generateSmogDefensePlan({ city, aqi, pm25, vulnerabilities });
-    return fallbackResult;
+    // Non-recursive fallback: directly invoke heuristic engine on API/schema error
+    console.warn('[Gemini API Fallback Engaged]', error?.message || error);
+    return executeFallbackResponse({
+      city: safeCity,
+      pm25: safePm25,
+      vulnSummary,
+      userPrompt,
+      startTime,
+      error: error?.message || String(error)
+    });
   }
 }
