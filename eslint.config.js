@@ -1,19 +1,21 @@
 import js from '@eslint/js';
 import globals from 'globals';
+import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
-import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
+import tseslint from 'typescript-eslint';
 
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', 'demo_clips/**']
+    ignores: ['dist/**', 'coverage/**', 'node_modules/**', 'demo_clips/**']
   },
   js.configs.recommended,
+  ...tseslint.configs.recommended,
   reactPlugin.configs.flat.recommended,
   reactPlugin.configs.flat['jsx-runtime'],
   jsxA11yPlugin.flatConfigs.recommended,
   {
-    files: ['**/*.{js,jsx,mjs}'],
+    files: ['**/*.{ts,tsx,js,jsx,mjs}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -37,8 +39,13 @@ export default [
       }
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^React$', argsIgnorePattern: '^_' }],
-      'react/prop-types': 'error',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { varsIgnorePattern: '^React$', argsIgnorePattern: '^_' }
+      ],
+      '@typescript-eslint/no-explicit-any': 'error',
+      'react/prop-types': 'off',
       'react/no-array-index-key': 'error',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
@@ -48,10 +55,9 @@ export default [
     }
   },
   {
-    files: ['scripts/**/*.mjs', 'tests/**/*.{js,jsx}'],
+    files: ['scripts/**/*.mjs', 'tests/**/*.{ts,tsx}'],
     rules: {
-      'no-console': 'off',
-      'react/prop-types': 'off'
+      'no-console': 'off'
     }
   }
 ];

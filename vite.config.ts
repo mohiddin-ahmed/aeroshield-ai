@@ -14,7 +14,7 @@ export default defineConfig({
           groups: [
             {
               name: 'vendor-react',
-              test: /[\\/]node_modules[\\/](react|react-dom|prop-types)[\\/]/,
+              test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
               priority: 20
             },
             {
