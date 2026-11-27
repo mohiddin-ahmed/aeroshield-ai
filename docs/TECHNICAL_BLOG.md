@@ -1,4 +1,4 @@
-# Building AeroShield AI (VayuMitra OS): Architecting a GenAI Clean-Air Defense Operating System with Google Antigravity & Gemini
+# Building AeroShield AI (VayuMitra OS): Engineering a Resilient, Accessible GenAI Clean-Air Operating System
 
 > **Event:** PromptWars Virtual (Hack2skill × Google for Developers)  
 > **Challenge:** Challenge 6: Urban Air Quality Assistant  
@@ -10,11 +10,11 @@
 
 ## 1. Abstract & Problem Statement
 
-Every winter across the Indo-Gangetic Plains, over **300 million citizens breathe toxic air equivalent to smoking 25 to 30 cigarettes a day**. Thermal boundary-layer inversions trap PM2.5, NO2, and volatile organic compounds near ground level. 
+Every winter across the Indo-Gangetic Plains, over **300 million citizens breathe toxic air equivalent to smoking 25 to 30 cigarettes a day**. Thermal boundary-layer inversions trap $\text{PM}_{2.5}$, $\text{NO}_2$, and volatile organic compounds near ground level.
 
-Commercial solutions present a stark socioeconomic divide: branded HEPA air purifiers cost between ₹20,000 and ₹40,000, putting them out of reach for 90% of Indian households. Meanwhile, commercial weather applications merely display alarmist red numbers and induce psychological dread without delivering a single actionable, low-cost harm reduction strategy.
+Commercial solutions create a stark affordability divide: branded HEPA air purifiers cost ₹20,000–₹40,000+, while conventional weather dashboards simply flash red AQI warnings without delivering low-cost harm-reduction protocols.
 
-Our mission with **AeroShield AI (VayuMitra OS)** is to **turn winter smog anxiety into daily clean-air strategy**. We built a scientifically grounded household clean-air operating system that leverages **Google Antigravity**, the **Gemini 2.5 Flash API**, high-resolution European **Copernicus Atmosphere Monitoring Service (CAMS)** telemetry via Open-Meteo, and evidence-informed **Desi Jugaad engineering**.
+Our mission with **AeroShield AI (VayuMitra OS)** is to **turn winter smog anxiety into daily clean-air strategy** using **Google Antigravity**, the **Gemini 2.5 Flash API**, **Open-Meteo European Copernicus CAMS telemetry**, fluid-dynamics calculators, and production engineering guardrails.
 
 ---
 
@@ -22,71 +22,51 @@ Our mission with **AeroShield AI (VayuMitra OS)** is to **turn winter smog anxie
 
 ```mermaid
 flowchart TD
-    A["Auto-Detected Device GPS & Clock"] --> B["Open-Meteo High-Resolution Satellite Atmospheric Grid"]
-    B --> C["Diurnal Inversion & Solar Thermal Lift Analyzer"]
-    
+    A["Auto-Detected Device GPS & Diurnal Clock"] --> B["Open-Meteo CAMS Satellite Grid (15-min TTL Cache)"]
+    B --> C["Input Sanitization & Diurnal Solar Thermal Lift Engine"]
     C --> D{"Gemini API Key Available?"}
-    D -->|"Live Mode"| E["Gemini 2.5 Flash Clinical Pulmonology Model"]
-    D -->|"Quota Limit / Offline"| F["Zero-Crash High-Fidelity Mock Fallback Engine"]
-    
-    E --> G["Prompt Telemetry & Token Logger"]
+    D -->|"Live Mode"| E["Gemini 2.5 Flash Clinical Model (Strict JSON + parseSafeAiPlan)"]
+    D -->|"Quota Limit / Offline"| F["Non-Recursive Zero-Crash Fallback Engine"]
+    E --> G["Bounded Prompt Telemetry Logger"]
     F --> G
-    
     G --> H["Judges Live Prompt Inspector (DevTools)"]
-    G --> I["VayuMitra OS UI (Rotary Dial, Routine Timeline, Jugaad Lab, Research Hub)"]
+    G --> I["Code-Split VayuMitra OS UI (WCAG 2.1 AA)"]
 ```
 
-### Full-Stack Architecture:
+### Engineering Stack:
 * **Agentic Orchestration:** Google Antigravity
-* **Core Foundation Model:** Google Gemini 2.5 Flash API with temperature control (`0.3` for clinical accuracy)
-* **Atmospheric Data Pipeline:** Open-Meteo 11km ECMWF & CAMS atmospheric model grid (PM2.5, PM10, NO2, Ozone)
-* **Frontend Platform:** React 19, Tailwind CSS v4, Lucide Icons, Vite 8
-* **Mathematical Engines:**
-  * **Berkeley Earth Dosimetry:** Translates PM2.5 mass concentration ($\mu\text{g/m}^3$) into daily cigarette inhalation.
-  * **Box-Fan CADR Fluid Dynamics:** Computes effective Clean Air Delivery Rate (CFM), Air Changes per Hour (ACH), and time-to-90% particulate clearance for room sizes from 80 to 600 sq ft.
-* **Resilience Layer:** Zero-Crash mock failover guaranteeing evaluators never face a blank screen.
+* **Foundation Model:** Google Gemini 2.5 Flash API (`temperature: 0.3`, strict `application/json` schema validation)
+* **Atmospheric Data Pipeline:** Open-Meteo Copernicus CAMS 11km model grid ($\text{PM}_{2.5}$, $\text{PM}_{10}$, $\text{NO}_2$, $\text{O}_3$) with 4s `AbortController` timeouts
+* **Frontend Platform:** React 19 (modular custom hooks, `PropTypes`, lazy-loaded modals & tabs), Tailwind CSS v4, Vite 8 (Rolldown vendor chunk splitting)
+* **Quality, Security & Accessibility:** ESLint 9 (`jsx-a11y` zero-warning enforcement), CSP/HSTS security headers (`vercel.json`), and 30 automated Vitest + Testing Library unit/security/accessibility/integration tests
 
 ---
 
 ## 3. Prompt Strategy & Engineering Framework
 
-We engineered a specialized **5-Pillar Intent Architecture** tailored for critical public health:
+We engineered a specialized **5-Pillar Clinical Prompt Architecture**:
 
-1. **Role & Clinical Persona Calibration:**  
-   The model is strictly calibrated as *VayuMitra AI: an elite atmospheric physicist and clinical pulmonologist*. It never provides vague advice like "stay indoors"; it prescribes exact boundary-layer actions (e.g., "activate Rock-Salt Wet Mopping to precipitate dry particulates without resuspension").
-2. **Deterministic Output Schema Constraints:**  
-   Outputs follow a rigid JSON schema containing an executive assessment, severity category, 4-phase daily routine milestones, and tailored Desi Jugaad interventions.
-3. **Multi-AI Context Synchronization:**  
-   Our One-Click Multi-AI engine auto-crafts structured prompts pre-filled with the user's live micro-climate, current time, and selected family vulnerabilities (Toddlers, Elderly, Asthmatics, etc.), allowing seamless 1-click execution across ChatGPT, Claude, and Gemini.
-4. **Observable Prompt DevTools for Judges:**  
-   We embedded an in-app **Live Prompt Inspector**, empowering hackathon judges to verify the exact system instruction, user prompt payload, token counts, and execution latency in real time.
+1. **Role & Clinical Persona Calibration:** Strictly constrains the model as *VayuMitra AI*, prescribing boundary-layer timing and frugal household interventions grounded in epidemiology rather than generic platitudes.
+2. **Deterministic Schema Guardrails (`parseSafeAiPlan`):** Strips accidental Markdown wrappers and validates mandatory keys (`assessment`, 4-phase `daily_routine`, `jugaad_prescriptions`, `dosimetry_impact`) before UI rendering.
+3. **Input Sanitization Prior to Prompt Interpolation (`inputValidator.js`):** Sanitizes city names, coordinate bounds, and vulnerability arrays prior to building LLM prompts or external links.
+4. **Live Prompt Inspector (Judges DevTools):** Records every live or offline execution in memory (`promptLogger.js`) with system instructions, payloads, response JSON, latency, and token metrics.
 
 ---
 
-## 4. Key Engineering Challenges & How We Fixed Them
+## 4. Key Engineering Challenges & How We Solved Them
 
-### Pitfall 1: Evaluator API Quota Exhaustion (The "Blank Screen" Crash)
-* **The Problem:** In hackathon competitions, judges evaluating dozens of projects simultaneously cause shared API keys to hit `429 Too Many Requests` or quota limits, leading to an immediate zero-score crash.
-* **Our Solution:** We architected a **Zero-Crash Mock Fallback Engine**. If the API key is missing or fails, the application automatically falls back to rich, simulated atmospheric intelligence with an explanatory status badge. The evaluator experience is 100% uninterrupted.
+### Challenge 1: Eliminating Evaluator "Blank Screen" & Fallback Recursion Risks
+* **The Problem:** External API keys in public reviews frequently encounter `429 Quota Exceeded` or network timeouts. Calling the primary API function recursively inside `catch` risks infinite retry loops.
+* **Our Solution:** Separated deterministic heuristic synthesis (`buildFallbackDefensePlan`) from `generateSmogDefensePlan`, ensuring single-pass non-recursive failover backed by a top-level React `ErrorBoundary` and `AbortController` API timeouts.
 
-### Pitfall 2: Mobile Viewport Clashes & Dark Mode Contrast
-* **The Problem:** In dense data dashboards, mobile screens often wrap badges awkwardly, collide close buttons with modal titles, or suffer from text-on-dark invisibility.
-* **Our Solution:** We decoupled modal headers into flex row containers, added custom dark-mode CSS overrides in `src/index.css`, established tactile primary buttons, and designed a floating capsule navigation bar with intelligent scroll memory.
-
----
-
-## 5. Live Demo Walkthrough
-
-1. **Auto-Detected Device Location & Time:** The app immediately senses your city and solar phase.
-2. **Rotary AQI Dial & Cigarette Equivalence:** Visualizes real-time toxicity and Berkeley Earth cigarette equivalence.
-3. **1–3 PM Solar Lift Window:** Alerts households when solar convective currents break the cold pool, allowing safe ventilation.
-4. **₹1,200 Box-Fan CADR Calculator:** Adjust room size and fan speed to calculate clean-air delivery matching ₹25,000 branded purifiers.
-5. **Inspect Prompts (Judges DevTools):** Click the top-right terminal icon to review real-time Gemini 2.5 Flash prompt payloads and execution latency.
+### Challenge 2: Bundle Bloat vs Mobile Responsiveness & Accessibility
+* **The Problem:** Loading all interactive modals, charts, and scientific hubs upfront created a >500 kB single JavaScript bundle, while overlays needed full keyboard control.
+* **Our Solution:** Code-split secondary views and modals using `React.lazy()` + `<Suspense>` and configured Vite 8 `codeSplitting.groups`, reducing main entry JS to **134.4 kB (41.6 kB gzip)**. Added a shared `useModalAccessibility` Escape-key hook, skip-to-content landmarks, `aria-pressed` states, and `eslint-plugin-jsx-a11y` CI checks.
 
 ---
 
-## 6. Future Scope & Conclusion
+## 5. Verification & Conclusion
 
-AeroShield AI (VayuMitra OS) proves that GenAI can democratize life-saving environmental health defense. Future roadmaps include integrating low-cost IoT PM2.5 sensors and rolling out localized WhatsApp voice advisories for rural agricultural communities.
+Running `npm run validate` verifies all 10 automated checks end to end: ESLint (`--max-warnings=0`), all 30 Vitest tests across 5 suites, code-split Vite compilation, CSP/HSTS headers, and prompt registry integrity.
 
-*We express our heartfelt gratitude to Google for Developers and Hack2skill for hosting PromptWars Virtual!*
+AeroShield AI (VayuMitra OS) demonstrates how intent-driven engineering with Google Antigravity and Gemini 2.5 Flash can deliver clinically grounded, accessible environmental protection software at zero household cost.

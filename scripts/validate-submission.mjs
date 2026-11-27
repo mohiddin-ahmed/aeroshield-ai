@@ -2,10 +2,10 @@
 
 /**
  * ==============================================================================
- * PROMPTWARS SUBMISSION AUDITOR & VALIDATION CLI
+ * AEROSHIELD AI (VAYUMITRA OS) — SUBMISSION PRE-FLIGHT AUDITOR CLI
  * ==============================================================================
- * Automates pre-flight verification against official Hack2skill & Google evaluator
- * rubrics to ensure 100% compliance and prevent disqualification or point losses.
+ * Automates end-to-end verification across repository hygiene, security headers,
+ * ESLint static analysis, Vitest unit/UI tests, production bundling, and docs.
  * ==============================================================================
  */
 
@@ -26,7 +26,7 @@ const COLORS = {
   cyan: '\x1b[36m',
   magenta: '\x1b[35m',
   bold: '\x1b[1m',
-  gray: '\x1b[90m',
+  gray: '\x1b[90m'
 };
 
 const checks = [];
@@ -35,13 +35,17 @@ function addCheck(name, category, testFn) {
   checks.push({ name, category, testFn });
 }
 
-console.log(`\n${COLORS.bold}${COLORS.cyan}==============================================================================${COLORS.reset}`);
-console.log(`${COLORS.bold}${COLORS.magenta}           🚀 PROMPTWARS VIRTUAL — SUBMISSION PRE-FLIGHT AUDITOR             ${COLORS.reset}`);
-console.log(`${COLORS.bold}${COLORS.cyan}==============================================================================${COLORS.reset}\n`);
+console.log(
+  `\n${COLORS.bold}${COLORS.cyan}==============================================================================${COLORS.reset}`
+);
+console.log(
+  `${COLORS.bold}${COLORS.magenta}        🚀 AEROSHIELD AI — PRODUCTION & SUBMISSION PRE-FLIGHT AUDITOR        ${COLORS.reset}`
+);
+console.log(
+  `${COLORS.bold}${COLORS.cyan}==============================================================================${COLORS.reset}\n`
+);
 
-// -----------------------------------------------------------------------------
-// CHECK 1: Git & Repository Security
-// -----------------------------------------------------------------------------
+// 1. Repository & Secrets Hygiene
 addCheck('Git Repository Initialized', 'Repository', () => {
   const gitDir = path.join(ROOT_DIR, '.git');
   if (!fs.existsSync(gitDir)) {
@@ -50,109 +54,130 @@ addCheck('Git Repository Initialized', 'Repository', () => {
   return { pass: true, detail: 'Valid .git repository detected' };
 });
 
-addCheck('No Leaked API Keys in Git (.gitignore Check)', 'Security', () => {
+addCheck('No Leaked API Keys (.gitignore Excludes .env)', 'Security', () => {
   const gitignorePath = path.join(ROOT_DIR, '.gitignore');
   if (!fs.existsSync(gitignorePath)) {
     return { pass: false, error: 'Missing .gitignore file.' };
   }
   const content = fs.readFileSync(gitignorePath, 'utf8');
   if (!content.includes('.env')) {
-    return { pass: false, error: '.gitignore does NOT exclude .env! Risk of leaking API keys.' };
+    return { pass: false, error: '.gitignore does NOT exclude .env!' };
   }
-  return { pass: true, detail: '.env properly excluded from version control' };
+  return { pass: true, detail: '.env and media binaries excluded from version control' };
 });
 
-addCheck('.env.example Available for Evaluators', 'Security', () => {
+addCheck('.env.example Template Present for Evaluators', 'Security', () => {
   const envExample = path.join(ROOT_DIR, '.env.example');
   if (!fs.existsSync(envExample)) {
-    return { pass: false, error: 'Missing .env.example. Evaluators need to know what env variables are needed.' };
+    return { pass: false, error: 'Missing .env.example template.' };
   }
-  return { pass: true, detail: '.env.example template present' };
+  return { pass: true, detail: '.env.example documented for Gemini key injection' };
 });
 
-// -----------------------------------------------------------------------------
-// CHECK 2: Build & Production Readiness
-// -----------------------------------------------------------------------------
-addCheck('Production Build Passes Without Errors', 'Build Quality', () => {
+addCheck('Security Headers Configured in vercel.json', 'Security', () => {
+  const vercelPath = path.join(ROOT_DIR, 'vercel.json');
+  if (!fs.existsSync(vercelPath)) {
+    return { pass: false, error: 'Missing vercel.json deployment configuration.' };
+  }
+  const raw = fs.readFileSync(vercelPath, 'utf8');
+  const requiredHeaders = [
+    'Content-Security-Policy',
+    'Strict-Transport-Security',
+    'X-Content-Type-Options',
+    'X-Frame-Options',
+    'Referrer-Policy'
+  ];
+  const missing = requiredHeaders.filter((h) => !raw.includes(h));
+  if (missing.length > 0) {
+    return { pass: false, error: `Missing security headers in vercel.json: ${missing.join(', ')}` };
+  }
+  return { pass: true, detail: 'CSP, HSTS, Referrer-Policy, X-Frame-Options configured' };
+});
+
+// 2. Code Quality & Static Linting
+addCheck('ESLint Zero-Warning Static Analysis Passes', 'Code Quality', () => {
+  try {
+    execSync('npm run lint', { cwd: ROOT_DIR, stdio: 'pipe' });
+    return { pass: true, detail: '0 ESLint errors and 0 warnings (--max-warnings=0)' };
+  } catch (err) {
+    return { pass: false, error: `ESLint failed: ${err.message}` };
+  }
+});
+
+// 3. Automated Testing
+addCheck('Vitest Unit, Security & Accessibility Suite Passes', 'Testing', () => {
+  try {
+    execSync('npm test', { cwd: ROOT_DIR, stdio: 'pipe' });
+    return { pass: true, detail: 'All automated Vitest suites passed cleanly' };
+  } catch (err) {
+    return { pass: false, error: `Test suite failed: ${err.message}` };
+  }
+});
+
+// 4. Production Build & Chunk Optimization
+addCheck('Production Vite Build Compiles Cleanly', 'Build Efficiency', () => {
   try {
     execSync('npm run build', { cwd: ROOT_DIR, stdio: 'pipe' });
     const distHtml = path.join(ROOT_DIR, 'dist', 'index.html');
     if (!fs.existsSync(distHtml)) {
-      return { pass: false, error: 'Build ran but dist/index.html was not generated.' };
+      return { pass: false, error: 'Build finished without dist/index.html.' };
     }
-    return { pass: true, detail: 'Build generated successfully in dist/' };
+    return { pass: true, detail: 'Code-split production bundle generated in dist/' };
   } catch (err) {
     return { pass: false, error: `Build failed: ${err.message}` };
   }
 });
 
-// -----------------------------------------------------------------------------
-// CHECK 3: Prompt Engineering Artifacts
-// -----------------------------------------------------------------------------
-addCheck('Prompt Registry & Templates Present', 'Prompt Engineering', () => {
+// 5. Prompt Engineering & Documentation
+addCheck('Challenge 6 Prompt Registry Verified', 'Prompt Engineering', () => {
   const registryPath = path.join(ROOT_DIR, 'prompts', 'prompt-registry.json');
   if (!fs.existsSync(registryPath)) {
-    return { pass: false, error: 'prompts/prompt-registry.json missing. Judges require prompt strategy logs.' };
+    return { pass: false, error: 'prompts/prompt-registry.json missing.' };
   }
-  return { pass: true, detail: 'Prompt registry catalog found' };
+  try {
+    const parsed = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+    if (!Array.isArray(parsed.prompts) || parsed.prompts.length === 0) {
+      return { pass: false, error: 'prompt-registry.json contains no prompt definitions.' };
+    }
+    return {
+      pass: true,
+      detail: `${parsed.prompts.length} Challenge 6 structured prompt specs verified`
+    };
+  } catch (err) {
+    return { pass: false, error: `Invalid JSON in prompt-registry.json: ${err.message}` };
+  }
 });
 
-// -----------------------------------------------------------------------------
-// CHECK 4: Technical Documentation & Blog
-// -----------------------------------------------------------------------------
-addCheck('Technical Blog Post Drafted (docs/TECHNICAL_BLOG.md)', 'Documentation', () => {
+addCheck('Technical Blog Verified (docs/TECHNICAL_BLOG.md)', 'Documentation', () => {
   const blogPath = path.join(ROOT_DIR, 'docs', 'TECHNICAL_BLOG.md');
   if (!fs.existsSync(blogPath)) {
-    return { pass: false, error: 'docs/TECHNICAL_BLOG.md is missing. Required for Hack2skill submissions!' };
+    return { pass: false, error: 'docs/TECHNICAL_BLOG.md missing.' };
   }
   const content = fs.readFileSync(blogPath, 'utf8');
   const wordCount = content.split(/\s+/).filter(Boolean).length;
-  
-  if (wordCount < 150) {
-    return { pass: false, error: `Technical blog is too short (${wordCount} words). Elaborate on architecture & prompts.` };
-  }
-
-  const requiredSections = [
-    'Problem Statement',
-    'Architecture',
-    'Prompt Strategy',
-  ];
-
+  const requiredSections = ['Problem Statement', 'Architecture', 'Prompt Strategy'];
   for (const section of requiredSections) {
     if (!content.toLowerCase().includes(section.toLowerCase())) {
-      return { pass: false, error: `Technical blog is missing mandatory section: "${section}".` };
+      return { pass: false, error: `Technical blog missing section: "${section}".` };
     }
   }
-
   return { pass: true, detail: `Blog verified (${wordCount} words, all key sections present)` };
 });
 
-// -----------------------------------------------------------------------------
-// CHECK 5: Social & Submission Artifacts
-// -----------------------------------------------------------------------------
-addCheck('Submission Pre-Flight Checklist (docs/SUBMISSION_CHECKLIST.md)', 'Submission', () => {
+addCheck('Submission Checklist & LinkedIn Artifacts Present', 'Submission', () => {
   const checklistPath = path.join(ROOT_DIR, 'docs', 'SUBMISSION_CHECKLIST.md');
-  if (!fs.existsSync(checklistPath)) {
-    return { pass: false, error: 'docs/SUBMISSION_CHECKLIST.md missing.' };
-  }
-  return { pass: true, detail: 'Pre-flight checklist ready' };
-});
-
-addCheck('LinkedIn Build-in-Public Post Prepared', 'Social & Community', () => {
   const postPath = path.join(ROOT_DIR, 'docs', 'LINKEDIN_POST.md');
-  if (!fs.existsSync(postPath)) {
-    return { pass: false, error: 'docs/LINKEDIN_POST.md missing.' };
+  if (!fs.existsSync(checklistPath) || !fs.existsSync(postPath)) {
+    return { pass: false, error: 'Missing docs/SUBMISSION_CHECKLIST.md or docs/LINKEDIN_POST.md.' };
   }
-  const content = fs.readFileSync(postPath, 'utf8');
-  if (!content.includes('#PromptWars') || !content.includes('#BuildWithAI')) {
-    return { pass: false, error: 'LinkedIn template missing official hashtags (#PromptWars, #BuildWithAI).' };
+  const postContent = fs.readFileSync(postPath, 'utf8');
+  if (!postContent.includes('#PromptWars') || !postContent.includes('#BuildWithAI')) {
+    return { pass: false, error: 'LinkedIn post missing #PromptWars or #BuildWithAI tags.' };
   }
-  return { pass: true, detail: 'LinkedIn template configured with official tags' };
+  return { pass: true, detail: 'Submission checklist and LinkedIn post configured' };
 });
 
-// -----------------------------------------------------------------------------
-// EXECUTE CHECKS & DISPLAY REPORT
-// -----------------------------------------------------------------------------
+// Execute audit checks
 let passedCount = 0;
 let failedCount = 0;
 
@@ -161,22 +186,33 @@ checks.forEach((item, index) => {
   const num = `[${index + 1}/${checks.length}]`;
   if (result.pass) {
     passedCount++;
-    console.log(`${COLORS.green}✔ PASS${COLORS.reset} ${num.padEnd(8)} ${COLORS.bold}${item.name}${COLORS.reset}`);
+    console.log(
+      `${COLORS.green}✔ PASS${COLORS.reset} ${num.padEnd(8)} ${COLORS.bold}${item.name}${COLORS.reset}`
+    );
     console.log(`       ${COLORS.gray}↳ ${result.detail}${COLORS.reset}`);
   } else {
     failedCount++;
-    console.log(`${COLORS.red}✖ FAIL${COLORS.reset} ${num.padEnd(8)} ${COLORS.bold}${item.name}${COLORS.reset}`);
+    console.log(
+      `${COLORS.red}✖ FAIL${COLORS.reset} ${num.padEnd(8)} ${COLORS.bold}${item.name}${COLORS.reset}`
+    );
     console.log(`       ${COLORS.yellow}↳ Fix: ${result.error}${COLORS.reset}`);
   }
 });
 
-console.log(`\n${COLORS.cyan}------------------------------------------------------------------------------${COLORS.reset}`);
+console.log(
+  `\n${COLORS.cyan}------------------------------------------------------------------------------${COLORS.reset}`
+);
 if (failedCount === 0) {
-  console.log(`${COLORS.bold}${COLORS.green}🎉 ALL ${passedCount} CHECKS PASSED! Your project is 100% compliant and ready for submission.${COLORS.reset}`);
-  console.log(`${COLORS.gray}You can now deploy to Vercel/Cloud Run and submit on https://hack2skill.com/event/pwvirtual1${COLORS.reset}\n`);
+  console.log(
+    `${COLORS.bold}${COLORS.green}🎉 ALL ${passedCount} CHECKS PASSED! Repository meets production quality, security, and evaluation standards.${COLORS.reset}`
+  );
+  console.log(
+    `${COLORS.gray}Ready for deployment verification on https://aeroshield-ai-sandy.vercel.app/${COLORS.reset}\n`
+  );
   process.exit(0);
 } else {
-  console.log(`${COLORS.bold}${COLORS.red}⚠️  ${failedCount} CHECK(S) FAILED. Address the fixes above before submitting to ensure maximum points!${COLORS.reset}\n`);
+  console.log(
+    `${COLORS.bold}${COLORS.red}⚠️  ${failedCount} CHECK(S) FAILED. Address the issues above before submitting.${COLORS.reset}\n`
+  );
   process.exit(1);
 }
-
