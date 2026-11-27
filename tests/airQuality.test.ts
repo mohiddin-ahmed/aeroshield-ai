@@ -1,19 +1,20 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { calculateRequiredCfm, calculateDiyPurifierStats } from '../src/utils/cadrCalculator';
-import { getSolarWindowStatus } from '../src/utils/solarWindowEngine';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { researchArticles } from '../src/data/researchArticlesData';
 import {
-  getAqiCategory,
-  getAqiAdvisories,
   calculateCigarettesFromPm25,
+  clearTelemetryCache,
   fetchLiveAirQuality,
-  clearTelemetryCache
+  getAqiAdvisories,
+  getAqiCategory
 } from '../src/services/airQualityService';
-import { researchArticles } from '../src/services/researchArticlesData';
+import { calculateDiyPurifierStats, calculateRequiredCfm } from '../src/utils/cadrCalculator';
 import {
+  detectDeviceLocation,
   getDetailedTimeContext,
   resolveFallbackLocationByTimezone
 } from '../src/utils/geolocationEngine';
 import { generatePersonalizedIntelligence } from '../src/utils/personalizedJugaadEngine';
+import { getSolarWindowStatus } from '../src/utils/solarWindowEngine';
 
 describe('AeroShield AI: Mathematical, Atmospheric & Telemetry Tests', () => {
   beforeEach(() => {
@@ -25,9 +26,7 @@ describe('AeroShield AI: Mathematical, Atmospheric & Telemetry Tests', () => {
   });
 
   it('calculates required CADR correctly and clamps invalid room dimensions', () => {
-    // 200 sq ft * 9 ft ceiling = 1800 cu ft; (1800 * 5 ACH) / 60 = 150 CFM
     expect(calculateRequiredCfm(200, 5, 9)).toBe(150);
-    // Clamps room size below MIN_ROOM_SQFT (50) and above MAX_ROOM_SQFT (2000)
     expect(calculateRequiredCfm(10, 5, 9)).toBe(calculateRequiredCfm(50, 5, 9));
     expect(calculateRequiredCfm(9000, 5, 9)).toBe(calculateRequiredCfm(2000, 5, 9));
   });
@@ -91,31 +90,62 @@ describe('AeroShield AI: Mathematical, Atmospheric & Telemetry Tests', () => {
     expect(researchArticles.length).toBeGreaterThanOrEqual(5);
     const berkeley = researchArticles.find((a) => a.id === 'berkeley-earth-cigarette-rule');
     expect(berkeley).toBeDefined();
-    expect(berkeley.doi).toBeDefined();
-    expect(berkeley.keyTakeaway).toContain('22 μg/m³');
+    expect(berkeley?.doi).toBeDefined();
+    expect(berkeley?.keyTakeaway).toContain('22 μg/m³');
 
     const lancet = researchArticles.find((a) => a.id === 'lancet-planetary-health-2023');
     expect(lancet).toBeDefined();
   });
 
-  it('resolves diurnal boundary-layer phases and Indian timezone defaults', () => {
+  it('resolves all diurnal phases and detects device location with timezone fallback', async () => {
     const solarDate = new Date();
     solarDate.setHours(14, 15, 0, 0);
     expect(getDetailedTimeContext(solarDate).timePhase).toBe('solar_window');
     expect(getDetailedTimeContext(solarDate).solarVentilationWindow).toBe(true);
 
+    const afternoonDate = new Date();
+    afternoonDate.setHours(16, 0, 0, 0);
+    expect(getDetailedTimeContext(afternoonDate).timePhase).toBe('late_afternoon');
+
     const eveningDate = new Date();
     eveningDate.setHours(18, 30, 0, 0);
     expect(getDetailedTimeContext(eveningDate).timePhase).toBe('evening_rush');
 
+    const nightDate = new Date();
+    nightDate.setHours(23, 0, 0, 0);
+    expect(getDetailedTimeContext(nightDate).timePhase).toBe('night_inversion');
+
     expect(resolveFallbackLocationByTimezone('Asia/Kolkata').city).toBe('Bengaluru');
     expect(resolveFallbackLocationByTimezone('America/New_York').city).toBe('New Delhi (NCR)');
+
+    const detected = await detectDeviceLocation();
+    expect(detected.isAutoDetected).toBe(true);
+    expect(detected.city.length).toBeGreaterThan(0);
+
+    // Verify live GPS coordinate validation + Nominatim reverse geocoding flow
+    Object.defineProperty(globalThis.navigator, 'geolocation', {
+      value: {
+        getCurrentPosition: (success: (pos: GeolocationPosition) => void) =>
+          success({
+            coords: { latitude: 25.5941, longitude: 85.1376 }
+          } as GeolocationPosition)
+      },
+      configurable: true
+    });
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ address: { city: 'Patna', country: 'India' } })
+    } as Response);
+
+    const gpsDetected = await detectDeviceLocation();
+    expect(gpsDetected.source).toBe('gps');
+    expect(gpsDetected.city).toBe('Patna');
   });
 
-  it('tailors Desi Jugaad cards and custom AI prompt to household vulnerabilities', () => {
-    const date = new Date();
-    date.setHours(8, 0, 0, 0);
-    const timeCtx = getDetailedTimeContext(date);
+  it('tailors Desi Jugaad cards and custom AI prompt across diurnal phases and vulnerabilities', () => {
+    const morningDate = new Date();
+    morningDate.setHours(8, 0, 0, 0);
+    const morningCtx = getDetailedTimeContext(morningDate);
     const telemetry = {
       city: 'New Delhi',
       aqi: 425,
@@ -126,14 +156,14 @@ describe('AeroShield AI: Mathematical, Atmospheric & Telemetry Tests', () => {
     };
 
     const baseline = generatePersonalizedIntelligence({
-      timeContext: timeCtx,
+      timeContext: morningCtx,
       telemetry,
       vulnerabilities: []
     });
     expect(baseline.customizedJugaadList).toHaveLength(3);
 
     const targeted = generatePersonalizedIntelligence({
-      timeContext: timeCtx,
+      timeContext: morningCtx,
       telemetry,
       vulnerabilities: ['asthma', 'commuter']
     });
@@ -141,6 +171,33 @@ describe('AeroShield AI: Mathematical, Atmospheric & Telemetry Tests', () => {
     expect(targeted.currentUrgentAdvisory).toContain('High Humidity Tip');
     expect(targeted.customizedJugaadList.length).toBe(5);
     expect(targeted.customAiPrompt).toContain('asthma, commuter');
+
+    const solarDate = new Date();
+    solarDate.setHours(14, 0, 0, 0);
+    const solarIntel = generatePersonalizedIntelligence({
+      timeContext: getDetailedTimeContext(solarDate),
+      telemetry: { city: 'Bengaluru', aqi: 60, pm2_5: 15, humidityPct: 50 },
+      vulnerabilities: []
+    });
+    expect(solarIntel.bannerTheme).toBe('olive');
+
+    const eveningDate = new Date();
+    eveningDate.setHours(18, 0, 0, 0);
+    const eveningIntel = generatePersonalizedIntelligence({
+      timeContext: getDetailedTimeContext(eveningDate),
+      telemetry: { city: 'Delhi', aqi: 300, pm2_5: 200, humidityPct: 60 },
+      vulnerabilities: []
+    });
+    expect(eveningIntel.bannerTheme).toBe('crimson');
+
+    const nightDate = new Date();
+    nightDate.setHours(23, 0, 0, 0);
+    const nightIntel = generatePersonalizedIntelligence({
+      timeContext: getDetailedTimeContext(nightDate),
+      telemetry: { city: 'Delhi', aqi: 300, pm2_5: 200, humidityPct: 60 },
+      vulnerabilities: []
+    });
+    expect(nightIntel.bannerTheme).toBe('hazel');
   });
 
   it('fetches live Open-Meteo telemetry, caches subsequent requests, and falls back gracefully on HTTP failure', async () => {
@@ -156,7 +213,7 @@ describe('AeroShield AI: Mathematical, Atmospheric & Telemetry Tests', () => {
           ozone: 40.5
         }
       })
-    });
+    } as Response);
 
     const firstResult = await fetchLiveAirQuality('custom', { lat: 12.9716, lon: 77.5946 });
     expect(firstResult.isLiveFeed).toBe(true);
@@ -164,14 +221,13 @@ describe('AeroShield AI: Mathematical, Atmospheric & Telemetry Tests', () => {
     expect(firstResult.category).toBe('Moderate');
     expect(firstResult.cigaretteEquivDaily).toBe(1.4);
 
-    // Second call with identical coords must hit 15-minute TTL cache
     const cachedResult = await fetchLiveAirQuality('custom', { lat: 12.9716, lon: 77.5946 });
     expect(cachedResult).toEqual(firstResult);
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
-    // Simulate HTTP 503 failure for uncached Mumbai request -> engages safe mock fallback
     clearTelemetryCache();
-    fetchMock.mockResolvedValueOnce({ ok: false, status: 503 });
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    fetchMock.mockResolvedValueOnce({ ok: false, status: 503 } as Response);
     const fallbackResult = await fetchLiveAirQuality('mumbai');
     expect(fallbackResult.isLiveFeed).toBe(false);
     expect(fallbackResult.city).toBe('Mumbai');

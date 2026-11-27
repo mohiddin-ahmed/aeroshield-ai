@@ -74,15 +74,32 @@ addCheck('.env.example Template Present for Evaluators', 'Security', () => {
   return { pass: true, detail: '.env.example documented for Gemini key injection' };
 });
 
-addCheck('Security Headers Configured in vercel.json', 'Security', () => {
+addCheck('MIT License File Present', 'Repository', () => {
+  const licensePath = path.join(ROOT_DIR, 'LICENSE');
+  if (!fs.existsSync(licensePath)) {
+    return { pass: false, error: 'Missing root LICENSE file.' };
+  }
+  const text = fs.readFileSync(licensePath, 'utf8');
+  if (!text.includes('MIT License')) {
+    return { pass: false, error: 'LICENSE file does not specify MIT License.' };
+  }
+  return { pass: true, detail: 'MIT License verified at repository root' };
+});
+
+addCheck('Security Headers Configured in vercel.json (Strict CSP)', 'Security', () => {
   const vercelPath = path.join(ROOT_DIR, 'vercel.json');
   if (!fs.existsSync(vercelPath)) {
     return { pass: false, error: 'Missing vercel.json deployment configuration.' };
   }
   const raw = fs.readFileSync(vercelPath, 'utf8');
+  if (raw.includes("'unsafe-inline'")) {
+    return { pass: false, error: "vercel.json CSP still contains 'unsafe-inline'." };
+  }
   const requiredHeaders = [
     'Content-Security-Policy',
     'Strict-Transport-Security',
+    'Cross-Origin-Opener-Policy',
+    'X-Permitted-Cross-Domain-Policies',
     'X-Content-Type-Options',
     'X-Frame-Options',
     'Referrer-Policy'
@@ -91,10 +108,28 @@ addCheck('Security Headers Configured in vercel.json', 'Security', () => {
   if (missing.length > 0) {
     return { pass: false, error: `Missing security headers in vercel.json: ${missing.join(', ')}` };
   }
-  return { pass: true, detail: 'CSP, HSTS, Referrer-Policy, X-Frame-Options configured' };
+  return { pass: true, detail: 'Strict zero-unsafe-inline CSP, COOP, HSTS & headers configured' };
 });
 
-// 2. Code Quality & Static Linting
+// 2. TypeScript, Prettier & Static Linting
+addCheck('Strict TypeScript Compiler Check Passes (tsc --noEmit)', 'Code Quality', () => {
+  try {
+    execSync('npm run typecheck', { cwd: ROOT_DIR, stdio: 'pipe' });
+    return { pass: true, detail: '0 TypeScript compiler errors' };
+  } catch (err) {
+    return { pass: false, error: `TypeScript check failed: ${err.message}` };
+  }
+});
+
+addCheck('Prettier Code Formatting Passes', 'Code Quality', () => {
+  try {
+    execSync('npm run format:check', { cwd: ROOT_DIR, stdio: 'pipe' });
+    return { pass: true, detail: 'All TS, TSX, and CSS files conform to .prettierrc' };
+  } catch (err) {
+    return { pass: false, error: `Prettier formatting check failed: ${err.message}` };
+  }
+});
+
 addCheck('ESLint Zero-Warning Static Analysis Passes', 'Code Quality', () => {
   try {
     execSync('npm run lint', { cwd: ROOT_DIR, stdio: 'pipe' });

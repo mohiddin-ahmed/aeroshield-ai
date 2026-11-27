@@ -1,10 +1,15 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { generateSmogDefensePlan, buildFallbackDefensePlan } from '../src/services/gemini';
-import { promptLogger, getPromptLogs } from '../src/utils/promptLogger';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  buildFallbackDefensePlan,
+  type GeminiClientLike,
+  generateSmogDefensePlan
+} from '../src/services/gemini';
+import { getPromptLogs, promptLogger } from '../src/utils/promptLogger';
 
 describe('AeroShield AI: Gemini GenAI Service & Prompt Telemetry Tests', () => {
   beforeEach(() => {
     promptLogger.clear();
+    vi.restoreAllMocks();
   });
 
   it('builds consistent deterministic fallback defense plans with Berkeley Earth dosimetry math', () => {
@@ -17,9 +22,8 @@ describe('AeroShield AI: Gemini GenAI Service & Prompt Telemetry Tests', () => {
     expect(plan.assessment).toContain('Patna');
     expect(plan.daily_routine).toHaveLength(4);
     expect(plan.jugaad_prescriptions).toHaveLength(2);
-    // 220 * 1.8 = 396 ug -> 396 / 22 = 18.0 cigarettes avoided
-    expect(plan.dosimetry_impact.pm25_avoided_ug).toBe(396);
-    expect(plan.dosimetry_impact.cigarettes_avoided).toBe(18);
+    expect(plan.dosimetry_impact?.pm25_avoided_ug).toBe(396);
+    expect(plan.dosimetry_impact?.cigarettes_avoided).toBe(18);
   });
 
   it('runs cleanly without API key in offline evaluator mode and logs telemetry', async () => {
@@ -42,7 +46,7 @@ describe('AeroShield AI: Gemini GenAI Service & Prompt Telemetry Tests', () => {
   });
 
   it('executes live Gemini client cleanly and preserves exact tokenCount & isMock=false', async () => {
-    const mockClient = {
+    const mockClient: GeminiClientLike = {
       models: {
         generateContent: vi.fn().mockResolvedValue({
           text: JSON.stringify({
@@ -76,7 +80,8 @@ describe('AeroShield AI: Gemini GenAI Service & Prompt Telemetry Tests', () => {
   });
 
   it('falls back gracefully without infinite recursion when Gemini API throws or returns invalid JSON', async () => {
-    const failingClient = {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const failingClient: GeminiClientLike = {
       models: {
         generateContent: vi.fn().mockRejectedValue(new Error('429 Quota exceeded'))
       }
@@ -87,7 +92,6 @@ describe('AeroShield AI: Gemini GenAI Service & Prompt Telemetry Tests', () => {
       failingClient
     );
 
-    // Must invoke API exactly once (no recursive retry storm) and fall back cleanly
     expect(failingClient.models.generateContent).toHaveBeenCalledTimes(1);
     expect(result.success).toBe(true);
     expect(result.isMock).toBe(true);
@@ -96,6 +100,14 @@ describe('AeroShield AI: Gemini GenAI Service & Prompt Telemetry Tests', () => {
     const logs = getPromptLogs();
     expect(logs[0].isMock).toBe(true);
     expect(logs[0].error).toContain('429 Quota exceeded');
+
+    const invalidSchemaClient: GeminiClientLike = {
+      models: {
+        generateContent: vi.fn().mockResolvedValue({ text: '{"invalid": true}' })
+      }
+    };
+    const schemaFallback = await generateSmogDefensePlan({ city: 'Patna' }, invalidSchemaClient);
+    expect(schemaFallback.isMock).toBe(true);
   });
 
   it('enforces 50-entry bounded log history and notifies subscribers', () => {

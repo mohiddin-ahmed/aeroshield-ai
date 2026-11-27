@@ -37,8 +37,8 @@ flowchart TD
 * **Agentic Orchestration:** Google Antigravity
 * **Foundation Model:** Google Gemini 2.5 Flash API (`temperature: 0.3`, strict `application/json` schema validation)
 * **Atmospheric Data Pipeline:** Open-Meteo Copernicus CAMS 11km model grid ($\text{PM}_{2.5}$, $\text{PM}_{10}$, $\text{NO}_2$, $\text{O}_3$) with 4s `AbortController` timeouts
-* **Frontend Platform:** React 19 (modular custom hooks, `PropTypes`, lazy-loaded modals & tabs), Tailwind CSS v4, Vite 8 (Rolldown vendor chunk splitting)
-* **Quality, Security & Accessibility:** ESLint 9 (`jsx-a11y` zero-warning enforcement), CSP/HSTS security headers (`vercel.json`), iOS/Android safe-area responsiveness, and 34 automated Vitest + Testing Library unit/security/accessibility/integration tests
+* **Frontend Platform:** React 19 with strict **TypeScript (`tsc --noEmit`)**, Prettier formatting, decomposed single-responsibility modules, lazy-loaded modals, Tailwind CSS v4, and Vite 8 (Rolldown vendor chunk splitting)
+* **Quality, Security & Accessibility:** ESLint 9 (`typescript-eslint` + `jsx-a11y` zero-warning enforcement), strict zero-`'unsafe-inline'` CSP/COOP/HSTS security headers (`vercel.json`), iOS/Android safe-area responsiveness, and **43 automated Vitest + Testing Library tests across 6 suites (89.05% line coverage)**
 
 ---
 
@@ -48,8 +48,8 @@ We engineered a specialized **5-Pillar Clinical Prompt Architecture**:
 
 1. **Role & Clinical Persona Calibration:** Strictly constrains the model as *VayuMitra AI*, prescribing boundary-layer timing and frugal household interventions grounded in epidemiology rather than generic platitudes.
 2. **Deterministic Schema Guardrails (`parseSafeAiPlan`):** Strips accidental Markdown wrappers and validates mandatory keys (`assessment`, 4-phase `daily_routine`, `jugaad_prescriptions`, `dosimetry_impact`) before UI rendering.
-3. **Input Sanitization Prior to Prompt Interpolation (`inputValidator.js`):** Sanitizes city names, coordinate bounds, and vulnerability arrays prior to building LLM prompts or external links.
-4. **Live Prompt Inspector (Judges DevTools):** Records every live or offline execution in memory (`promptLogger.js`) with system instructions, payloads, response JSON, latency, and token metrics.
+3. **Input Sanitization Prior to Prompt Interpolation (`src/utils/inputValidator.ts`):** Sanitizes city names, coordinate bounds, and vulnerability arrays prior to building LLM prompts or external links.
+4. **Live Prompt Inspector (Judges DevTools):** Records every live or offline execution in memory (`src/utils/promptLogger.ts`) with system instructions, payloads, response JSON, latency, and token metrics.
 
 ---
 
@@ -59,14 +59,14 @@ We engineered a specialized **5-Pillar Clinical Prompt Architecture**:
 * **The Problem:** External API keys in public reviews frequently encounter `429 Quota Exceeded` or network timeouts. Calling the primary API function recursively inside `catch` risks infinite retry loops.
 * **Our Solution:** Separated deterministic heuristic synthesis (`buildFallbackDefensePlan`) from `generateSmogDefensePlan`, ensuring single-pass non-recursive failover backed by a top-level React `ErrorBoundary` and `AbortController` API timeouts.
 
-### Challenge 2: Bundle Bloat vs Mobile Responsiveness & Accessibility
-* **The Problem:** Loading all heavy modals upfront bloated initial page load, while mobile/iOS/Android devices needed instant tab switching, safe-area support, and full keyboard accessibility.
-* **Our Solution:** Code-split all 6 modal dialogs using `React.lazy()` + `<Suspense>` and configured Vite 8 `codeSplitting.groups`, separating vendor chunks while keeping primary tabs instant-switchable (~182 kB entry JS / ~53 kB gzip). Added `viewport-fit=cover` + iOS safe-area insets, a shared `useModalAccessibility` Escape-key hook, skip-to-content landmarks, `aria-pressed` states, and `eslint-plugin-jsx-a11y` checks.
+### Challenge 2: Bundle Bloat, Strict CSP & Cross-Device Accessibility
+* **The Problem:** Loading all heavy modals upfront bloated initial page load, while dynamic inline styles force lax `'unsafe-inline'` CSP directives.
+* **Our Solution:** Code-split all 6 modal dialogs using `React.lazy()` + `<Suspense>` and configured Vite 8 `codeSplitting.groups`, separating vendor chunks while keeping entry JS at **179.91 kB raw / 53.84 kB gzip**. Replaced all inline `style={{...}}` attributes with Tailwind utility maps and SVG vector geometry so `vercel.json` enforces `style-src 'self' https://fonts.googleapis.com` with zero `'unsafe-inline'`. Added `viewport-fit=cover`, `useModalAccessibility` Escape-key dismissal with trigger focus restoration, `aria-live="polite"` navigation announcements, and `prefers-reduced-motion: reduce`.
 
 ---
 
 ## 5. Verification & Conclusion
 
-Running `npm run validate` verifies all 10 automated checks end to end: ESLint (`--max-warnings=0`), all 34 Vitest tests across 5 suites, code-split Vite compilation, CSP/HSTS headers, and prompt registry integrity.
+Running `npm run validate` verifies every automated gate end to end: strict TypeScript (`tsc --noEmit`), Prettier formatting, ESLint (`--max-warnings=0`), all **43 Vitest tests across 6 suites**, code-split Vite compilation, MIT license compliance, strict zero-`'unsafe-inline'` CSP/HSTS headers, and prompt registry integrity.
 
 AeroShield AI (VayuMitra OS) demonstrates how intent-driven engineering with Google Antigravity and Gemini 2.5 Flash can deliver clinically grounded, accessible environmental protection software at zero household cost.

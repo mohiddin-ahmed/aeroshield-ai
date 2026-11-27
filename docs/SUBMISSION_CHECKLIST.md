@@ -5,11 +5,12 @@ Before clicking **"Submit Project"** on the [Hack2skill Portal](https://hack2ski
 ---
 
 ### Phase 1: Code Quality, Security & Deployment Checks
-- [ ] **GitHub Repository Visibility:** Set to **PUBLIC** (under 10 MB, single `main` branch).
+- [ ] **GitHub Repository Visibility:** Set to **PUBLIC** (under 10 MB, single `main` branch, MIT LICENSE).
+- [ ] **Strict TypeScript & Formatting:** Run `npm run typecheck` (`0` errors) and `npm run format:check`.
 - [ ] **Zero-Warning Linting Passed:** Run `npm run lint` (`0` ESLint errors and `0` warnings).
-- [ ] **Automated Test Suite Passed:** Run `npm test` (all 5 Vitest unit, security, component, and integration suites pass).
+- [ ] **Automated Test Suite Passed:** Run `npm run test:coverage` (all 6 Vitest suites / 43 tests pass).
 - [ ] **Clean Production Build:** Run `npm run build` (`dist/` compiles cleanly with code-split chunks and zero warnings).
-- [ ] **Security Hygiene:** `.env` is excluded by `.gitignore` and security headers (CSP, HSTS, Referrer-Policy) are present in `vercel.json`.
+- [ ] **Security Hygiene:** `.env` is excluded by `.gitignore` and strict zero-`'unsafe-inline'` CSP, COOP, HSTS, and Referrer-Policy headers are present in `vercel.json`.
 - [ ] **Working Live Preview URL:** Tested in an incognito window with Zero-Crash fallback verified.
 
 ---
@@ -23,8 +24,8 @@ Before clicking **"Submit Project"** on the [Hack2skill Portal](https://hack2ski
 ---
 
 ### Phase 3: Automated Auditor Verification
-Run the 10-point submission auditor CLI in your terminal:
+Run the automated submission auditor CLI in your terminal:
 ```bash
 npm run validate
 ```
-Ensure all 10 checks report **✔ PASS** before submitting.
+Ensure every check reports **✔ PASS** before submitting.

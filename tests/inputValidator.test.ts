@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
-  sanitizeText,
-  sanitizeCityKey,
-  sanitizeVulnerabilities,
-  validateCoordinates,
   clampNumber,
-  parseSafeAiPlan
+  parseSafeAiPlan,
+  sanitizeCityKey,
+  sanitizeText,
+  sanitizeVulnerabilities,
+  validateCoordinates
 } from '../src/utils/inputValidator';
 
 describe('AeroShield AI: Security Sanitization & Schema Guardrail Tests', () => {
@@ -66,16 +66,16 @@ describe('AeroShield AI: Security Sanitization & Schema Guardrail Tests', () => 
 
     const parsed = parseSafeAiPlan(fencedJson);
     expect(parsed).not.toBeNull();
-    expect(parsed.assessment).toContain('Severe smog');
-    expect(parsed.daily_routine).toHaveLength(1);
+    expect(parsed?.assessment).toContain('Severe smog');
+    expect(parsed?.daily_routine).toHaveLength(1);
 
-    // Malformed payloads must safely return null instead of throwing
+    expect(parseSafeAiPlan('')).toBeNull();
+    expect(parseSafeAiPlan(null)).toBeNull();
     expect(parseSafeAiPlan('{ broken json')).toBeNull();
     expect(parseSafeAiPlan(JSON.stringify({ assessment: 'Only text' }))).toBeNull();
+    expect(parseSafeAiPlan(JSON.stringify({ assessment: 'Ok', daily_routine: [] }))).toBeNull();
     expect(
-      parseSafeAiPlan(
-        JSON.stringify({ assessment: 'Ok', daily_routine: [{ time: '7 AM' }] })
-      )
+      parseSafeAiPlan(JSON.stringify({ assessment: 'Ok', daily_routine: [{ time: '7 AM' }] }))
     ).toBeNull();
   });
 });

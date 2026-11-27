@@ -1,10 +1,12 @@
 # 🛡️ AeroShield AI (VayuMitra OS) — Urban Air Quality Defense Companion
 
+[![TypeScript](https://img.shields.io/badge/TypeScript-Strict%200%20Errors-3178C6?style=for-the-badge&logo=typescript)](./tsconfig.json)
 [![ESLint](https://img.shields.io/badge/ESLint-0%20Errors%20%7C%200%20Warnings-emerald?style=for-the-badge&logo=eslint)](./eslint.config.js)
-[![Tests](https://img.shields.io/badge/Vitest-34%20Passing%20Tests-indigo?style=for-the-badge&logo=vitest)](./tests)
+[![Tests](https://img.shields.io/badge/Vitest-43%20Tests%20%7C%2089%25%20Lines-indigo?style=for-the-badge&logo=vitest)](./tests)
 [![AI Engine](https://img.shields.io/badge/Gemini%20API-2.5%20Flash-blue?style=for-the-badge&logo=google)](https://aistudio.google.com)
-[![Accessibility](https://img.shields.io/badge/WCAG%202.1%20AA-Compliant-teal?style=for-the-badge)](./src/App.jsx)
-[![Security](https://img.shields.io/badge/CSP%20%26%20HSTS-Hardened-amber?style=for-the-badge)](./vercel.json)
+[![Accessibility](https://img.shields.io/badge/WCAG%202.1%20AA-Compliant-teal?style=for-the-badge)](./src/App.tsx)
+[![Security](https://img.shields.io/badge/Strict%20CSP%20%26%20HSTS-Zero%20Unsafe%20Inline-amber?style=for-the-badge)](./vercel.json)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](./LICENSE)
 [![Live Deployment](https://img.shields.io/badge/Live%20App-Vercel-emerald?style=for-the-badge&logo=vercel)](https://aeroshield-ai-sandy.vercel.app/)
 [![Demo Video](https://img.shields.io/badge/Demo%20Video-Watch%20HD-rose?style=for-the-badge&logo=googledrive)](https://drive.google.com/file/d/18vHHx8OvH3ZrenDX-60WtGm0OsJ_NTD7/view?usp=sharing)
 
@@ -39,26 +41,26 @@ Architected for multi-generational households, renters, commuters, and vulnerabl
 
 ## 🧠 Approach and Atmospheric Logic
 
-1. **Atmospheric Physics over Static AQI:** Models winter boundary-layer inversion trapping versus the `13:00–15:00` local convective thermal lift slot (`solarWindowEngine.js`).
-2. **Epidemiological Dosimetry:** Adheres strictly to Berkeley Earth's peer-reviewed rule ($22\,\mu\text{g/m}^3\ \text{PM}_{2.5}$ over 24 hours $\equiv 1\text{ cigarette}$ smoked) alongside citations from *The Lancet Planetary Health*, *IIT Kanpur*, *Harvard T.H. Chan*, and *WHO* (`researchArticlesData.js`).
-3. **Frugal Fluid Dynamics:** Implements ANSI/AHAM AC-1 & EPA airflow equations ($\text{Required CFM} = (\text{Volume} \times \text{Target ACH}) / 60$ and $t_{90} = \ln(10)/\text{ACH}$) with bounded dimension clamping (`cadrCalculator.js`).
+1. **Atmospheric Physics over Static AQI:** Models winter boundary-layer inversion trapping versus the `13:00–15:00` local convective thermal lift slot (`solarWindowEngine.ts`).
+2. **Epidemiological Dosimetry:** Adheres strictly to Berkeley Earth's peer-reviewed rule ($22\,\mu\text{g/m}^3\ \text{PM}_{2.5}$ over 24 hours $\equiv 1\text{ cigarette}$ smoked) alongside citations from *The Lancet Planetary Health*, *IIT Kanpur*, *Harvard T.H. Chan*, and *WHO* (`src/data/researchArticlesData.ts`).
+3. **Frugal Fluid Dynamics:** Implements ANSI/AHAM AC-1 & EPA airflow equations ($\text{Required CFM} = (\text{Volume} \times \text{Target ACH}) / 60$ and $t_{90} = \ln(10)/\text{ACH}$) with bounded dimension clamping (`cadrCalculator.ts`).
 4. **Structured GenAI Synthesis:** Enforces `temperature: 0.3` and strict JSON output parsing (`parseSafeAiPlan`) paired with deterministic fallback synthesis (`buildFallbackDefensePlan`) preventing recursive retry failures.
 
 ---
 
 ## ⚙️ Modular Code Quality & Engineering Standards
 
-The codebase follows strict modular separation of concerns with static enforcement:
-- **ESLint 9 Flat Config (`--max-warnings=0`):** Enforces `@eslint/js` recommended rules, `eslint-plugin-react`, `eslint-plugin-react-hooks`, and `eslint-plugin-jsx-a11y` across every file (`eslint.config.js`).
-- **Custom Hook Decomposition (`src/hooks/`):** Decouples state management from presentation across `useAirQuality`, `useTheme`, `useLanguage`, `useDailyChecklist`, and shared modal keyboard hook `useModalAccessibility`.
-- **Decomposed UI Components (`src/components/`):** `App.jsx` orchestrates focused modules (`LocationHeroBanner`, `CitySelector`, `AiPlanSpotlight`, `CommandCenterTab`, `RotaryAqiDial`, `VulnerabilityToggles`, `TelemetryGrid`, `DailyDefenseChecklist`, etc.) with one-click Home return via header logo.
-- **Explicit Runtime Contracts:** All UI components enforce runtime `PropTypes` validation alongside JSDoc `@param`/`@returns` contracts on services, hooks, and utilities.
-- **Centralized Constants (`src/constants/airQuality.js`):** Eliminates magic numbers and encodes declarative `AQI_THRESHOLDS`.
+The codebase enforces strict **TypeScript (`strict: true`)** contracts alongside automated static analysis:
+- **TypeScript + Prettier Architecture (`tsconfig.json`, `.prettierrc`):** Strict compiler flags (`noUnusedLocals`, `noUnusedParameters`, `noImplicitReturns`) across every domain contract (`src/types/airQuality.ts`), data catalog (`src/data/`), service, hook, and UI component with zero `any` escapes.
+- **ESLint 9 + `typescript-eslint` (`--max-warnings=0`):** Enforces recommended TypeScript rules, `eslint-plugin-react`, `eslint-plugin-react-hooks`, and `eslint-plugin-jsx-a11y` across every file (`eslint.config.js`).
+- **Custom Hook Decomposition (`src/hooks/`):** Decouples state management from presentation across `useAirQuality`, `useTheme`, `useLanguage`, `useDailyChecklist`, and `useModalAccessibility` (including Escape dismissal + trigger focus restoration).
+- **Single-Responsibility UI Modules (`src/components/`):** `App.tsx` orchestrates compact components (`LocationHeroBanner`, `CitySelector`, `Navbar`, `LanguageSwitcher`, `MobileNavDrawer`, `CommandCenterTab`, `RotaryAqiDial`, `VulnerabilityToggles`, `TelemetryGrid`, `DailyDefenseChecklist`, `CadrCalculatorCard`, `DosimetryCalculator`, `ResearchArticleCard`) with SVG vector charts and zero inline `style=` attributes.
+- **Centralized Constants & Structured Logging (`src/constants/airQuality.ts`, `src/utils/logger.ts`):** Eliminates magic numbers and encodes declarative `AQI_THRESHOLDS`.
 
 ```mermaid
 flowchart TD
     A["Device GPS & Diurnal Clock (useAirQuality)"] --> B["Open-Meteo CAMS Grid (15-min TTL Cache + Timeout)"]
-    B --> C["Input Sanitizer & Bounds Validator (inputValidator.js)"]
+    B --> C["Input Sanitizer & Bounds Validator (inputValidator.ts)"]
     C --> D["Diurnal Inversion & Solar Lift Engine"]
     C --> E{"Gemini API Key Active?"}
     E -->|"Live Mode"| F["Gemini 2.5 Flash (Strict JSON Schema + parseSafeAiPlan)"]
@@ -73,22 +75,22 @@ flowchart TD
 
 ## 🔒 Security & Privacy Hardening
 
-- **HTTP Security Headers (`vercel.json`):** Enforces `Content-Security-Policy` (restricting scripts to `'self'`, telemetry endpoints cleanly allowlisted, `frame-ancestors 'none'`), `Strict-Transport-Security`, `Referrer-Policy`, `Permissions-Policy`, `X-Content-Type-Options: nosniff`, and `X-Frame-Options: DENY`.
-- **Input Sanitization & Guardrails (`src/utils/inputValidator.js`):** Sanitizes free-text labels against angle brackets/control chars, normalizes city keys against traversal strings, validates WGS84 latitude/longitude bounds, clamps slider bounds, and safely strips markdown fences before parsing LLM JSON.
+- **Zero `'unsafe-inline'` Content Security Policy (`vercel.json`):** Enforces strict `default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com` with zero `'unsafe-inline'` directives (pollutant severity bars and rotary gauges use pure CSS classes + inline SVG geometry), plus `Strict-Transport-Security`, `Cross-Origin-Opener-Policy: same-origin`, `X-Permitted-Cross-Domain-Policies: none`, `Referrer-Policy`, `Permissions-Policy`, `X-Content-Type-Options: nosniff`, and `X-Frame-Options: DENY`.
+- **Input Sanitization & Guardrails (`src/utils/inputValidator.ts`):** Sanitizes free-text labels against angle brackets/control chars, normalizes city keys against traversal strings, validates WGS84 latitude/longitude bounds, clamps slider bounds, and safely strips markdown fences before parsing LLM JSON.
 - **Secret Isolation:** `.env` files are excluded via `.gitignore` and documented via `.env.example`. `npm audit` reports **0 vulnerabilities**.
 
 ---
 
 ## ⚡ Performance & Bundle Optimization
 
-- **Code Splitting (`React.lazy` + `Suspense`) & Zero-Flash Navigation:** All 6 modal dialogs load lazily on demand while primary tabs switch instantaneously in memory, keeping initial JS lean (~182 kB raw / ~53 kB gzip) and separating vendor chunks (`vendor-react`, `vendor-genai`, `vendor-icons`) via Vite 8 with zero build size warnings.
+- **Code Splitting (`React.lazy` + `Suspense`) & Zero-Flash Navigation:** All 6 modal dialogs load lazily on demand while primary tabs switch instantaneously in memory, keeping initial entry JS lean (**179.91 kB raw / 53.84 kB gzip**) and separating vendor chunks (`vendor-react`, `vendor-genai`, `vendor-icons`) via Vite 8 with zero build warnings.
 - **Resilient Networking:** Uses `AbortController` 4-second timeouts on Open-Meteo and Nominatim requests plus 15-minute in-memory coordinate caching.
 
 ---
 
 ## ♿ WCAG 2.1 AA Accessibility
 
-- **Keyboard Navigation & Focus Management:** Includes a `Skip to main content` landmark link (`#main-content`), high-contrast `:focus-visible` emerald outlines, and shared Escape-key dismissal across all modals (`useModalAccessibility`) and header menus.
+- **Keyboard Navigation, Focus Restoration & Motion Sensitivity:** Includes a `Skip to main content` landmark link (`#main-content`), `:focus-visible` emerald outlines, `aria-live="polite"` view announcements, `prefers-reduced-motion: reduce` support, and `useModalAccessibility` Escape-key dismissal with trigger focus restoration.
 - **Semantic Landmarks & ARIA:** Every modal implements `role="dialog"`, `aria-modal="true"`, and `aria-labelledby`. Stateful toggles expose `aria-pressed`, sensor progress bars expose `role="progressbar"` with `aria-valuenow`/`min`/`max`, and inline SVGs provide descriptive `<title>` + `aria-label` text.
 - **Error Resilience:** Wrapped cleanly in `ErrorBoundary` with `role="alert"` safe recovery UI.
 
@@ -96,23 +98,26 @@ flowchart TD
 
 ## 🧪 Automated Testing & Pre-Flight QA
 
-All checks are automated across unit tests, security guardrails, GenAI failover tests, UI accessibility tests, and end-to-end flows (**5 test files, 34 passing tests**):
+All checks are automated across unit tests, custom hook tests, security guardrails, GenAI failover tests, UI accessibility tests, and end-to-end flows (**6 TypeScript test suites, 43 passing tests, 89.05% line coverage**):
 
 | Suite File | Focus Areas Covered | Environment |
 |---|---|---|
-| `tests/airQuality.test.js` | CADR math, Solar Window boundaries, Berkeley Earth rule, AQI classification, Open-Meteo caching & 503 fallback | Node |
-| `tests/inputValidator.test.js` | HTML/control-char sanitization, key normalization, coordinate validation, numeric clamping, AI JSON schema parser | Node |
-| `tests/geminiService.test.js` | Offline fallback, injected live client token logging, non-recursive `429` error failover verification, log buffer bounds | Node |
-| `tests/components.test.jsx` | Rotary dial ARIA gauge, Vulnerability slider & toggles, CitySelector search, Daily checklist, Modal Escape keys, ErrorBoundary alert | jsdom + RTL |
-| `tests/integration.test.jsx` | Onboarding dismissal, Plan generation -> Judges DevTools, BottomNav `aria-current`, App icon Home navigation, Hindi language switch | jsdom + RTL |
+| `tests/airQuality.test.ts` | CADR math, Solar Window boundaries, Berkeley Earth rule, AQI classification, GPS + Nominatim geocoding, Open-Meteo caching & 503 fallback | Node |
+| `tests/inputValidator.test.ts` | HTML/control-char sanitization, key normalization, coordinate validation, numeric clamping, AI JSON schema parser | Node |
+| `tests/geminiService.test.ts` | Offline fallback, injected live client token logging, non-recursive `429` error failover verification, malformed schema fallback, log buffer bounds | Node |
+| `tests/hooks.test.tsx` | All 5 custom hooks (`useTheme`, `useLanguage`, `useDailyChecklist` + calendar streak rollover, `useModalAccessibility` focus restore, `useAirQuality`) | jsdom + RTL |
+| `tests/components.test.tsx` | Rotary dial ARIA gauge, Vulnerability slider & toggles, CitySelector search, Daily checklist edit, Onboarding & Multi-AI modals, Navbar drawer, ErrorBoundary | jsdom + RTL |
+| `tests/integration.test.tsx` | Onboarding dismissal, Plan generation -> Judges DevTools, BottomNav `aria-current` & live region announcements, App icon Home navigation, Hindi + dark mode | jsdom + RTL |
 
 ### Local Verification Commands
 ```bash
 npm install
-npm run lint       # ESLint (--max-warnings=0 across src, tests, scripts)
-npm test           # Runs all 34 unit, security, component, and integration tests
-npm run build      # Compiles code-split production bundle in dist/
-npm run validate   # Executes the 10-point Submission Pre-Flight Auditor CLI
+npm run typecheck      # Strict TypeScript compiler check (tsc --noEmit)
+npm run lint           # ESLint (--max-warnings=0 across TS, TSX, scripts)
+npm run format:check   # Prettier style enforcement across src/ & tests/
+npm run test:coverage  # Runs all 43 tests across 6 suites with V8 coverage
+npm run build          # Compiles code-split production bundle in dist/
+npm run validate       # Executes the automated Submission Pre-Flight Auditor CLI
 ```
 
 ---
@@ -140,17 +145,20 @@ aeroshield-ai/
 │   ├── README.md                   # Prompt engineering principles overview
 │   └── templates/                  # 5-pillar clinical prompt structure
 ├── scripts/
-│   └── validate-submission.mjs     # 10-point automated lint/test/security/build auditor CLI
+│   └── validate-submission.mjs     # 13-point automated TS/lint/format/test/security/build auditor CLI
 ├── src/
-│   ├── components/                 # Accessible, PropTypes-validated React UI & lazy modals
+│   ├── components/                 # Decomposed strict TypeScript UI modules & lazy modals
 │   ├── constants/                  # Centralized meteorological, AQI, and timing constants
-│   ├── hooks/                      # Custom hooks (useAirQuality, useDailyChecklist, useTheme, useLanguage, useModalAccessibility)
-│   ├── services/                   # Open-Meteo CAMS client, Gemini 2.5 Flash service, citations
-│   └── utils/                      # CADR math, solar window, geolocation, input validator, i18n
-├── tests/                          # Vitest + Testing Library suites (5 files, 34 passing tests)
-├── eslint.config.js                # ESLint 9 flat config (React, Hooks, jsx-a11y)
-├── vercel.json                     # Hardened security headers (CSP, HSTS, Referrer-Policy)
-└── vite.config.js                  # Vite 8 + Rolldown vendor chunk optimization
+│   ├── data/                       # Typed station catalogs, research corpus, slides & protocols
+│   ├── hooks/                      # Custom TypeScript hooks (useAirQuality, useDailyChecklist, etc.)
+│   ├── services/                   # Open-Meteo CAMS client & Gemini 2.5 Flash service
+│   ├── types/                      # Shared domain TypeScript interfaces
+│   └── utils/                      # CADR math, solar window, geolocation, validator, i18n
+├── tests/                          # Vitest + Testing Library suites (6 suites, 43 passing tests)
+├── eslint.config.js                # ESLint 9 flat config (TypeScript, React, Hooks, jsx-a11y)
+├── tsconfig.json                   # Strict TypeScript compiler configuration
+├── vercel.json                     # Hardened zero-'unsafe-inline' CSP, COOP & HSTS headers
+└── vite.config.ts                  # Vite 8 + Rolldown vendor chunk optimization
 ```
 
 ---

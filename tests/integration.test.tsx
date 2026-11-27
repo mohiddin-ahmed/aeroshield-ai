@@ -1,11 +1,10 @@
 // @vitest-environment jsdom
 import '@testing-library/jest-dom/vitest';
-import React from 'react';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../src/App';
-import { promptLogger } from '../src/utils/promptLogger';
 import { clearTelemetryCache } from '../src/services/airQualityService';
+import { promptLogger } from '../src/utils/promptLogger';
 
 describe('AeroShield AI: End-to-End Application Flow Integration Tests', () => {
   beforeEach(() => {
@@ -15,7 +14,7 @@ describe('AeroShield AI: End-to-End Application Flow Integration Tests', () => {
     window.scrollTo = vi.fn();
     Element.prototype.scrollIntoView = vi.fn();
 
-    window.matchMedia = vi.fn().mockImplementation((query) => ({
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
       matches: false,
       media: query,
       onchange: null,
@@ -38,7 +37,7 @@ describe('AeroShield AI: End-to-End Application Flow Integration Tests', () => {
           ozone: 38.0
         }
       })
-    });
+    } as Response);
   });
 
   afterEach(() => {
@@ -49,22 +48,19 @@ describe('AeroShield AI: End-to-End Application Flow Integration Tests', () => {
   it('renders skip-to-content link, dismisses onboarding, generates an AI smog plan, and opens Judges DevTools', async () => {
     render(<App />);
 
-    // Skip-to-main-content WCAG landmark link is present
     expect(screen.getByText(/Skip to main content/i)).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(/Home air quality overview/i);
 
-    // Wait for lazy OnboardingModal to mount and skip it
     const skipBtn = await screen.findByRole('button', { name: /Skip onboarding tour/i });
     fireEvent.click(skipBtn);
     expect(localStorage.getItem('aeroshield_onboarded')).toBe('true');
 
-    // Generate AI Smog Defense Plan
     const generateBtn = screen.getByRole('button', { name: /Get AI Plan/i });
     fireEvent.click(generateBtn);
 
     const planHeading = await screen.findByText(/Generated Smog Defense Plan for Your Family/i);
     expect(planHeading).toBeInTheDocument();
 
-    // Open Judges DevTools and verify logged execution appears
     const devToolsBtn = screen.getByRole('button', { name: /Judges DevTools/i });
     fireEvent.click(devToolsBtn);
 
@@ -72,15 +68,22 @@ describe('AeroShield AI: End-to-End Application Flow Integration Tests', () => {
     expect(await screen.findByText(/PROMPT RUNS \(1\)/i)).toBeInTheDocument();
   });
 
-  it('switches navigation tabs smoothly using FloatingBottomNav with aria-current page semantics', async () => {
+  it('switches navigation tabs smoothly using FloatingBottomNav with aria-current and live region updates', async () => {
     localStorage.setItem('aeroshield_onboarded', 'true');
     render(<App />);
 
     const homeNav = screen.getByRole('button', { name: 'Home' });
+    const routineNav = screen.getByRole('button', { name: 'Routine' });
     const hacksNav = screen.getByRole('button', { name: 'Hacks' });
     const scienceNav = screen.getByRole('button', { name: 'Science' });
 
     expect(homeNav).toHaveAttribute('aria-current', 'page');
+
+    fireEvent.click(routineNav);
+    await waitFor(() => {
+      expect(screen.getByText(/Simple 24-Hour Clean-Air Routine/i)).toBeInTheDocument();
+    });
+    expect(routineNav).toHaveAttribute('aria-current', 'page');
 
     fireEvent.click(hacksNav);
     await waitFor(() => {
@@ -90,19 +93,16 @@ describe('AeroShield AI: End-to-End Application Flow Integration Tests', () => {
 
     fireEvent.click(scienceNav);
     await waitFor(() => {
-      expect(
-        screen.getByText(/How Clean-Air Steps Protect Your Lungs/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/How Clean-Air Steps Protect Your Lungs/i)).toBeInTheDocument();
     });
     expect(scienceNav).toHaveAttribute('aria-current', 'page');
 
-    // Clicking the header App Icon / Brand button navigates right back to Home
     const brandHomeBtn = screen.getByRole('button', { name: /Return to AeroShield AI Home/i });
     fireEvent.click(brandHomeBtn);
     expect(homeNav).toHaveAttribute('aria-current', 'page');
   });
 
-  it('switches language localized labels when selecting हिन्दी from Navbar dropdown', async () => {
+  it('switches language localized labels and toggles theme mode', async () => {
     localStorage.setItem('aeroshield_onboarded', 'true');
     render(<App />);
 
@@ -115,5 +115,9 @@ describe('AeroShield AI: End-to-End Application Flow Integration Tests', () => {
     await waitFor(() => {
       expect(screen.getByText(/वायुमित्र OS/i)).toBeInTheDocument();
     });
+
+    const themeBtn = screen.getByRole('button', { name: /Switch to Dark Mode/i });
+    fireEvent.click(themeBtn);
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
   });
 });
